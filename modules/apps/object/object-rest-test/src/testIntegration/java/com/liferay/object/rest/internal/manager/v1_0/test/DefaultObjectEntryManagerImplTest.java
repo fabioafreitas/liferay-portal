@@ -4922,6 +4922,30 @@ public class DefaultObjectEntryManagerImplTest
 			).build());
 	}
 
+	@FeatureFlag("LPD-53981")
+	@Test
+	public void testGetObjectEntriesTotalCountMatchesItemCount()
+		throws Exception {
+
+		ObjectEntry objectEntry = _addObjectEntry(
+			_objectDefinition4, _group.getGroupKey(), 1);
+
+		_defaultObjectEntryManager.deleteObjectEntry(
+			_simpleDTOConverterContext, _objectDefinition4,
+			objectEntry.getId());
+
+		Page<ObjectEntry> expectedPage = Page.of(
+			List.of(_addObjectEntry(
+				_objectDefinition4, _group.getGroupKey(), 1)));
+
+		Page<ObjectEntry> page = _objectEntryManager.getObjectEntries(
+			TestPropsValues.getCompanyId(), _objectDefinition4,
+			_group.getGroupKey(), null, _createDTOConverterContext(),
+			(String)null, null, null, null);
+
+		assertEquals(expectedPage, page);
+	}
+
 	@Test
 	public void testGetObjectEntriesWithAccountEntryRestricted1()
 		throws Exception {
