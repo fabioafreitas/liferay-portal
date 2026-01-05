@@ -19,6 +19,7 @@ ViewTeamsSectionDisplayContext viewTeamsSectionDisplayContext = (ViewTeamsSectio
 			formName="fm"
 			id="<%= CMSSiteInitializerFDSNames.TEAMS_SECTION %>"
 			itemsPerPage="<%= 20 %>"
+			propsTransformer="{AssetsFDSPropsTransformer} from site-cms-site-initializer"
 			selectedItemsKey="embedded.id"
 			selectionType="multiple"
 			showSelectAll="<%= true %>"
