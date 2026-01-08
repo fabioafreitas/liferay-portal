@@ -1200,9 +1200,20 @@ public class ObjectEntryDTOConverter
 			}
 
 			if (serializable instanceof String) {
-				Date date = DateUtil.parseDate(
-					"yyyy-MM-dd", (String)serializable,
-					LocaleUtil.getSiteDefault());
+				Date date = null;
+
+				if (objectField.compareBusinessType(
+						ObjectFieldConstants.BUSINESS_TYPE_DATE)) {
+
+					date = DateUtil.parseDate(
+						"yyyy-MM-dd", (String)serializable,
+						LocaleUtil.getSiteDefault());
+				}
+				else {
+					date = DateUtil.parseDate(
+						"yyyy-MM-dd'T'HH:mm:ss", (String)serializable,
+						LocaleUtil.getSiteDefault());
+				}
 
 				serializable = new Timestamp(date.getTime());
 			}
