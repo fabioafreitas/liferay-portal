@@ -16,4 +16,8 @@ public class CMPSiteInitializerFDSNames {
 	public static final String CMP_TASK =
 		CMPSiteInitializerConstants.BUNDLE_SYMBOLIC_NAME + "-task";
 
+	public static final String CMP_TASK_CONTENTS_SUMMARY_SECTION =
+		CMPSiteInitializerConstants.BUNDLE_SYMBOLIC_NAME +
+			"-cmp-task-contents-summary-section";
+
 }
