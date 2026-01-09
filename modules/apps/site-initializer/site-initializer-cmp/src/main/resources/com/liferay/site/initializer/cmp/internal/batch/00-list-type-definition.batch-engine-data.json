@@ -38,6 +38,12 @@
 					"key": "notStarted",
 					"name": "Not Started",
 					"system": true
+				},
+				{
+					"externalReferenceCode": "OVERDUE",
+					"key": "overdue",
+					"name": "Overdue",
+					"system": true
 				}
 			],
 			"name": "Project States",
