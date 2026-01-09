@@ -13,9 +13,11 @@ import React, {useEffect, useId, useState} from 'react';
 
 export default function ProjectEditorToolbar({
 	backURL,
+	title,
 	viewProjectURL,
 }: {
 	backURL: string;
+	title: string;
 	viewProjectURL?: string;
 }) {
 	const [formId, setFormId] = useState<string | undefined>();
@@ -62,7 +64,7 @@ export default function ProjectEditorToolbar({
 		<Toolbar
 			backURL={backURL}
 			className="content-editor__toolbar position-fixed"
-			title={Liferay.Language.get('new-project')}
+			title={title}
 		>
 			<Toolbar.Item>
 				<ClayLink
