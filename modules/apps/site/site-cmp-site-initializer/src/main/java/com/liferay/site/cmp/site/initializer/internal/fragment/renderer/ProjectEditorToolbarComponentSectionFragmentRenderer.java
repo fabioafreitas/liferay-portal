@@ -9,11 +9,15 @@ import com.liferay.fragment.renderer.FragmentRenderer;
 import com.liferay.fragment.renderer.FragmentRendererContext;
 import com.liferay.layout.display.page.LayoutDisplayPageObjectProvider;
 import com.liferay.layout.display.page.constants.LayoutDisplayPageWebKeys;
+import com.liferay.object.model.ObjectDefinition;
 import com.liferay.object.model.ObjectEntry;
 import com.liferay.object.service.ObjectDefinitionLocalService;
+import com.liferay.object.service.ObjectEntryLocalService;
+import com.liferay.portal.kernel.language.LanguageUtil;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.Constants;
 import com.liferay.portal.kernel.util.HashMapBuilder;
+import com.liferay.portal.kernel.util.ListUtil;
 import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.site.cmp.site.initializer.internal.util.ActionUtil;
@@ -23,6 +27,7 @@ import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -79,47 +84,97 @@ public class ProjectEditorToolbarComponentSectionFragmentRenderer
 		FragmentRendererContext fragmentRendererContext,
 		HttpServletRequest httpServletRequest) {
 
+		ObjectEntry objectEntry = _getObjectEntry(httpServletRequest);
+		ThemeDisplay themeDisplay =
+			(ThemeDisplay)httpServletRequest.getAttribute(
+				WebKeys.THEME_DISPLAY);
+
 		return HashMapBuilder.<String, Object>put(
 			"backURL", ParamUtil.getString(httpServletRequest, "redirect")
 		).put(
+			"title",
+			() -> {
+				if (objectEntry == null) {
+					return null;
+				}
+
+				ObjectDefinition objectDefinition =
+					_objectDefinitionLocalService.fetchObjectDefinition(
+						objectEntry.getObjectDefinitionId());
+
+				if (Objects.equals(
+						objectDefinition.getExternalReferenceCode(),
+						"L_CMP_TASK")) {
+
+					return LanguageUtil.get(
+						themeDisplay.getLocale(), "new-task");
+				}
+
+				return LanguageUtil.get(
+					themeDisplay.getLocale(), "new-project");
+			}
+		).put(
 			"viewProjectURL",
 			() -> {
-				LayoutDisplayPageObjectProvider<?>
-					layoutDisplayPageObjectProvider =
-						(LayoutDisplayPageObjectProvider<?>)
-							httpServletRequest.getAttribute(
-								LayoutDisplayPageWebKeys.
-									LAYOUT_DISPLAY_PAGE_OBJECT_PROVIDER);
-
-				if (layoutDisplayPageObjectProvider == null) {
-					return null;
-				}
-
-				Object displayObject =
-					layoutDisplayPageObjectProvider.getDisplayObject();
-
-				if (!(displayObject instanceof ObjectEntry)) {
-					return null;
-				}
-
-				ObjectEntry objectEntry = (ObjectEntry)displayObject;
-
 				if (!objectEntry.isDraft()) {
 					return null;
 				}
 
+				ObjectDefinition objectDefinition =
+					_objectDefinitionLocalService.getObjectDefinition(
+						themeDisplay.getCompanyId(), "CMPProject");
+
 				String viewProjectURL = ActionUtil.getBaseViewProjectURL(
-					_objectDefinitionLocalService.fetchObjectDefinition(
-						objectEntry.getObjectDefinitionId()),
+					objectDefinition,
 					(ThemeDisplay)httpServletRequest.getAttribute(
 						WebKeys.THEME_DISPLAY));
 
-				return viewProjectURL + objectEntry.getObjectEntryId();
+				long projectId = ParamUtil.getLong(
+					httpServletRequest, "projectId");
+
+				if (projectId == 0) {
+					List<ObjectEntry> objectEntries =
+						_objectEntryLocalService.getObjectEntries(
+							objectEntry.getGroupId(),
+							objectDefinition.getObjectDefinitionId(), 0, 1);
+
+					if (ListUtil.isEmpty(objectEntries)) {
+						return null;
+					}
+
+					projectId = objectEntries.get(
+						0
+					).getObjectEntryId();
+				}
+
+				return viewProjectURL + projectId;
 			}
 		).build();
 	}
 
+	private ObjectEntry _getObjectEntry(HttpServletRequest httpServletRequest) {
+		LayoutDisplayPageObjectProvider<?> layoutDisplayPageObjectProvider =
+			(LayoutDisplayPageObjectProvider<?>)httpServletRequest.getAttribute(
+				LayoutDisplayPageWebKeys.LAYOUT_DISPLAY_PAGE_OBJECT_PROVIDER);
+
+		if (layoutDisplayPageObjectProvider == null) {
+			return null;
+		}
+
+		Object displayObject =
+			layoutDisplayPageObjectProvider.getDisplayObject();
+
+		if (!(displayObject instanceof ObjectEntry)) {
+			return null;
+		}
+
+		return (ObjectEntry)displayObject;
+	}
+
 	@Reference
 	private ObjectDefinitionLocalService _objectDefinitionLocalService;
+
+	@Reference
+	private ObjectEntryLocalService _objectEntryLocalService;
 
 }
