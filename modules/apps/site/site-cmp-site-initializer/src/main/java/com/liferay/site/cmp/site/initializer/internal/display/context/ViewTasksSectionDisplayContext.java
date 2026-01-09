@@ -12,7 +12,6 @@ import com.liferay.frontend.taglib.clay.servlet.taglib.util.CreationMenuBuilder;
 import com.liferay.frontend.taglib.clay.servlet.taglib.util.DropdownItem;
 import com.liferay.object.model.ObjectDefinition;
 import com.liferay.petra.string.StringBundler;
-import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.json.JSONUtil;
 import com.liferay.portal.kernel.language.LanguageUtil;
@@ -21,8 +20,8 @@ import com.liferay.portal.kernel.model.Layout;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.HashMapBuilder;
 import com.liferay.portal.kernel.util.ListUtil;
-import com.liferay.portal.kernel.util.PortalUtil;
 import com.liferay.portal.kernel.util.WebKeys;
+import com.liferay.site.cmp.site.initializer.internal.util.ActionUtil;
 
 import jakarta.servlet.http.HttpServletRequest;
 
@@ -147,11 +146,7 @@ public class ViewTasksSectionDisplayContext {
 		}
 
 		String url = StringBundler.concat(
-			StringBundler.concat(
-				_themeDisplay.getPathFriendlyURLPublic(),
-				GroupConstants.CMS_FRIENDLY_URL, "/e/edit-task/",
-				PortalUtil.getClassNameId(_objectDefinition.getClassName()),
-				StringPool.SLASH),
+			ActionUtil.getBaseEditTaskURL(_objectDefinition, _themeDisplay),
 			"{embedded.id}?redirect=", _themeDisplay.getURLCurrent(),
 			"&projectId=", projectId);
 

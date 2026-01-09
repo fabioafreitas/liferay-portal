@@ -37,6 +37,16 @@ public class ActionUtil {
 			StringPool.SLASH);
 	}
 
+	public static String getBaseEditTaskURL(
+		ObjectDefinition objectDefinition, ThemeDisplay themeDisplay) {
+
+		return StringBundler.concat(
+			themeDisplay.getPathFriendlyURLPublic(),
+			GroupConstants.CMS_FRIENDLY_URL, "/e/edit-task/",
+			PortalUtil.getClassNameId(objectDefinition.getClassName()),
+			StringPool.SLASH);
+	}
+
 	public static String getBaseViewProjectURL(
 		ObjectDefinition objectDefinition, ThemeDisplay themeDisplay) {
 
