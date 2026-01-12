@@ -10,7 +10,7 @@ import ClaySticker from '@clayui/sticker';
 import {IBaseFilterState, IFDSState} from '@liferay/frontend-data-set-web';
 import {useLiferayState} from '@liferay/frontend-js-state-web/react';
 import classNames from 'classnames';
-import React, {useState} from 'react';
+import React from 'react';
 
 import './TasksQuickFilters.scss';
 import {cmpTasksFDSAtom} from '../../props_transformer/atoms';
