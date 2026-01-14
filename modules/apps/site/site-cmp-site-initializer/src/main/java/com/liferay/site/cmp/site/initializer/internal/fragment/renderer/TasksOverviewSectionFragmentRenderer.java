@@ -128,7 +128,7 @@ public class TasksOverviewSectionFragmentRenderer
 
 		if (state != null) {
 			filterStringBundler.append(
-				" and state eq '"
+				"state eq '"
 			).append(
 				state
 			).append(
