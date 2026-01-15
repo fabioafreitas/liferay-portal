@@ -27,6 +27,8 @@ import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
 
+import java.time.Instant;
+
 import java.util.Map;
 import java.util.Objects;
 
@@ -126,14 +128,12 @@ public class TasksOverviewSectionFragmentRenderer
 
 		StringBundler filterStringBundler = new StringBundler(1);
 
-		if (state != null) {
+		if (Objects.equals(state, "overdue")) {
 			filterStringBundler.append(
-				"state eq '"
-			).append(
-				state
-			).append(
-				"'"
-			);
+				"dueDate lt " + Instant.now() + " and state ne 'done'");
+		}
+		else if (state != null) {
+			filterStringBundler.append("state eq '" + state + "'");
 		}
 
 		return _objectEntryLocalService.getValuesListCount(
