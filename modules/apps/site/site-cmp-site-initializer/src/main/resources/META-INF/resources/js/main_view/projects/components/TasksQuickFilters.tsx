@@ -5,8 +5,8 @@
 
 import ClayButton from '@clayui/button';
 import ClayIcon from '@clayui/icon';
-import ClayLabel from '@clayui/label';
 import ClayLayout from '@clayui/layout';
+import ClaySticker from '@clayui/sticker';
 import classNames from 'classnames';
 import React, {useState} from 'react';
 
@@ -18,6 +18,7 @@ function StatisticButton({
 	label,
 	onClick,
 }: {
+	active: boolean;
 	count: number;
 	displayType:
 		| 'secondary'
@@ -32,27 +33,35 @@ function StatisticButton({
 }) {
 	return (
 		<ClayButton
-			className="border c-py-3 h-100 text-left w-100"
+			className={classNames('border c-py-3 h-100 text-left w-100', {
+				active,
+			})}
 			displayType="secondary"
 			onClick={onClick}
 		>
-			<ClayLabel
-				className={classNames('inline-item inline-item-before text-3', {
-					'border-0 text-dark px-0': displayType === 'unstyled',
-				})}
-				displayType={displayType}
-			>
-				{label}
-			</ClayLabel>
+			<div className="align-items-center d-flex">
+				<ClaySticker displayType={displayType} size="lg">
+					<ClayIcon symbol={icon} />
+				</ClaySticker>
 
-			<span className={`inline-item inline-item text-${displayType}`}>
-				<ClayIcon symbol={icon} />
-			</span>
+				<div className="ml-2">
+					<div className="text-dark">{count || 0}</div>
 
-			<div className="text-7 text-dark text-left">{count || 0}</div>
+					<div className="text-3 text-secondary text-weight-normal">
+						{label}
+					</div>
+				</div>
+			</div>
 		</ClayButton>
 	);
 }
+
+const TASK_QUICK_FILTER_TYPES = {
+	BLOCKED: 'blocked',
+	IN_PROGRESS: 'inProgress',
+	OVERDUE: 'overdue',
+	TOTAL: 'total',
+};
 
 export default function TasksQuickFilters({
 	blockedCount,
@@ -67,26 +76,11 @@ export default function TasksQuickFilters({
 }) {
 	const [active, setActive] = useState('');
 
-	const handleClick = () => {
-		const projectNavigationTabsFragment = document.querySelector(
-			'[data-layout-structure-item-id="cmp-project-navigation-tabs"]'
-		);
+	const handleClick = (value: string) => {
+		setActive(value);
 
-		if (projectNavigationTabsFragment) {
-			const tabButtons =
-				projectNavigationTabsFragment.querySelectorAll(
-					'button[role="tab"]'
-				);
+		// TODO: Apply filter
 
-			const tasksTab = Array.from(tabButtons).find(
-				(button) =>
-					button.textContent.trim() === Liferay.Language.get('tasks')
-			);
-
-			if (tasksTab instanceof HTMLElement) {
-				tasksTab.click();
-			}
-		}
 	};
 
 	return (
@@ -95,41 +89,55 @@ export default function TasksQuickFilters({
 				<ClayLayout.Row>
 					<ClayLayout.Col className="px-2" size={3}>
 						<StatisticButton
+							active={active === TASK_QUICK_FILTER_TYPES.TOTAL}
 							count={totalCount}
 							displayType="unstyled"
 							icon="task-status"
 							label={Liferay.Language.get('total-tasks')}
-							onClick={handleClick}
+							onClick={() =>
+								handleClick(TASK_QUICK_FILTER_TYPES.TOTAL)
+							}
 						/>
 					</ClayLayout.Col>
 
 					<ClayLayout.Col className="px-2" size={3}>
 						<StatisticButton
+							active={
+								active === TASK_QUICK_FILTER_TYPES.IN_PROGRESS
+							}
 							count={inProgressCount}
 							displayType="info"
 							icon="analytics"
 							label={Liferay.Language.get('in-progress')}
-							onClick={handleClick}
+							onClick={() =>
+								handleClick(TASK_QUICK_FILTER_TYPES.IN_PROGRESS)
+							}
 						/>
 					</ClayLayout.Col>
 
 					<ClayLayout.Col className="px-2" size={3}>
 						<StatisticButton
+							active={active === TASK_QUICK_FILTER_TYPES.BLOCKED}
 							count={blockedCount}
 							displayType="danger"
 							icon="block"
 							label={Liferay.Language.get('blocked')}
-							onClick={handleClick}
+							onClick={() =>
+								handleClick(TASK_QUICK_FILTER_TYPES.BLOCKED)
+							}
 						/>
 					</ClayLayout.Col>
 
 					<ClayLayout.Col className="px-2" size={3}>
 						<StatisticButton
+							active={active === TASK_QUICK_FILTER_TYPES.OVERDUE}
 							count={overdueCount}
 							displayType="warning"
 							icon="exclamation-full"
 							label={Liferay.Language.get('overdue')}
-							onClick={handleClick}
+							onClick={() =>
+								handleClick(TASK_QUICK_FILTER_TYPES.OVERDUE)
+							}
 						/>
 					</ClayLayout.Col>
 				</ClayLayout.Row>
