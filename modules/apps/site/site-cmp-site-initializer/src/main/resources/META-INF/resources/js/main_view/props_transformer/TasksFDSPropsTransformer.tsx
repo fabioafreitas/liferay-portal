@@ -12,6 +12,8 @@ import {
 	deleteItemAction,
 } from '@liferay/site-cms-site-initializer';
 
+import {openCMPModal} from '../../common/utils/openCMPModal';
+
 import StateLabel from '../../common/components/StateLabel';
 
 type action = {
@@ -107,6 +109,23 @@ export default function TasksFDSPropsTransformer({
 			if (action?.data?.id === 'delete') {
 				await deleteItemAction(itemData, loadData);
 			}
+			else if (action?.data?.id === 'assign-to') {
+				await openCMPModal({
+					contentComponent: () =>
+						ProofOfConceptModalContent(),
+					size: 'full-screen',
+				});
+			}
 		},
 	};
+}
+
+import React from 'react';
+
+function ProofOfConceptModalContent() {
+  return (
+    <div>
+      <h1>Hello from My CMP Modal</h1>
+    </div>
+  );
 }

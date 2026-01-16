@@ -6,15 +6,22 @@
 package com.liferay.site.cmp.site.initializer.internal.display.context;
 
 import com.liferay.asset.kernel.model.AssetEntry;
+import com.liferay.depot.model.DepotEntry;
 import com.liferay.frontend.data.set.model.FDSActionDropdownItem;
 import com.liferay.frontend.taglib.clay.servlet.taglib.util.CreationMenu;
 import com.liferay.frontend.taglib.clay.servlet.taglib.util.CreationMenuBuilder;
+import com.liferay.frontend.taglib.clay.servlet.taglib.util.DropdownItem;
+import com.liferay.frontend.taglib.clay.servlet.taglib.util.DropdownItemBuilder;
 import com.liferay.object.model.ObjectDefinition;
+import com.liferay.object.model.ObjectEntryFolder;
 import com.liferay.petra.string.StringBundler;
+import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.language.LanguageUtil;
 import com.liferay.portal.kernel.model.GroupConstants;
+import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.HashMapBuilder;
 import com.liferay.portal.kernel.util.ListUtil;
+import com.liferay.portal.kernel.util.PortalUtil;
 import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.site.cmp.site.initializer.internal.util.ActionUtil;
 
@@ -115,6 +122,14 @@ public class ViewTasksSectionDisplayContext extends BaseSectionDisplayContext {
 					"{embedded.id}?redirect=", themeDisplay.getURLCurrent()),
 				"view", "actionLink",
 				LanguageUtil.get(httpServletRequest, "view"), null, "get",
+				null),
+			new FDSActionDropdownItem(
+				StringPool.BLANK, null, "assign-to",
+				LanguageUtil.get(httpServletRequest, "assign-to-..."), null, "get",
+				null),
+			new FDSActionDropdownItem(
+				null, "trash", "delete",
+				LanguageUtil.get(httpServletRequest, "delete"), null, "delete",
 				null),
 			new FDSActionDropdownItem(
 				null, "trash", "delete",
