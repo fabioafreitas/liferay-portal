@@ -54,8 +54,6 @@ public class TaskStateSelectionFDSFilter extends BaseSelectionFDSFilter {
 				_language.get(locale, "in-progress"), "inProgress"),
 			new SelectionFDSFilterItem(
 				_language.get(locale, "blocked"), "blocked"),
-			new SelectionFDSFilterItem(
-				_language.get(locale, "overdue"), "overdue"),
 			new SelectionFDSFilterItem(_language.get(locale, "done"), "done"));
 	}
 
