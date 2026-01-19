@@ -21,6 +21,7 @@ import com.liferay.portal.kernel.util.Constants;
 import com.liferay.portal.kernel.util.HashMapBuilder;
 import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.WebKeys;
+import com.liferay.site.cmp.site.initializer.internal.util.ActionUtil;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -116,6 +117,11 @@ public class TasksOverviewSectionFragmentRenderer
 			"overdueCount",
 			() -> _getCount(objectEntry, taskObjectDefinition, "overdue")
 		).put(
+			"redirect",
+			ActionUtil.getAddTaskURL(
+				taskObjectDefinition, objectEntry.getGroupId(),
+				objectEntry.getObjectEntryId(), themeDisplay)
+		).put(
 			"totalCount",
 			() -> _getCount(objectEntry, taskObjectDefinition, null)
 		).build();
@@ -126,22 +132,22 @@ public class TasksOverviewSectionFragmentRenderer
 			ObjectDefinition taskObjectDefinition, String state)
 		throws Exception {
 
-		StringBundler filterStringBundler = new StringBundler(1);
+		StringBundler sb = new StringBundler(1);
 
 		if (Objects.equals(state, "overdue")) {
-			filterStringBundler.append(
-				"dueDate lt " + LocalDate.now() + " and state ne 'done'");
+			sb.append(
+				StringBundler.concat(
+					"dueDate lt ", LocalDate.now(), " and state ne 'done'"));
 		}
 		else if (state != null) {
-			filterStringBundler.append("state eq '" + state + "'");
+			sb.append(StringBundler.concat("state eq '", state, "'"));
 		}
 
 		return _objectEntryLocalService.getValuesListCount(
 			new Long[] {projectObjectEntry.getGroupId()}, 0, 0,
 			taskObjectDefinition.getObjectDefinitionId(),
-			_filterFactory.create(
-				filterStringBundler.toString(), taskObjectDefinition),
-			false, null);
+			_filterFactory.create(sb.toString(), taskObjectDefinition), false,
+			null);
 	}
 
 	@Reference(
