@@ -46,12 +46,7 @@ export default function Assignee({
 		resource,
 	}: {
 		resource: {
-			items: {
-				externalReferenceCode: string;
-				image?: string;
-				name: string;
-				type: string;
-			}[];
+			items: AssigneeValue[];
 		};
 	} = useResource({
 		fetchOptions: {

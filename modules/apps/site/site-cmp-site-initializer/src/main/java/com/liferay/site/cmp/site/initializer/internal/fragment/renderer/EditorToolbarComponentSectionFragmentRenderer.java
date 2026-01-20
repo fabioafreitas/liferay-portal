@@ -101,23 +101,32 @@ public class EditorToolbarComponentSectionFragmentRenderer
 		return HashMapBuilder.<String, Object>put(
 			"backURL", ParamUtil.getString(httpServletRequest, "redirect")
 		).put(
-			"title",
+			"saveURL",
 			() -> {
-				if (Objects.equals(
-						objectDefinition.getExternalReferenceCode(),
-						"L_CMP_PROJECT")) {
+				if (ParamUtil.getBoolean(
+						httpServletRequest, "isCreateTaskGlobalTaskListPage")) {
 
-					return LanguageUtil.get(
-						themeDisplay.getLocale(), "new-project");
+					return ParamUtil.getString(httpServletRequest, "redirect");
 				}
 
-				return LanguageUtil.get(themeDisplay.getLocale(), "new-task");
-			}
-		).put(
-			"viewProjectURL",
-			() -> {
 				if (!objectEntry.isDraft()) {
 					return null;
+				}
+
+				if (ParamUtil.getBoolean(
+						httpServletRequest,
+						"isCreateProjectGlobalTaskListPage")) {
+
+					String addTaskURL = ActionUtil.getAddTaskURL(
+						objectEntry.getGroupId(),
+						_objectDefinitionLocalService.
+							getObjectDefinitionByExternalReferenceCode(
+								"L_CMP_TASK", themeDisplay.getCompanyId()),
+						objectEntry.getObjectEntryId(),
+						ParamUtil.getString(httpServletRequest, "redirect"),
+						themeDisplay);
+
+					return addTaskURL + "&isCreateTaskGlobalTaskListPage=true";
 				}
 
 				String viewProjectURL = ActionUtil.getBaseViewProjectURL(
@@ -144,6 +153,19 @@ public class EditorToolbarComponentSectionFragmentRenderer
 				}
 
 				return viewProjectURL + parentObjectEntry.getObjectEntryId();
+			}
+		).put(
+			"title",
+			() -> {
+				if (Objects.equals(
+						objectDefinition.getExternalReferenceCode(),
+						"L_CMP_PROJECT")) {
+
+					return LanguageUtil.get(
+						themeDisplay.getLocale(), "new-project");
+				}
+
+				return LanguageUtil.get(themeDisplay.getLocale(), "new-task");
 			}
 		).build();
 	}

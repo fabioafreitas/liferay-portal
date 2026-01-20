@@ -12,7 +12,6 @@ import com.liferay.frontend.taglib.clay.servlet.taglib.util.CreationMenuBuilder;
 import com.liferay.object.model.ObjectDefinition;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.language.LanguageUtil;
-import com.liferay.portal.kernel.model.GroupConstants;
 import com.liferay.portal.kernel.util.HashMapBuilder;
 import com.liferay.portal.kernel.util.ListUtil;
 import com.liferay.portal.kernel.util.WebKeys;
@@ -30,9 +29,12 @@ public class ViewTasksSectionDisplayContext extends BaseSectionDisplayContext {
 
 	public ViewTasksSectionDisplayContext(
 		HttpServletRequest httpServletRequest,
-		ObjectDefinition objectDefinition) {
+		ObjectDefinition projectObjectDefinition,
+		ObjectDefinition taskObjectDefinition) {
 
-		super(httpServletRequest, objectDefinition);
+		super(httpServletRequest, taskObjectDefinition);
+
+		_projectObjectDefinition = projectObjectDefinition;
 
 		_assetEntry = (AssetEntry)httpServletRequest.getAttribute(
 			WebKeys.LAYOUT_ASSET_ENTRY);
@@ -56,10 +58,6 @@ public class ViewTasksSectionDisplayContext extends BaseSectionDisplayContext {
 	}
 
 	public CreationMenu getCreationMenu() {
-		if (_assetEntry == null) {
-			return null;
-		}
-
 		return CreationMenuBuilder.addPrimaryDropdownItem(
 			dropdownItem -> {
 				dropdownItem.putData("action", "createTask");
@@ -67,22 +65,39 @@ public class ViewTasksSectionDisplayContext extends BaseSectionDisplayContext {
 					"objectDefinitionId",
 					String.valueOf(objectDefinition.getObjectDefinitionId()));
 				dropdownItem.putData(
-					"redirect",
-					StringBundler.concat(
-						themeDisplay.getPortalURL(), themeDisplay.getPathMain(),
-						GroupConstants.CMS_FRIENDLY_URL,
-						"/add_task?objectDefinitionId=",
-						objectDefinition.getObjectDefinitionId(), "&plid=",
-						themeDisplay.getPlid(), "&projectGroupId=",
-						_assetEntry.getGroupId(), "&projectId=",
-						_assetEntry.getClassPK(), "&redirect=",
-						themeDisplay.getURLCurrent()));
+					"projectObjectDefinitionId",
+					String.valueOf(
+						_projectObjectDefinition.getObjectDefinitionId()));
 				dropdownItem.putData(
 					"title",
 					objectDefinition.getLabel(themeDisplay.getLocale()));
 				dropdownItem.setIcon("forms");
-				dropdownItem.setLabel(
-					LanguageUtil.get(httpServletRequest, "new-task"));
+
+				if (_assetEntry != null) {
+					dropdownItem.putData(
+						"projectId", String.valueOf(_assetEntry.getClassPK()));
+					dropdownItem.putData(
+						"redirect",
+						ActionUtil.getAddTaskURL(
+							_assetEntry.getGroupId(), objectDefinition,
+							_assetEntry.getClassPK(),
+							themeDisplay.getURLCurrent(), themeDisplay));
+					dropdownItem.setLabel(
+						LanguageUtil.get(httpServletRequest, "new-task"));
+				}
+				else {
+					dropdownItem.putData(
+						"addProjectURL",
+						ActionUtil.getAddProjectURL(
+							_projectObjectDefinition, themeDisplay));
+					dropdownItem.putData(
+						"addTaskURL",
+						ActionUtil.getAddTaskURL(
+							0, objectDefinition, 0,
+							themeDisplay.getURLCurrent(), themeDisplay));
+					dropdownItem.setLabel(
+						LanguageUtil.get(httpServletRequest, "new"));
+				}
 			}
 		).build();
 	}
@@ -123,5 +138,6 @@ public class ViewTasksSectionDisplayContext extends BaseSectionDisplayContext {
 	}
 
 	private final AssetEntry _assetEntry;
+	private final ObjectDefinition _projectObjectDefinition;
 
 }

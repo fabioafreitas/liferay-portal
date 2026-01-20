@@ -5,12 +5,35 @@
 
 import {navigate} from 'frontend-js-web';
 
+import {openCMSModal} from '../../../common/utils/openCMSModal';
+import SelectProjectModalContent from '../../modal/SelectProjectModalContent';
+
 export type Data = {
-	redirect: string;
+	addProjectURL?: string;
+	addTaskURL?: string;
+	projectObjectDefinitionId: string;
+	redirect?: string;
 };
 
 export default function createTaskAction(data: Data) {
-	const url = new URL(data.redirect);
+	if (!data.addProjectURL && !data.addTaskURL && data.redirect) {
+		const url = new URL(data.redirect);
 
-	navigate(url.pathname + url.search);
+		navigate(url.pathname + url.search);
+
+		return;
+	}
+
+	openCMSModal({
+		center: true,
+		contentComponent: ({closeModal}: {closeModal: () => void}) =>
+			SelectProjectModalContent({
+				...data,
+				addProjectURL: data.addProjectURL!,
+				addTaskURL: data.addTaskURL!,
+				closeModal,
+				projectObjectDefinitionId: data.projectObjectDefinitionId,
+			}),
+		size: 'md',
+	});
 }

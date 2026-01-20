@@ -42,17 +42,24 @@ public class ViewTasksJSPSectionFragmentRenderer
 			(ThemeDisplay)httpServletRequest.getAttribute(
 				WebKeys.THEME_DISPLAY);
 
-		ObjectDefinition objectDefinition =
+		ObjectDefinition projectObjectDefinition =
+			_objectDefinitionLocalService.
+				fetchObjectDefinitionByExternalReferenceCode(
+					"L_CMP_PROJECT", themeDisplay.getCompanyId());
+
+		ObjectDefinition taskObjectDefinition =
 			_objectDefinitionLocalService.
 				fetchObjectDefinitionByExternalReferenceCode(
 					"L_CMP_TASK", themeDisplay.getCompanyId());
 
-		if (objectDefinition == null) {
+		if ((projectObjectDefinition == null) ||
+			(taskObjectDefinition == null)) {
+
 			return null;
 		}
 
 		return new ViewTasksSectionDisplayContext(
-			httpServletRequest, objectDefinition);
+			httpServletRequest, projectObjectDefinition, taskObjectDefinition);
 	}
 
 	@Override
