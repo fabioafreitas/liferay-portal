@@ -6,7 +6,6 @@
 import {IInternalRenderer} from '@liferay/frontend-data-set-web';
 import {AssigneeValue} from '@liferay/object-dynamic-data-mapping-form-field-type';
 import {
-	ACTIONS,
 	AdditionalProps,
 	SimpleActionLinkRenderer,
 	addOnClickToCreationMenuItems,
@@ -17,6 +16,7 @@ import React from 'react';
 import {openCMPModal} from '../../utils/openCMPModal';
 import StateLabel from '../StateLabel';
 import EditAssigneeModalContent from '../modal/EditAssigneeModalContent';
+import ACTIONS from './actions/creationMenuActions';
 
 type action = {
 	data: {
