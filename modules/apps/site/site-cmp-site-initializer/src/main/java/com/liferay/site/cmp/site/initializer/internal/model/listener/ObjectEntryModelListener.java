@@ -5,23 +5,45 @@
 
 package com.liferay.site.cmp.site.initializer.internal.model.listener;
 
+import com.liferay.depot.constants.DepotConstants;
+import com.liferay.depot.constants.DepotRolesConstants;
+import com.liferay.depot.model.DepotEntry;
+import com.liferay.depot.service.DepotEntryLocalService;
 import com.liferay.object.constants.ObjectDefinitionConstants;
 import com.liferay.object.model.ObjectDefinition;
 import com.liferay.object.model.ObjectEntry;
 import com.liferay.object.rest.filter.factory.FilterFactory;
 import com.liferay.object.service.ObjectDefinitionLocalService;
 import com.liferay.object.service.ObjectEntryLocalService;
+import com.liferay.petra.function.transform.TransformUtil;
 import com.liferay.petra.sql.dsl.expression.Predicate;
+import com.liferay.portal.kernel.dao.orm.QueryUtil;
 import com.liferay.portal.kernel.exception.ModelListenerException;
+import com.liferay.portal.kernel.json.JSONObject;
+import com.liferay.portal.kernel.json.JSONUtil;
 import com.liferay.portal.kernel.model.BaseModelListener;
+import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.model.ModelListener;
+import com.liferay.portal.kernel.model.ResourceAction;
+import com.liferay.portal.kernel.model.ResourceConstants;
+import com.liferay.portal.kernel.model.Role;
+import com.liferay.portal.kernel.model.role.RoleConstants;
+import com.liferay.portal.kernel.security.permission.ActionKeys;
+import com.liferay.portal.kernel.security.permission.ResourceActionsUtil;
+import com.liferay.portal.kernel.service.GroupLocalService;
+import com.liferay.portal.kernel.service.ResourceActionLocalService;
+import com.liferay.portal.kernel.service.ResourcePermissionLocalService;
+import com.liferay.portal.kernel.service.RoleLocalService;
 import com.liferay.portal.kernel.service.ServiceContext;
+import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.HashMapBuilder;
 import com.liferay.portal.kernel.util.MapUtil;
 import com.liferay.portal.kernel.util.StringUtil;
 
 import java.io.Serializable;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 
 import org.osgi.service.component.annotations.Component;
@@ -38,6 +60,7 @@ public class ObjectEntryModelListener extends BaseModelListener<ObjectEntry> {
 		throws ModelListenerException {
 
 		try {
+			_setResourcePermissions(objectEntry);
 			_updateProjectCompletionRate(objectEntry);
 		}
 		catch (Exception exception) {
@@ -70,6 +93,22 @@ public class ObjectEntryModelListener extends BaseModelListener<ObjectEntry> {
 		}
 	}
 
+	private String[] _getAssetLibraryContentReviewerActionIds(
+		ObjectDefinition objectDefinition) {
+
+		if (StringUtil.equals(
+				objectDefinition.getExternalReferenceCode(), "L_CMP_TASK")) {
+
+			return new String[] {
+				ActionKeys.ADD_DISCUSSION, ActionKeys.DELETE,
+				ActionKeys.DELETE_DISCUSSION, ActionKeys.PERMISSIONS,
+				ActionKeys.UPDATE, ActionKeys.UPDATE_DISCUSSION, ActionKeys.VIEW
+			};
+		}
+
+		return new String[] {ActionKeys.ADD_DISCUSSION, ActionKeys.VIEW};
+	}
+
 	private int _getCount(
 			String filterString, ObjectDefinition objectDefinition,
 			ObjectEntry objectEntry)
@@ -79,6 +118,88 @@ public class ObjectEntryModelListener extends BaseModelListener<ObjectEntry> {
 			new Long[] {objectEntry.getGroupId()}, 0, 0,
 			objectEntry.getObjectDefinitionId(),
 			_filterFactory.create(filterString, objectDefinition), false, null);
+	}
+
+	private JSONObject _getObjectEntryDefaultPermissionJSONObject(
+		ObjectDefinition objectDefinition) {
+
+		String[] actionIds = TransformUtil.transformToArray(
+			_resourceActionLocalService.getResourceActions(
+				objectDefinition.getClassName()),
+			ResourceAction::getActionId, String.class);
+
+		return JSONUtil.put(
+			DepotRolesConstants.ASSET_LIBRARY_ADMINISTRATOR, actionIds
+		).put(
+			DepotRolesConstants.ASSET_LIBRARY_CONTENT_REVIEWER,
+			_getAssetLibraryContentReviewerActionIds(objectDefinition)
+		).put(
+			DepotRolesConstants.ASSET_LIBRARY_MEMBER,
+			new String[] {ActionKeys.ADD_DISCUSSION, ActionKeys.VIEW}
+		).put(
+			RoleConstants.CMS_ADMINISTRATOR, actionIds
+		).put(
+			RoleConstants.OWNER, actionIds
+		).put(
+			RoleConstants.USER, new String[] {ActionKeys.VIEW}
+		);
+	}
+
+	private void _setResourcePermissions(ObjectEntry objectEntry)
+		throws Exception {
+
+		Group group = _groupLocalService.fetchGroup(objectEntry.getGroupId());
+
+		if ((group == null) || !group.isDepot()) {
+			return;
+		}
+
+		DepotEntry depotEntry = _depotEntryLocalService.getDepotEntry(
+			group.getClassPK());
+
+		if (depotEntry.getType() != DepotConstants.TYPE_PROJECT) {
+			return;
+		}
+
+		JSONObject defaultPermissionsJSONObject =
+			_getObjectEntryDefaultPermissionJSONObject(
+				_objectDefinitionLocalService.fetchObjectDefinition(
+					objectEntry.getObjectDefinitionId()));
+
+		if ((defaultPermissionsJSONObject == null) ||
+			JSONUtil.isEmpty(defaultPermissionsJSONObject)) {
+
+			return;
+		}
+
+		List<String> resourceActions = ResourceActionsUtil.getResourceActions(
+			objectEntry.getModelClassName());
+
+		List<Role> roles = _roleLocalService.getGroupRolesAndTeamRoles(
+			objectEntry.getCompanyId(), null,
+			Arrays.asList(
+				RoleConstants.ADMINISTRATOR,
+				DepotRolesConstants.ASSET_LIBRARY_OWNER),
+			null, null,
+			new int[] {RoleConstants.TYPE_REGULAR, RoleConstants.TYPE_DEPOT}, 0,
+			0, QueryUtil.ALL_POS, QueryUtil.ALL_POS);
+
+		for (Role role : roles) {
+			String[] actions = (String[])defaultPermissionsJSONObject.get(
+				role.getName());
+
+			if (actions == null) {
+				actions = new String[0];
+			}
+
+			_resourcePermissionLocalService.setResourcePermissions(
+				objectEntry.getCompanyId(), objectEntry.getModelClassName(),
+				ResourceConstants.SCOPE_INDIVIDUAL,
+				String.valueOf(objectEntry.getObjectEntryId()),
+				role.getRoleId(),
+				ArrayUtil.filter(
+					actions, action -> resourceActions.contains(action)));
+		}
 	}
 
 	private void _updateProjectCompletionRate(ObjectEntry objectEntry)
@@ -132,15 +253,30 @@ public class ObjectEntryModelListener extends BaseModelListener<ObjectEntry> {
 			new ServiceContext());
 	}
 
+	@Reference
+	private DepotEntryLocalService _depotEntryLocalService;
+
 	@Reference(
 		target = "(filter.factory.key=" + ObjectDefinitionConstants.STORAGE_TYPE_DEFAULT + ")"
 	)
 	private FilterFactory<Predicate> _filterFactory;
 
 	@Reference
+	private GroupLocalService _groupLocalService;
+
+	@Reference
 	private ObjectDefinitionLocalService _objectDefinitionLocalService;
 
 	@Reference
 	private ObjectEntryLocalService _objectEntryLocalService;
+
+	@Reference
+	private ResourceActionLocalService _resourceActionLocalService;
+
+	@Reference
+	private ResourcePermissionLocalService _resourcePermissionLocalService;
+
+	@Reference
+	private RoleLocalService _roleLocalService;
 
 }
