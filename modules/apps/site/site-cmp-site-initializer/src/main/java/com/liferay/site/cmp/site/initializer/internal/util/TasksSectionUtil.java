@@ -26,7 +26,7 @@ public class TasksSectionUtil {
 	public static String getSearchURL(
 		GroupedModel groupedModel, ObjectDefinition taskObjectDefinition) {
 
-		StringBundler sb = new StringBundler(11);
+		StringBundler sb = new StringBundler(12);
 
 		sb.append("/o/search/v1.0/search?emptySearch=true");
 
@@ -37,17 +37,19 @@ public class TasksSectionUtil {
 			sb.append(KaleoTaskInstanceToken.class.getName());
 		}
 
-		sb.append("&filter=(objectDefinitionId eq ");
+		sb.append("&filter=((objectDefinitionId eq ");
 		sb.append(taskObjectDefinition.getObjectDefinitionId());
 
 		if (groupedModel != null) {
 			sb.append(" and scopeGroupId eq ");
 			sb.append(groupedModel.getGroupId());
+			sb.append(StringPool.CLOSE_PARENTHESIS);
 		}
 		else {
 			sb.append(" or keywords/any(k:startswith(k, '");
 			sb.append(taskObjectDefinition.getExternalReferenceCode());
-			sb.append("'))");
+			sb.append("')))");
+			sb.append(SectionUtil.getScopeGroupIdFilterString());
 		}
 
 		sb.append(StringPool.CLOSE_PARENTHESIS);

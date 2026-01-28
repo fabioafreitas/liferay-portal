@@ -23,6 +23,7 @@ import com.liferay.site.cmp.site.initializer.internal.frontend.data.set.filter.P
 import com.liferay.site.cmp.site.initializer.internal.frontend.data.set.filter.ProjectSponsorSelectionFDSFilter;
 import com.liferay.site.cmp.site.initializer.internal.frontend.data.set.filter.StateSelectionFDSFilter;
 import com.liferay.site.cmp.site.initializer.internal.util.ActionUtil;
+import com.liferay.site.cmp.site.initializer.internal.util.ProjectsSectionUtil;
 
 import jakarta.servlet.http.HttpServletRequest;
 
@@ -45,14 +46,7 @@ public class ViewProjectsSectionDisplayContext
 	}
 
 	public String getAPIURL() {
-		StringBundler sb = new StringBundler(4);
-
-		sb.append("/o/search/v1.0/search?emptySearch=true&");
-		sb.append("filter=objectDefinitionId eq ");
-		sb.append(objectDefinition.getObjectDefinitionId());
-		sb.append("&nestedFields=embedded");
-
-		return sb.toString();
+		return ProjectsSectionUtil.getAPIURL(objectDefinition);
 	}
 
 	public Map<String, Object> getBreadcrumbProps() throws PortalException {

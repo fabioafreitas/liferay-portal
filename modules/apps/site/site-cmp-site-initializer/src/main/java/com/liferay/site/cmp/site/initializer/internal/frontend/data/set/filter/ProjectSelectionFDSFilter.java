@@ -8,7 +8,7 @@ package com.liferay.site.cmp.site.initializer.internal.frontend.data.set.filter;
 import com.liferay.frontend.data.set.constants.FDSEntityFieldTypes;
 import com.liferay.frontend.data.set.filter.BaseSelectionFDSFilter;
 import com.liferay.object.model.ObjectDefinition;
-import com.liferay.petra.string.StringBundler;
+import com.liferay.site.cmp.site.initializer.internal.util.ProjectsSectionUtil;
 
 /**
  * @author José Abelenda
@@ -21,14 +21,7 @@ public class ProjectSelectionFDSFilter extends BaseSelectionFDSFilter {
 
 	@Override
 	public String getAPIURL() {
-		StringBundler sb = new StringBundler(4);
-
-		sb.append("/o/search/v1.0/search?emptySearch=true&");
-		sb.append("filter=objectDefinitionId eq ");
-		sb.append(_objectDefinition.getObjectDefinitionId());
-		sb.append("&nestedFields=embedded");
-
-		return sb.toString();
+		return ProjectsSectionUtil.getAPIURL(_objectDefinition);
 	}
 
 	@Override
