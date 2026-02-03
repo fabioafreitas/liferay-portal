@@ -222,7 +222,7 @@ public class ViewTasksSectionDisplayContextTest
 		fdsFilters = getFDSFilters(_assetEntry);
 
 		Assert.assertEquals(fdsFilters.toString(), 3, fdsFilters.size());
-
+		// TODO update test for new property "cmpAssignTo"
 		assertFDSFilter(
 			FDSEntityFieldTypes.DATE_TIME, "dateCreated", "create-date",
 			fdsFilters.get(0));
