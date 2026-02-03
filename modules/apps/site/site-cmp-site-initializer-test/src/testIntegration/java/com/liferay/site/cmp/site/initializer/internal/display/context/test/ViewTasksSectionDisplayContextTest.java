@@ -8,6 +8,8 @@ package com.liferay.site.cmp.site.initializer.internal.display.context.test;
 import com.liferay.arquillian.extension.junit.bridge.junit.Arquillian;
 import com.liferay.asset.kernel.model.AssetEntry;
 import com.liferay.asset.kernel.service.AssetEntryLocalService;
+import com.liferay.depot.constants.DepotConstants;
+import com.liferay.depot.service.DepotEntryLocalService;
 import com.liferay.fragment.renderer.FragmentRenderer;
 import com.liferay.frontend.data.set.constants.FDSEntityFieldTypes;
 import com.liferay.frontend.data.set.filter.FDSFilter;
@@ -18,7 +20,9 @@ import com.liferay.object.model.ObjectDefinition;
 import com.liferay.object.model.ObjectEntry;
 import com.liferay.object.service.ObjectEntryLocalService;
 import com.liferay.petra.string.StringBundler;
+import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.model.GroupConstants;
+import com.liferay.portal.kernel.security.auth.CompanyThreadLocal;
 import com.liferay.portal.kernel.test.rule.AggregateTestRule;
 import com.liferay.portal.kernel.test.rule.Sync;
 import com.liferay.portal.kernel.test.util.ServiceContextTestUtil;
@@ -94,19 +98,20 @@ public class ViewTasksSectionDisplayContextTest
 					"/o/search/v1.0/search?emptySearch=true&entryClassNames=",
 					HtmlUtil.escapeURL(objectDefinition.getClassName()), ",",
 					_CLASS_NAME_KALEO_TASK_INSTANCE_TOKEN,
-					"&filter=(objectDefinitionId eq ",
+					"&filter=((objectDefinitionId eq ",
 					objectDefinition.getObjectDefinitionId(),
 					" or keywords/any(k:startswith(k, 'L_CMP_TASK')))",
-					"&nestedFields=cmpProjectToCMPTasks,embedded")));
+					_getScopeGroupIdFilterString(),
+					")&nestedFields=cmpProjectToCMPTasks,embedded")));
 		Assert.assertTrue(
 			StringUtil.equals(
 				getAPIURL(_assetEntry),
 				StringBundler.concat(
 					"/o/search/v1.0/search?emptySearch=true&filter=",
-					"(objectDefinitionId eq ",
+					"((objectDefinitionId eq ",
 					objectDefinition.getObjectDefinitionId(),
 					" and scopeGroupId eq ", _assetEntry.getGroupId(),
-					")&nestedFields=cmpProjectToCMPTasks,embedded")));
+					"))&nestedFields=cmpProjectToCMPTasks,embedded")));
 	}
 
 	@Test
@@ -159,7 +164,7 @@ public class ViewTasksSectionDisplayContextTest
 				"entryClassName", objectDefinition.getClassName()),
 			fdsActionDropdownItems.get(1));
 		assertFDSActionDropdownItem(
-			null, "assign-to", "Assign to...", null,
+			null, "assign-to", "Assign to...", "get",
 			Collections.singletonMap(
 				"entryClassName", objectDefinition.getClassName()),
 			fdsActionDropdownItems.get(2));
@@ -251,6 +256,27 @@ public class ViewTasksSectionDisplayContextTest
 				"ViewTasksSectionDisplayContext");
 	}
 
+	private String _getScopeGroupIdFilterString() {
+		StringBundler sb = new StringBundler();
+
+		sb.append(" and (scopeGroupId in (");
+
+		for (long groupId :
+				_depotEntryLocalService.getDepotEntryGroupIds(
+					CompanyThreadLocal.getCompanyId(),
+					DepotConstants.TYPE_PROJECT)) {
+
+			sb.append(groupId);
+			sb.append(StringPool.COMMA);
+		}
+
+		sb.setIndex(sb.index() - 1);
+
+		sb.append("))");
+
+		return sb.toString();
+	}
+
 	private static final String _CLASS_NAME_KALEO_TASK_INSTANCE_TOKEN =
 		"com.liferay.portal.workflow.kaleo.model.KaleoTaskInstanceToken";
 
@@ -258,6 +284,9 @@ public class ViewTasksSectionDisplayContextTest
 
 	@Inject
 	private AssetEntryLocalService _assetEntryLocalService;
+
+	@Inject
+	private DepotEntryLocalService _depotEntryLocalService;
 
 	@Inject(
 		filter = "component.name=com.liferay.site.cmp.site.initializer.internal.fragment.renderer.ViewTasksJSPSectionFragmentRenderer"
