@@ -5,12 +5,12 @@
 
 package com.liferay.site.cmp.site.initializer.internal.display.context;
 
-import com.liferay.asset.kernel.model.AssetEntry;
 import com.liferay.frontend.data.set.filter.FDSFilter;
 import com.liferay.frontend.data.set.model.FDSActionDropdownItem;
 import com.liferay.frontend.taglib.clay.servlet.taglib.util.CreationMenu;
 import com.liferay.frontend.taglib.clay.servlet.taglib.util.CreationMenuBuilder;
 import com.liferay.object.model.ObjectDefinition;
+import com.liferay.object.service.ObjectEntryService;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.language.LanguageUtil;
@@ -19,7 +19,6 @@ import com.liferay.portal.kernel.util.HashMapBuilder;
 import com.liferay.portal.kernel.util.ListUtil;
 import com.liferay.portal.kernel.util.PortalUtil;
 import com.liferay.portal.kernel.util.PortletKeys;
-import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.portal.workflow.kaleo.model.KaleoTaskInstanceToken;
 import com.liferay.site.cmp.site.initializer.internal.frontend.data.set.filter.CreateDateFDSFilter;
 import com.liferay.site.cmp.site.initializer.internal.frontend.data.set.filter.DueDateRangeFDSFilter;
@@ -43,24 +42,24 @@ public class ViewTasksSectionDisplayContext extends BaseSectionDisplayContext {
 
 	public ViewTasksSectionDisplayContext(
 		HttpServletRequest httpServletRequest,
+		ObjectEntryService objectEntryService,
 		ObjectDefinition projectObjectDefinition,
 		ObjectDefinition taskObjectDefinition) {
 
-		super(httpServletRequest, taskObjectDefinition);
-
-		_assetEntry = (AssetEntry)httpServletRequest.getAttribute(
-			WebKeys.LAYOUT_ASSET_ENTRY);
+		super(httpServletRequest, taskObjectDefinition, objectEntryService);
 
 		_projectObjectDefinition = projectObjectDefinition;
 	}
 
 	public String getAPIURL() {
-		return TasksSectionUtil.getSearchURL(_assetEntry, objectDefinition) +
+		return TasksSectionUtil.getSearchURL(assetEntry, objectDefinition) +
 			"&nestedFields=cmpProjectToCMPTasks,embedded";
 	}
 
-	public CreationMenu getCreationMenu() {
-		if (_assetEntry == null) {
+	public CreationMenu getCreationMenu() throws Exception {
+		if ((assetEntry == null) ||
+			!hasAddObjectEntryPortletResourcePermission()) {
+
 			return null;
 		}
 
@@ -73,8 +72,8 @@ public class ViewTasksSectionDisplayContext extends BaseSectionDisplayContext {
 				dropdownItem.putData(
 					"redirect",
 					ActionUtil.getAddTaskURL(
-						_assetEntry.getGroupId(), objectDefinition,
-						_assetEntry.getClassPK(), themeDisplay));
+						assetEntry.getGroupId(), objectDefinition,
+						assetEntry.getClassPK(), themeDisplay));
 				dropdownItem.putData(
 					"title",
 					objectDefinition.getLabel(themeDisplay.getLocale()));
@@ -187,7 +186,7 @@ public class ViewTasksSectionDisplayContext extends BaseSectionDisplayContext {
 		fdsFilters.add(new CreateDateFDSFilter());
 		fdsFilters.add(new DueDateRangeFDSFilter());
 
-		if (_assetEntry == null) {
+		if (assetEntry == null) {
 			fdsFilters.add(
 				new ProjectSelectionFDSFilter(_projectObjectDefinition));
 		}
@@ -199,10 +198,9 @@ public class ViewTasksSectionDisplayContext extends BaseSectionDisplayContext {
 
 	public Map<String, Object> getSearchURLProperties() {
 		return TasksSectionUtil.getSearchURLProperties(
-			_assetEntry, objectDefinition);
+			assetEntry, objectDefinition);
 	}
 
-	private final AssetEntry _assetEntry;
 	private final ObjectDefinition _projectObjectDefinition;
 
 }
