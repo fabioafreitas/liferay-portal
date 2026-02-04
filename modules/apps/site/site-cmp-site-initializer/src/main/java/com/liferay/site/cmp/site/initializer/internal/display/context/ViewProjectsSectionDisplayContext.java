@@ -5,6 +5,7 @@
 
 package com.liferay.site.cmp.site.initializer.internal.display.context;
 
+import com.liferay.depot.service.DepotEntryLocalService;
 import com.liferay.frontend.data.set.filter.FDSFilter;
 import com.liferay.frontend.data.set.model.FDSActionDropdownItem;
 import com.liferay.frontend.taglib.clay.servlet.taglib.util.CreationMenu;
@@ -16,6 +17,7 @@ import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.json.JSONUtil;
 import com.liferay.portal.kernel.language.LanguageUtil;
 import com.liferay.portal.kernel.model.Layout;
+import com.liferay.portal.kernel.service.GroupLocalService;
 import com.liferay.portal.kernel.service.UserLocalService;
 import com.liferay.portal.kernel.util.HashMapBuilder;
 import com.liferay.portal.kernel.util.ListUtil;
@@ -38,12 +40,16 @@ public class ViewProjectsSectionDisplayContext
 	extends BaseSectionDisplayContext {
 
 	public ViewProjectsSectionDisplayContext(
+		DepotEntryLocalService depotEntryLocalService,
+		GroupLocalService groupLocalService,
 		HttpServletRequest httpServletRequest,
 		ObjectDefinition objectDefinition,
 		ObjectEntryService objectEntryService,
 		UserLocalService userLocalService) {
 
-		super(httpServletRequest, objectDefinition, objectEntryService);
+		super(
+			depotEntryLocalService, groupLocalService, httpServletRequest,
+			objectDefinition, objectEntryService);
 
 		_userLocalService = userLocalService;
 	}

@@ -5,9 +5,11 @@
 
 package com.liferay.site.cmp.site.initializer.internal.fragment.renderer;
 
+import com.liferay.depot.service.DepotEntryLocalService;
 import com.liferay.fragment.renderer.FragmentRenderer;
 import com.liferay.object.service.ObjectDefinitionLocalService;
 import com.liferay.object.service.ObjectEntryService;
+import com.liferay.portal.kernel.service.GroupLocalService;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.site.cmp.site.initializer.internal.display.context.ViewTasksSectionDisplayContext;
@@ -43,7 +45,8 @@ public class ViewTasksJSPSectionFragmentRenderer
 				WebKeys.THEME_DISPLAY);
 
 		return new ViewTasksSectionDisplayContext(
-			httpServletRequest, _objectEntryService,
+			_depotEntryLocalService, _groupLocalService, httpServletRequest,
+			_objectEntryService,
 			_objectDefinitionLocalService.
 				fetchObjectDefinitionByExternalReferenceCode(
 					"L_CMP_PROJECT", themeDisplay.getCompanyId()),
@@ -56,6 +59,12 @@ public class ViewTasksJSPSectionFragmentRenderer
 	protected String getJSPPath() {
 		return "/view_tasks.jsp";
 	}
+
+	@Reference
+	private DepotEntryLocalService _depotEntryLocalService;
+
+	@Reference
+	private GroupLocalService _groupLocalService;
 
 	@Reference
 	private ObjectDefinitionLocalService _objectDefinitionLocalService;
