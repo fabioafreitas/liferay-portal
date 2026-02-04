@@ -15,12 +15,16 @@ import com.liferay.petra.string.StringBundler;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.language.LanguageUtil;
 import com.liferay.portal.kernel.portlet.url.builder.PortletURLBuilder;
+import com.liferay.portal.kernel.service.ClassNameLocalService;
+import com.liferay.portal.kernel.service.RoleLocalService;
+import com.liferay.portal.kernel.service.UserLocalService;
 import com.liferay.portal.kernel.util.HashMapBuilder;
 import com.liferay.portal.kernel.util.ListUtil;
 import com.liferay.portal.kernel.util.PortalUtil;
 import com.liferay.portal.kernel.util.PortletKeys;
 import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.portal.workflow.kaleo.model.KaleoTaskInstanceToken;
+import com.liferay.site.cmp.site.initializer.internal.frontend.data.set.filter.AssigneeSelectionFDSFilter;
 import com.liferay.site.cmp.site.initializer.internal.frontend.data.set.filter.CreateDateFDSFilter;
 import com.liferay.site.cmp.site.initializer.internal.frontend.data.set.filter.DueDateRangeFDSFilter;
 import com.liferay.site.cmp.site.initializer.internal.frontend.data.set.filter.ProjectSelectionFDSFilter;
@@ -42,16 +46,21 @@ import java.util.Map;
 public class ViewTasksSectionDisplayContext extends BaseSectionDisplayContext {
 
 	public ViewTasksSectionDisplayContext(
+		ClassNameLocalService classNameLocalService,
 		HttpServletRequest httpServletRequest,
 		ObjectDefinition projectObjectDefinition,
-		ObjectDefinition taskObjectDefinition) {
+		ObjectDefinition taskObjectDefinition,
+		RoleLocalService roleLocalService, UserLocalService userLocalService) {
 
 		super(httpServletRequest, taskObjectDefinition);
 
 		_assetEntry = (AssetEntry)httpServletRequest.getAttribute(
 			WebKeys.LAYOUT_ASSET_ENTRY);
 
+		_classNameLocalService = classNameLocalService;
 		_projectObjectDefinition = projectObjectDefinition;
+		_roleLocalService = roleLocalService;
+		_userLocalService = userLocalService;
 	}
 
 	public String getAPIURL() {
@@ -184,6 +193,9 @@ public class ViewTasksSectionDisplayContext extends BaseSectionDisplayContext {
 	public List<FDSFilter> getFDSFilters() {
 		List<FDSFilter> fdsFilters = new ArrayList<>();
 
+		fdsFilters.add(
+			new AssigneeSelectionFDSFilter(
+				_classNameLocalService, _roleLocalService, _userLocalService));
 		fdsFilters.add(new CreateDateFDSFilter());
 		fdsFilters.add(new DueDateRangeFDSFilter());
 
@@ -203,6 +215,9 @@ public class ViewTasksSectionDisplayContext extends BaseSectionDisplayContext {
 	}
 
 	private final AssetEntry _assetEntry;
+	private final ClassNameLocalService _classNameLocalService;
 	private final ObjectDefinition _projectObjectDefinition;
+	private final RoleLocalService _roleLocalService;
+	private final UserLocalService _userLocalService;
 
 }
