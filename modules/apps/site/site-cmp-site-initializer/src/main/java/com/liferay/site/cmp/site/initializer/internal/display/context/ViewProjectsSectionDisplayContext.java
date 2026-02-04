@@ -163,8 +163,8 @@ public class ViewProjectsSectionDisplayContext
 	public List<FDSFilter> getFDSFilters() {
 		return ListUtil.fromArray(
 			new DueDateRangeFDSFilter(),
-			new ProjectManagerSelectionFDSFilter(_userLocalService),
-			new ProjectSponsorSelectionFDSFilter(_userLocalService),
+			new ProjectManagerSelectionFDSFilter(groupIds, _userLocalService),
+			new ProjectSponsorSelectionFDSFilter(groupIds, _userLocalService),
 			new StateSelectionFDSFilter());
 	}
 
