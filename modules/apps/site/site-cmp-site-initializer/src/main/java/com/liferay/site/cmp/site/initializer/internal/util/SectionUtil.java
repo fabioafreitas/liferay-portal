@@ -5,17 +5,9 @@
 
 package com.liferay.site.cmp.site.initializer.internal.util;
 
-import com.liferay.depot.constants.DepotConstants;
-import com.liferay.depot.service.DepotEntryLocalServiceUtil;
 import com.liferay.petra.string.StringPool;
-import com.liferay.portal.kernel.security.auth.CompanyThreadLocal;
-import com.liferay.portal.kernel.security.auth.PrincipalThreadLocal;
-import com.liferay.portal.kernel.security.permission.PermissionChecker;
-import com.liferay.portal.kernel.security.permission.PermissionThreadLocal;
-import com.liferay.portal.kernel.service.GroupLocalServiceUtil;
 import com.liferay.portal.kernel.util.ListUtil;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -23,19 +15,7 @@ import java.util.List;
  */
 public class SectionUtil {
 
-	public static String getScopeGroupIdFilterString() {
-		List<Long> groupIds = new ArrayList<>();
-
-		for (long groupId :
-				DepotEntryLocalServiceUtil.getDepotEntryGroupIds(
-					CompanyThreadLocal.getCompanyId(),
-					DepotConstants.TYPE_PROJECT)) {
-
-			if (_isAssetLibraryAdminOrAssetLibraryMember(groupId)) {
-				groupIds.add(groupId);
-			}
-		}
-
+	public static String getScopeGroupIdFilterString(List<Long> groupIds) {
 		if (groupIds.isEmpty()) {
 			return " and (scopeGroupId in (-1))";
 		}
@@ -43,20 +23,6 @@ public class SectionUtil {
 		return " and (scopeGroupId in (" +
 			ListUtil.toString(groupIds, StringPool.BLANK, StringPool.COMMA) +
 				"))";
-	}
-
-	private static boolean _isAssetLibraryAdminOrAssetLibraryMember(
-		long groupId) {
-
-		PermissionChecker permissionChecker =
-			PermissionThreadLocal.getPermissionChecker();
-
-		if (permissionChecker.isGroupAdmin(groupId)) {
-			return true;
-		}
-
-		return GroupLocalServiceUtil.hasUserGroup(
-			PrincipalThreadLocal.getUserId(), groupId);
 	}
 
 }

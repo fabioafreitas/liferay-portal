@@ -55,7 +55,7 @@ public class ViewProjectsSectionDisplayContext
 	}
 
 	public String getAPIURL() {
-		return ProjectsSectionUtil.getAPIURL(objectDefinition);
+		return ProjectsSectionUtil.getAPIURL(groupIds, objectDefinition);
 	}
 
 	public Map<String, Object> getBreadcrumbProps() throws PortalException {

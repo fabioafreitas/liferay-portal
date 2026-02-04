@@ -83,7 +83,7 @@ public class TasksOverviewComponentSectionFragmentRenderer
 				projectObjectEntry.getObjectEntryId(), themeDisplay)
 		).putAll(
 			TasksSectionUtil.getSearchURLProperties(
-				projectObjectEntry, taskObjectDefinition)
+				projectObjectEntry, null, taskObjectDefinition)
 		).build();
 	}
 

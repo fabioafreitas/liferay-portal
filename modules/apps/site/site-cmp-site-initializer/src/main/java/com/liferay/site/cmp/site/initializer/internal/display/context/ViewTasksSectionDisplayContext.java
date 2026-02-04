@@ -58,8 +58,10 @@ public class ViewTasksSectionDisplayContext extends BaseSectionDisplayContext {
 	}
 
 	public String getAPIURL() {
-		return TasksSectionUtil.getSearchURL(assetEntry, objectDefinition) +
-			"&nestedFields=cmpProjectToCMPTasks,embedded";
+		String searchURL = TasksSectionUtil.getSearchURL(
+			assetEntry, groupIds, objectDefinition);
+
+		return searchURL + "&nestedFields=cmpProjectToCMPTasks,embedded";
 	}
 
 	public CreationMenu getCreationMenu() throws Exception {
@@ -194,7 +196,8 @@ public class ViewTasksSectionDisplayContext extends BaseSectionDisplayContext {
 
 		if (assetEntry == null) {
 			fdsFilters.add(
-				new ProjectSelectionFDSFilter(_projectObjectDefinition));
+				new ProjectSelectionFDSFilter(
+					groupIds, _projectObjectDefinition));
 		}
 
 		fdsFilters.add(new StateSelectionFDSFilter());
@@ -204,7 +207,7 @@ public class ViewTasksSectionDisplayContext extends BaseSectionDisplayContext {
 
 	public Map<String, Object> getSearchURLProperties() {
 		return TasksSectionUtil.getSearchURLProperties(
-			assetEntry, objectDefinition);
+			assetEntry, groupIds, objectDefinition);
 	}
 
 	private final ObjectDefinition _projectObjectDefinition;

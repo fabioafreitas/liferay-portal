@@ -10,18 +10,23 @@ import com.liferay.frontend.data.set.filter.BaseSelectionFDSFilter;
 import com.liferay.object.model.ObjectDefinition;
 import com.liferay.site.cmp.site.initializer.internal.util.ProjectsSectionUtil;
 
+import java.util.List;
+
 /**
  * @author José Abelenda
  */
 public class ProjectSelectionFDSFilter extends BaseSelectionFDSFilter {
 
-	public ProjectSelectionFDSFilter(ObjectDefinition objectDefinition) {
+	public ProjectSelectionFDSFilter(
+		List<Long> groupIds, ObjectDefinition objectDefinition) {
+
+		_groupIds = groupIds;
 		_objectDefinition = objectDefinition;
 	}
 
 	@Override
 	public String getAPIURL() {
-		return ProjectsSectionUtil.getAPIURL(_objectDefinition);
+		return ProjectsSectionUtil.getAPIURL(_groupIds, _objectDefinition);
 	}
 
 	@Override
@@ -54,6 +59,7 @@ public class ProjectSelectionFDSFilter extends BaseSelectionFDSFilter {
 		return true;
 	}
 
+	private final List<Long> _groupIds;
 	private final ObjectDefinition _objectDefinition;
 
 }

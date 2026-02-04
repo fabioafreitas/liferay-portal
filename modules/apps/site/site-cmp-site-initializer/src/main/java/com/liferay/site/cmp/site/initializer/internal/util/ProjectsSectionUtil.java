@@ -8,18 +8,22 @@ package com.liferay.site.cmp.site.initializer.internal.util;
 import com.liferay.object.model.ObjectDefinition;
 import com.liferay.petra.string.StringBundler;
 
+import java.util.List;
+
 /**
  * @author Pedro Leite
  */
 public class ProjectsSectionUtil {
 
-	public static String getAPIURL(ObjectDefinition objectDefinition) {
+	public static String getAPIURL(
+		List<Long> groupIds, ObjectDefinition objectDefinition) {
+
 		StringBundler sb = new StringBundler(5);
 
 		sb.append("/o/search/v1.0/search?emptySearch=true&");
 		sb.append("filter=objectDefinitionId eq ");
 		sb.append(objectDefinition.getObjectDefinitionId());
-		sb.append(SectionUtil.getScopeGroupIdFilterString());
+		sb.append(SectionUtil.getScopeGroupIdFilterString(groupIds));
 		sb.append("&nestedFields=embedded");
 
 		return sb.toString();

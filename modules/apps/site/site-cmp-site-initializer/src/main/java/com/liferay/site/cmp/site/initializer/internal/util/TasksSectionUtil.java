@@ -16,6 +16,7 @@ import com.liferay.portal.workflow.kaleo.model.KaleoTaskInstanceToken;
 import java.time.LocalDate;
 import java.time.ZoneId;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -24,7 +25,8 @@ import java.util.Map;
 public class TasksSectionUtil {
 
 	public static String getSearchURL(
-		GroupedModel groupedModel, ObjectDefinition taskObjectDefinition) {
+		GroupedModel groupedModel, List<Long> groupIds,
+		ObjectDefinition taskObjectDefinition) {
 
 		StringBundler sb = new StringBundler(12);
 
@@ -49,7 +51,7 @@ public class TasksSectionUtil {
 			sb.append(" or keywords/any(k:startswith(k, '");
 			sb.append(taskObjectDefinition.getExternalReferenceCode());
 			sb.append("')))");
-			sb.append(SectionUtil.getScopeGroupIdFilterString());
+			sb.append(SectionUtil.getScopeGroupIdFilterString(groupIds));
 		}
 
 		sb.append(StringPool.CLOSE_PARENTHESIS);
@@ -58,9 +60,11 @@ public class TasksSectionUtil {
 	}
 
 	public static Map<String, Object> getSearchURLProperties(
-		GroupedModel groupedModel, ObjectDefinition taskObjectDefinition) {
+		GroupedModel groupedModel, List<Long> groupIds,
+		ObjectDefinition taskObjectDefinition) {
 
-		String searchURL = getSearchURL(groupedModel, taskObjectDefinition);
+		String searchURL = getSearchURL(
+			groupedModel, groupIds, taskObjectDefinition);
 
 		return HashMapBuilder.<String, Object>put(
 			"blockedCountURL", searchURL + " and cmpState eq 'blocked'"
