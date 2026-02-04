@@ -6,6 +6,8 @@
 package com.liferay.site.cmp.site.initializer.internal.display.context;
 
 import com.liferay.asset.kernel.model.AssetEntry;
+import com.liferay.asset.kernel.service.AssetTagLocalService;
+import com.liferay.depot.service.DepotEntryLocalService;
 import com.liferay.frontend.data.set.filter.FDSFilter;
 import com.liferay.frontend.data.set.model.FDSActionDropdownItem;
 import com.liferay.frontend.taglib.clay.servlet.taglib.util.CreationMenu;
@@ -29,6 +31,7 @@ import com.liferay.site.cmp.site.initializer.internal.frontend.data.set.filter.C
 import com.liferay.site.cmp.site.initializer.internal.frontend.data.set.filter.DueDateRangeFDSFilter;
 import com.liferay.site.cmp.site.initializer.internal.frontend.data.set.filter.ProjectSelectionFDSFilter;
 import com.liferay.site.cmp.site.initializer.internal.frontend.data.set.filter.StateSelectionFDSFilter;
+import com.liferay.site.cmp.site.initializer.internal.frontend.data.set.filter.TagSelectionFDSFilter;
 import com.liferay.site.cmp.site.initializer.internal.util.ActionUtil;
 import com.liferay.site.cmp.site.initializer.internal.util.TasksSectionUtil;
 
@@ -46,7 +49,9 @@ import java.util.Map;
 public class ViewTasksSectionDisplayContext extends BaseSectionDisplayContext {
 
 	public ViewTasksSectionDisplayContext(
+		AssetTagLocalService assetTagLocalService,
 		ClassNameLocalService classNameLocalService,
+		DepotEntryLocalService depotEntryLocalService,
 		HttpServletRequest httpServletRequest,
 		ObjectDefinition projectObjectDefinition,
 		ObjectDefinition taskObjectDefinition,
@@ -54,10 +59,13 @@ public class ViewTasksSectionDisplayContext extends BaseSectionDisplayContext {
 
 		super(httpServletRequest, taskObjectDefinition);
 
+		_assetTagLocalService = assetTagLocalService;
+
 		_assetEntry = (AssetEntry)httpServletRequest.getAttribute(
 			WebKeys.LAYOUT_ASSET_ENTRY);
 
 		_classNameLocalService = classNameLocalService;
+		_depotEntryLocalService = depotEntryLocalService;
 		_projectObjectDefinition = projectObjectDefinition;
 		_roleLocalService = roleLocalService;
 		_userLocalService = userLocalService;
@@ -205,6 +213,9 @@ public class ViewTasksSectionDisplayContext extends BaseSectionDisplayContext {
 		}
 
 		fdsFilters.add(new StateSelectionFDSFilter());
+		fdsFilters.add(
+			new TagSelectionFDSFilter(
+				_assetTagLocalService, _depotEntryLocalService, _assetEntry));
 
 		return fdsFilters;
 	}
@@ -215,7 +226,9 @@ public class ViewTasksSectionDisplayContext extends BaseSectionDisplayContext {
 	}
 
 	private final AssetEntry _assetEntry;
+	private final AssetTagLocalService _assetTagLocalService;
 	private final ClassNameLocalService _classNameLocalService;
+	private final DepotEntryLocalService _depotEntryLocalService;
 	private final ObjectDefinition _projectObjectDefinition;
 	private final RoleLocalService _roleLocalService;
 	private final UserLocalService _userLocalService;
