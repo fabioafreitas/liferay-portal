@@ -5,6 +5,7 @@
 
 package com.liferay.site.cmp.site.initializer.internal.display.context;
 
+import com.liferay.asset.kernel.service.AssetTagLocalService;
 import com.liferay.depot.service.DepotEntryLocalService;
 import com.liferay.frontend.data.set.filter.FDSFilter;
 import com.liferay.frontend.data.set.model.FDSActionDropdownItem;
@@ -26,6 +27,7 @@ import com.liferay.site.cmp.site.initializer.internal.frontend.data.set.filter.C
 import com.liferay.site.cmp.site.initializer.internal.frontend.data.set.filter.DueDateRangeFDSFilter;
 import com.liferay.site.cmp.site.initializer.internal.frontend.data.set.filter.ProjectSelectionFDSFilter;
 import com.liferay.site.cmp.site.initializer.internal.frontend.data.set.filter.StateSelectionFDSFilter;
+import com.liferay.site.cmp.site.initializer.internal.frontend.data.set.filter.TagSelectionFDSFilter;
 import com.liferay.site.cmp.site.initializer.internal.util.ActionUtil;
 import com.liferay.site.cmp.site.initializer.internal.util.TasksSectionUtil;
 
@@ -43,6 +45,7 @@ import java.util.Map;
 public class ViewTasksSectionDisplayContext extends BaseSectionDisplayContext {
 
 	public ViewTasksSectionDisplayContext(
+		AssetTagLocalService assetTagLocalService,
 		DepotEntryLocalService depotEntryLocalService,
 		GroupLocalService groupLocalService,
 		HttpServletRequest httpServletRequest,
@@ -54,6 +57,7 @@ public class ViewTasksSectionDisplayContext extends BaseSectionDisplayContext {
 			depotEntryLocalService, groupLocalService, httpServletRequest,
 			taskObjectDefinition, objectEntryService);
 
+		_assetTagLocalService = assetTagLocalService;
 		_projectObjectDefinition = projectObjectDefinition;
 	}
 
@@ -201,6 +205,9 @@ public class ViewTasksSectionDisplayContext extends BaseSectionDisplayContext {
 		}
 
 		fdsFilters.add(new StateSelectionFDSFilter());
+		fdsFilters.add(
+			new TagSelectionFDSFilter(
+				_assetTagLocalService, getDepotEntryGroupIds(assetEntry)));
 
 		return fdsFilters;
 	}
@@ -210,6 +217,7 @@ public class ViewTasksSectionDisplayContext extends BaseSectionDisplayContext {
 			assetEntry, groupIds, objectDefinition);
 	}
 
+	private final AssetTagLocalService _assetTagLocalService;
 	private final ObjectDefinition _projectObjectDefinition;
 
 }

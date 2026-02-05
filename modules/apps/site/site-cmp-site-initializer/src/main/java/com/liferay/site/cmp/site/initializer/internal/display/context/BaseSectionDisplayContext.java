@@ -14,6 +14,7 @@ import com.liferay.frontend.taglib.clay.servlet.taglib.util.DropdownItem;
 import com.liferay.object.constants.ObjectActionKeys;
 import com.liferay.object.model.ObjectDefinition;
 import com.liferay.object.service.ObjectEntryService;
+import com.liferay.portal.kernel.model.GroupedModel;
 import com.liferay.portal.kernel.security.auth.CompanyThreadLocal;
 import com.liferay.portal.kernel.security.auth.PrincipalThreadLocal;
 import com.liferay.portal.kernel.security.permission.PermissionChecker;
@@ -51,7 +52,7 @@ public abstract class BaseSectionDisplayContext {
 		assetEntry = (AssetEntry)httpServletRequest.getAttribute(
 			WebKeys.LAYOUT_ASSET_ENTRY);
 
-		groupIds = _getDepotEntryGroupIds();
+		groupIds = getDepotEntryGroupIds();
 
 		themeDisplay = (ThemeDisplay)httpServletRequest.getAttribute(
 			WebKeys.THEME_DISPLAY);
@@ -68,6 +69,36 @@ public abstract class BaseSectionDisplayContext {
 	public abstract Map<String, Object> getEmptyState();
 
 	public abstract List<FDSActionDropdownItem> getFDSActionDropdownItems();
+
+	protected List<Long> getDepotEntryGroupIds() {
+		return getDepotEntryGroupIds(null);
+	}
+
+	protected List<Long> getDepotEntryGroupIds(GroupedModel groupedModel) {
+		if (groupedModel != null) {
+			if (_isAssetLibraryAdminOrAssetLibraryMember(
+					groupedModel.getGroupId())) {
+
+				return Collections.singletonList(groupedModel.getGroupId());
+			}
+
+			return new ArrayList<>();
+		}
+
+		List<Long> groupIds = new ArrayList<>();
+
+		for (long depotGroupId :
+				_depotEntryLocalService.getDepotEntryGroupIds(
+					CompanyThreadLocal.getCompanyId(),
+					DepotConstants.TYPE_PROJECT)) {
+
+			if (_isAssetLibraryAdminOrAssetLibraryMember(depotGroupId)) {
+				groupIds.add(depotGroupId);
+			}
+		}
+
+		return groupIds;
+	}
 
 	protected boolean hasAddObjectEntryPortletResourcePermission()
 		throws Exception {
@@ -89,22 +120,6 @@ public abstract class BaseSectionDisplayContext {
 	protected final ObjectDefinition objectDefinition;
 	protected final ObjectEntryService objectEntryService;
 	protected final ThemeDisplay themeDisplay;
-
-	private List<Long> _getDepotEntryGroupIds() {
-		List<Long> groupIds = new ArrayList<>();
-
-		for (long groupId :
-				_depotEntryLocalService.getDepotEntryGroupIds(
-					CompanyThreadLocal.getCompanyId(),
-					DepotConstants.TYPE_PROJECT)) {
-
-			if (_isAssetLibraryAdminOrAssetLibraryMember(groupId)) {
-				groupIds.add(groupId);
-			}
-		}
-
-		return groupIds;
-	}
 
 	private boolean _isAssetLibraryAdminOrAssetLibraryMember(long groupId) {
 		PermissionChecker permissionChecker =

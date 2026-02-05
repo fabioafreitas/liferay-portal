@@ -5,6 +5,7 @@
 
 package com.liferay.site.cmp.site.initializer.internal.fragment.renderer;
 
+import com.liferay.asset.kernel.service.AssetTagLocalService;
 import com.liferay.depot.service.DepotEntryLocalService;
 import com.liferay.fragment.renderer.FragmentRenderer;
 import com.liferay.object.service.ObjectDefinitionLocalService;
@@ -45,8 +46,8 @@ public class ViewTasksJSPSectionFragmentRenderer
 				WebKeys.THEME_DISPLAY);
 
 		return new ViewTasksSectionDisplayContext(
-			_depotEntryLocalService, _groupLocalService, httpServletRequest,
-			_objectEntryService,
+			_assetTagLocalService, _depotEntryLocalService, _groupLocalService,
+			httpServletRequest, _objectEntryService,
 			_objectDefinitionLocalService.
 				fetchObjectDefinitionByExternalReferenceCode(
 					"L_CMP_PROJECT", themeDisplay.getCompanyId()),
@@ -59,6 +60,9 @@ public class ViewTasksJSPSectionFragmentRenderer
 	protected String getJSPPath() {
 		return "/view_tasks.jsp";
 	}
+
+	@Reference
+	private AssetTagLocalService _assetTagLocalService;
 
 	@Reference
 	private DepotEntryLocalService _depotEntryLocalService;
