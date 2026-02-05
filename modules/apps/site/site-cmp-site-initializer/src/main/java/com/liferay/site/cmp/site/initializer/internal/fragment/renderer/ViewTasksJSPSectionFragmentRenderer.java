@@ -10,7 +10,10 @@ import com.liferay.depot.service.DepotEntryLocalService;
 import com.liferay.fragment.renderer.FragmentRenderer;
 import com.liferay.object.service.ObjectDefinitionLocalService;
 import com.liferay.object.service.ObjectEntryService;
+import com.liferay.portal.kernel.service.ClassNameLocalService;
 import com.liferay.portal.kernel.service.GroupLocalService;
+import com.liferay.portal.kernel.service.RoleLocalService;
+import com.liferay.portal.kernel.service.UserLocalService;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.site.cmp.site.initializer.internal.display.context.ViewTasksSectionDisplayContext;
@@ -46,14 +49,16 @@ public class ViewTasksJSPSectionFragmentRenderer
 				WebKeys.THEME_DISPLAY);
 
 		return new ViewTasksSectionDisplayContext(
-			_assetTagLocalService, _depotEntryLocalService, _groupLocalService,
-			httpServletRequest, _objectEntryService,
+			_assetTagLocalService, _classNameLocalService,
+			_depotEntryLocalService, _groupLocalService, httpServletRequest,
+			_objectEntryService,
 			_objectDefinitionLocalService.
 				fetchObjectDefinitionByExternalReferenceCode(
 					"L_CMP_PROJECT", themeDisplay.getCompanyId()),
 			_objectDefinitionLocalService.
 				fetchObjectDefinitionByExternalReferenceCode(
-					"L_CMP_TASK", themeDisplay.getCompanyId()));
+					"L_CMP_TASK", themeDisplay.getCompanyId()),
+			_roleLocalService, _userLocalService);
 	}
 
 	@Override
@@ -63,6 +68,9 @@ public class ViewTasksJSPSectionFragmentRenderer
 
 	@Reference
 	private AssetTagLocalService _assetTagLocalService;
+
+	@Reference
+	private ClassNameLocalService _classNameLocalService;
 
 	@Reference
 	private DepotEntryLocalService _depotEntryLocalService;
@@ -75,5 +83,11 @@ public class ViewTasksJSPSectionFragmentRenderer
 
 	@Reference
 	private ObjectEntryService _objectEntryService;
+
+	@Reference
+	private RoleLocalService _roleLocalService;
+
+	@Reference
+	private UserLocalService _userLocalService;
 
 }
