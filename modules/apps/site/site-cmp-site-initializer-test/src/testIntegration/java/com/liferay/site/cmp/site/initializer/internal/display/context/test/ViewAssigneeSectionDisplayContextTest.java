@@ -12,7 +12,6 @@ import com.liferay.object.model.ObjectDefinition;
 import com.liferay.object.model.ObjectEntry;
 import com.liferay.object.rest.dto.v1_0.Assignee;
 import com.liferay.object.service.ObjectDefinitionLocalService;
-import com.liferay.object.service.ObjectEntryLocalService;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.json.JSONUtil;
 import com.liferay.portal.kernel.model.ClassName;
@@ -86,7 +85,7 @@ public class ViewAssigneeSectionDisplayContextTest
 
 		serviceContext.setWorkflowAction(WorkflowConstants.ACTION_SAVE_DRAFT);
 
-		_taskObjectEntry = _objectEntryLocalService.addObjectEntry(
+		_taskObjectEntry = objectEntryLocalService.addObjectEntry(
 			projectObjectEntry.getGroupId(), projectObjectEntry.getUserId(),
 			taskObjectDefinition.getObjectDefinitionId(), 0, null,
 			HashMapBuilder.<String, Serializable>put(
@@ -156,7 +155,7 @@ public class ViewAssigneeSectionDisplayContextTest
 			String expectedPortrait, String expectedType)
 		throws Exception {
 
-		_taskObjectEntry = _objectEntryLocalService.partialUpdateObjectEntry(
+		_taskObjectEntry = objectEntryLocalService.partialUpdateObjectEntry(
 			_taskObjectEntry.getUserId(), _taskObjectEntry.getObjectEntryId(),
 			_taskObjectEntry.getObjectEntryFolderId(),
 			HashMapBuilder.<String, Serializable>put(
@@ -198,9 +197,6 @@ public class ViewAssigneeSectionDisplayContextTest
 
 	@Inject
 	private ObjectDefinitionLocalService _objectDefinitionLocalService;
-
-	@Inject
-	private ObjectEntryLocalService _objectEntryLocalService;
 
 	@Inject
 	private RoleLocalService _roleLocalService;
