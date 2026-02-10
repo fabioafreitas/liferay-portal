@@ -6,6 +6,9 @@
 package com.liferay.headless.cmp.resource.v1_0.test;
 
 import com.liferay.arquillian.extension.junit.bridge.junit.Arquillian;
+import com.liferay.depot.constants.DepotConstants;
+import com.liferay.depot.model.DepotEntry;
+import com.liferay.depot.service.DepotEntryLocalService;
 import com.liferay.headless.cmp.client.dto.v1_0.TaskAssignee;
 import com.liferay.headless.cmp.client.pagination.Page;
 import com.liferay.portal.kernel.model.Role;
@@ -17,7 +20,9 @@ import com.liferay.portal.kernel.test.util.RoleTestUtil;
 import com.liferay.portal.kernel.test.util.ServiceContextTestUtil;
 import com.liferay.portal.kernel.test.util.TestPropsValues;
 import com.liferay.portal.kernel.test.util.UserTestUtil;
+import com.liferay.portal.kernel.util.HashMapBuilder;
 import com.liferay.portal.kernel.util.LocaleUtil;
+import com.liferay.portal.test.rule.Inject;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 import com.liferay.portal.test.rule.PermissionCheckerMethodTestRule;
 
@@ -42,15 +47,26 @@ public class TaskAssigneeResourceTest extends BaseTaskAssigneeResourceTestCase {
 	@Override
 	@Test
 	public void testGetTaskAssigneesPage() throws Exception {
+		DepotEntry depotEntry = _depotEntryLocalService.addDepotEntry(
+			HashMapBuilder.put(
+				LocaleUtil.getDefault(), RandomTestUtil.randomString()
+			).build(),
+			HashMapBuilder.put(
+				LocaleUtil.getDefault(), RandomTestUtil.randomString()
+			).build(),
+			DepotConstants.TYPE_SPACE,
+			ServiceContextTestUtil.getServiceContext());
+
 		Role role = RoleTestUtil.addRole(
-			"Custom Role", RoleConstants.TYPE_REGULAR);
+			"Custom Asset Library Role", RoleConstants.TYPE_DEPOT);
 		User user = UserTestUtil.addUser(
 			TestPropsValues.getCompanyId(), TestPropsValues.getUserId(),
 			RandomTestUtil.randomString(), LocaleUtil.getDefault(), "John",
-			"Doe", new long[0], ServiceContextTestUtil.getServiceContext());
+			"Doe", new long[] {depotEntry.getGroupId()},
+			ServiceContextTestUtil.getServiceContext());
 
 		Page<TaskAssignee> page = taskAssigneeResource.getTaskAssigneesPage(
-			"Custom R");
+			"Custom");
 
 		assertEquals(
 			new TaskAssignee() {
@@ -74,7 +90,7 @@ public class TaskAssigneeResourceTest extends BaseTaskAssigneeResourceTestCase {
 			},
 			page.fetchFirstItem());
 
-		page = taskAssigneeResource.getTaskAssigneesPage("John D");
+		page = taskAssigneeResource.getTaskAssigneesPage("John");
 
 		assertEquals(
 			new TaskAssignee() {
@@ -90,5 +106,8 @@ public class TaskAssigneeResourceTest extends BaseTaskAssigneeResourceTestCase {
 	protected String[] getAdditionalAssertFieldNames() {
 		return new String[] {"externalReferenceCode", "name", "type"};
 	}
+
+	@Inject
+	private DepotEntryLocalService _depotEntryLocalService;
 
 }
