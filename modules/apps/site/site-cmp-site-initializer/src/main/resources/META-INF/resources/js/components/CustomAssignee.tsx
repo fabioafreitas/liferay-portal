@@ -14,6 +14,7 @@ import AssigneeTrigger from './AssigneeTrigger';
 import './AssigneeTrigger.scss';
 
 interface ICustomAssignee {
+	label?: string;
 	name?: string;
 	onChange?: (value: AssigneeValue | {}) => void;
 	showLabel?: boolean;
@@ -23,6 +24,7 @@ interface ICustomAssignee {
 }
 
 export default function CustomAssignee({
+	label,
 	name,
 	onChange,
 	showLabel = true,
@@ -34,7 +36,7 @@ export default function CustomAssignee({
 
 	return (
 		<Assignee
-			label={Liferay.Language.get('assignee')}
+			label={label ?? Liferay.Language.get('assignee')}
 			name={name ?? ''}
 			onChange={async (event: {target: {value: AssigneeValue | {}}}) => {
 				setValue(event.target.value);
