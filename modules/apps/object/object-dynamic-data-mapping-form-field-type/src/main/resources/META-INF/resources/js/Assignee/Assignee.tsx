@@ -89,6 +89,16 @@ export default function Assignee({
 		},
 	});
 
+	const filteredItems = useMemo(() => {
+		const items = resource?.items ?? [];
+
+		if (!userOnly) {
+			return items;
+		}
+
+		return items.filter(({type}) => type === 'User');
+	}, [resource?.items, userOnly]);
+
 	function getValue(
 		userOnly: boolean,
 		value: AssigneeValue | null | {}
@@ -97,11 +107,7 @@ export default function Assignee({
 			return JSON.stringify(value);
 		}
 
-		if (!value) {
-			return '0';
-		}
-
-		if (!('id' in value)) {
+		if (!value || !('id' in value)) {
 			return '0';
 		}
 
@@ -141,7 +147,7 @@ export default function Assignee({
 				aria-label={label}
 				disabled={readOnly}
 				filterKey="name"
-				items={resource?.items ?? []}
+				items={filteredItems}
 				loadingState={networkStatus}
 				menuTrigger="focus"
 				messages={{
