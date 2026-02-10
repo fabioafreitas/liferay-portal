@@ -7,9 +7,13 @@ package com.liferay.site.cmp.site.initializer.internal.display.context;
 
 import com.liferay.object.model.ObjectEntry;
 import com.liferay.portal.kernel.json.JSONObject;
+import com.liferay.portal.kernel.json.JSONUtil;
 import com.liferay.portal.kernel.language.Language;
+import com.liferay.portal.kernel.model.User;
+import com.liferay.portal.kernel.service.UserLocalService;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.HashMapBuilder;
+import com.liferay.portal.kernel.util.MapUtil;
 
 import java.util.Map;
 
@@ -19,12 +23,15 @@ import java.util.Map;
 public abstract class BaseAssigneeSectionDisplayContext {
 
 	public BaseAssigneeSectionDisplayContext(
-		Language language, ObjectEntry objectEntry, ThemeDisplay themeDisplay) {
+		Language language, ObjectEntry objectEntry, ThemeDisplay themeDisplay,
+		UserLocalService userLocalService) {
 
 		_language = language;
 
 		this.objectEntry = objectEntry;
-		this.themeDisplay = themeDisplay;
+
+		_themeDisplay = themeDisplay;
+		_userLocalService = userLocalService;
 	}
 
 	public abstract String getLabelKey();
@@ -33,12 +40,13 @@ public abstract class BaseAssigneeSectionDisplayContext {
 
 	public Map<String, Object> getProperties() throws Exception {
 		return HashMapBuilder.<String, Object>put(
-			"label", _language.get(themeDisplay.getLocale(), getLabelKey())
+			"label", _language.get(_themeDisplay.getLocale(), getLabelKey())
 		).put(
 			"name", getName()
 		).put(
 			"searchURL",
-			themeDisplay.getPortalURL() + "/o/headless-cmp/v1.0/task-assignees/"
+			_themeDisplay.getPortalURL() +
+				"/o/headless-cmp/v1.0/task-assignees/"
 		).put(
 			"triggerClassName", "form-control"
 		).put(
@@ -54,9 +62,34 @@ public abstract class BaseAssigneeSectionDisplayContext {
 
 	public abstract JSONObject getValueJSONObject() throws Exception;
 
+	protected JSONObject getUserAssigneeFieldValueJSONObject(
+			String objectFieldName)
+		throws Exception {
+
+		User user = _userLocalService.fetchUser(
+			MapUtil.getLong(objectEntry.getValues(), objectFieldName));
+
+		if (user == null) {
+			return null;
+		}
+
+		return JSONUtil.put(
+			"externalReferenceCode", user.getExternalReferenceCode()
+		).put(
+			"id", user.getUserId()
+		).put(
+			"name", user.getFullName()
+		).put(
+			"portrait", user.getPortraitURL(_themeDisplay)
+		).put(
+			"type", "user"
+		);
+	}
+
 	protected final ObjectEntry objectEntry;
-	protected final ThemeDisplay themeDisplay;
 
 	private final Language _language;
+	private final ThemeDisplay _themeDisplay;
+	private final UserLocalService _userLocalService;
 
 }
