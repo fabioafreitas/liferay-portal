@@ -6,16 +6,14 @@
 package com.liferay.site.cmp.site.initializer.internal.fragment.renderer;
 
 import com.liferay.fragment.renderer.FragmentRenderer;
-import com.liferay.object.constants.ObjectFieldConstants;
-import com.liferay.object.field.business.type.ObjectFieldBusinessTypeRegistry;
+import com.liferay.info.constants.InfoDisplayWebKeys;
 import com.liferay.object.model.ObjectEntry;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.language.Language;
 import com.liferay.portal.kernel.service.UserLocalService;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.WebKeys;
-import com.liferay.site.cmp.site.initializer.internal.display.context.ViewAssigneeSectionDisplayContext;
-import com.liferay.site.cmp.site.initializer.internal.util.ObjectEntryUtil;
+import com.liferay.site.cmp.site.initializer.internal.display.context.ViewProjectSponsorAssigneeSectionDisplayContext;
 
 import jakarta.servlet.http.HttpServletRequest;
 
@@ -23,32 +21,30 @@ import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
 /**
- * @author Igor Franca
+ * @author Pedro Leite
  */
 @Component(service = FragmentRenderer.class)
-public class ViewAssigneeJSPSectionFragmentRenderer
+public class ViewProjectSponsorAssigneeJSPSectionFragmentRenderer
 	extends BaseJSPSectionFragmentRenderer {
 
 	@Override
 	public String getCollectionKey() {
-		return "assignee-field";
+		return "project-sponsor-assignee-field";
 	}
 
 	@Override
 	protected Object getDisplayContext(HttpServletRequest httpServletRequest)
 		throws PortalException {
 
-		ObjectEntry objectEntry = ObjectEntryUtil.getObjectEntry(
-			httpServletRequest);
+		Object object = httpServletRequest.getAttribute(
+			InfoDisplayWebKeys.INFO_ITEM);
 
-		if (objectEntry == null) {
+		if (!(object instanceof ObjectEntry)) {
 			return null;
 		}
 
-		return new ViewAssigneeSectionDisplayContext(
-			_objectFieldBusinessTypeRegistry.getObjectFieldBusinessType(
-				ObjectFieldConstants.BUSINESS_TYPE_ASSIGNEE),
-			_language, objectEntry,
+		return new ViewProjectSponsorAssigneeSectionDisplayContext(
+			_language, (ObjectEntry)object,
 			(ThemeDisplay)httpServletRequest.getAttribute(
 				WebKeys.THEME_DISPLAY),
 			_userLocalService);
@@ -56,19 +52,16 @@ public class ViewAssigneeJSPSectionFragmentRenderer
 
 	@Override
 	protected String getJSPPath() {
-		return "/view_assignee.jsp";
+		return "/view_project_sponsor_assignee.jsp";
 	}
 
 	@Override
 	protected String getLabelKey() {
-		return "assignee-field";
+		return "project-sponsor-assignee-field";
 	}
 
 	@Reference
 	private Language _language;
-
-	@Reference
-	private ObjectFieldBusinessTypeRegistry _objectFieldBusinessTypeRegistry;
 
 	@Reference
 	private UserLocalService _userLocalService;

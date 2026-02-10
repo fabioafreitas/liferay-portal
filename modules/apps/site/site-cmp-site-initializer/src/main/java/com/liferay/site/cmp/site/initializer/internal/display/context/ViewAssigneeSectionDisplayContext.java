@@ -11,6 +11,7 @@ import com.liferay.object.rest.dto.v1_0.Assignee;
 import com.liferay.portal.kernel.json.JSONFactoryUtil;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.language.Language;
+import com.liferay.portal.kernel.service.UserLocalService;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
 
 import java.io.Serializable;
@@ -25,9 +26,10 @@ public class ViewAssigneeSectionDisplayContext
 
 	public ViewAssigneeSectionDisplayContext(
 		ObjectFieldBusinessType assigneeObjectFieldBusinessType,
-		Language language, ObjectEntry objectEntry, ThemeDisplay themeDisplay) {
+		Language language, ObjectEntry objectEntry, ThemeDisplay themeDisplay,
+		UserLocalService userLocalService) {
 
-		super(language, objectEntry, themeDisplay);
+		super(language, objectEntry, themeDisplay, userLocalService);
 
 		_assigneeObjectFieldBusinessType = assigneeObjectFieldBusinessType;
 	}
