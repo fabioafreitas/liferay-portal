@@ -9,7 +9,7 @@ import com.liferay.frontend.data.set.constants.FDSEntityFieldTypes;
 import com.liferay.frontend.data.set.filter.BaseSelectionFDSFilter;
 import com.liferay.frontend.data.set.filter.SelectionFDSFilterItem;
 import com.liferay.portal.kernel.model.User;
-import com.liferay.site.cms.site.initializer.util.UserSelectionFDSFilterUtil;
+import com.liferay.site.cms.site.initializer.util.CMSUserUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -43,7 +43,7 @@ public class ProjectManagerSelectionFDSFilter extends BaseSelectionFDSFilter {
 		List<SelectionFDSFilterItem> selectionFDSFilterItems =
 			new ArrayList<>();
 
-		Set<User> users = UserSelectionFDSFilterUtil.getUsers();
+		Set<User> users = CMSUserUtil.getUsers(null);
 
 		if (users.isEmpty()) {
 			return selectionFDSFilterItems;
