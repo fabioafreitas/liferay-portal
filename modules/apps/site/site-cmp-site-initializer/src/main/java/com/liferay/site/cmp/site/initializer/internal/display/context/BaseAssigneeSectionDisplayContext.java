@@ -1,0 +1,62 @@
+/**
+ * SPDX-FileCopyrightText: (c) 2026 Liferay, Inc. https://liferay.com
+ * SPDX-License-Identifier: LGPL-2.1-or-later OR LicenseRef-Liferay-DXP-EULA-2.0.0-2023-06
+ */
+
+package com.liferay.site.cmp.site.initializer.internal.display.context;
+
+import com.liferay.object.model.ObjectEntry;
+import com.liferay.portal.kernel.json.JSONObject;
+import com.liferay.portal.kernel.language.Language;
+import com.liferay.portal.kernel.theme.ThemeDisplay;
+import com.liferay.portal.kernel.util.HashMapBuilder;
+
+import java.util.Map;
+
+/**
+ * @author Pedro Leite
+ */
+public abstract class BaseAssigneeSectionDisplayContext {
+
+	public BaseAssigneeSectionDisplayContext(
+		Language language, ObjectEntry objectEntry, ThemeDisplay themeDisplay) {
+
+		_language = language;
+
+		this.objectEntry = objectEntry;
+		this.themeDisplay = themeDisplay;
+	}
+
+	public abstract String getLabelKey();
+
+	public abstract String getName();
+
+	public Map<String, Object> getProperties() throws Exception {
+		return HashMapBuilder.<String, Object>put(
+			"label", _language.get(themeDisplay.getLocale(), getLabelKey())
+		).put(
+			"name", getName()
+		).put(
+			"searchURL",
+			themeDisplay.getPortalURL() + "/o/headless-cmp/v1.0/task-assignees/"
+		).put(
+			"triggerClassName", "form-control"
+		).put(
+			"userOnly", getUserOnly()
+		).put(
+			"value", getValueJSONObject()
+		).put(
+			"visible", true
+		).build();
+	}
+
+	public abstract boolean getUserOnly();
+
+	public abstract JSONObject getValueJSONObject() throws Exception;
+
+	protected final ObjectEntry objectEntry;
+	protected final ThemeDisplay themeDisplay;
+
+	private final Language _language;
+
+}
