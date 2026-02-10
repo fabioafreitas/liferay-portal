@@ -15,7 +15,6 @@ import com.liferay.object.service.ObjectStateFlowLocalService;
 import com.liferay.object.service.ObjectStateLocalService;
 import com.liferay.portal.kernel.service.ClassNameLocalService;
 import com.liferay.portal.kernel.service.RoleService;
-import com.liferay.portal.kernel.service.UserLocalService;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.site.cmp.site.initializer.internal.display.context.ViewTasksSectionDisplayContext;
@@ -61,8 +60,7 @@ public class ViewTasksJSPSectionFragmentRenderer
 			_roleService,
 			_objectDefinitionLocalService.
 				fetchObjectDefinitionByExternalReferenceCode(
-					"L_CMP_TASK", themeDisplay.getCompanyId()),
-			_userLocalService);
+					"L_CMP_TASK", themeDisplay.getCompanyId()));
 	}
 
 	@Override
@@ -96,8 +94,5 @@ public class ViewTasksJSPSectionFragmentRenderer
 
 	@Reference
 	private RoleService _roleService;
-
-	@Reference
-	private UserLocalService _userLocalService;
 
 }
