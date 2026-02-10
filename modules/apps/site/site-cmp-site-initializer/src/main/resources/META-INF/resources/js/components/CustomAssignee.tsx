@@ -18,6 +18,7 @@ interface ICustomAssignee {
 	onChange?: (value: AssigneeValue | {}) => void;
 	showLabel?: boolean;
 	triggerClassName?: string;
+	userOnly?: boolean;
 	value: AssigneeValue | {} | null;
 }
 
@@ -26,6 +27,7 @@ export default function CustomAssignee({
 	onChange,
 	showLabel = true,
 	triggerClassName,
+	userOnly,
 	value: initialValue,
 }: ICustomAssignee) {
 	const [value, setValue] = useState<AssigneeValue | null | {}>(initialValue);
@@ -45,6 +47,7 @@ export default function CustomAssignee({
 			showLabel={showLabel}
 			triggerClassName={triggerClassName}
 			triggerComponent={AssigneeTrigger}
+			userOnly={userOnly}
 			value={value}
 			visible={true}
 		/>

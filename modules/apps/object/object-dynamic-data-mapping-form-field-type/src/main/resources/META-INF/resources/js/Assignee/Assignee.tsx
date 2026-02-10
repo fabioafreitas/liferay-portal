@@ -14,6 +14,7 @@ import Option from './Option';
 
 export interface AssigneeValue {
 	externalReferenceCode: string;
+	id?: number;
 	name: string;
 	portrait?: string;
 	type: string;
@@ -35,6 +36,7 @@ interface AssigneeProps {
 	showLabel?: boolean;
 	triggerClassName?: string;
 	triggerComponent?: React.ComponentType<AssigneeTriggerProps>;
+	userOnly?: boolean;
 	value?: AssigneeValue | null | {};
 	visible?: boolean;
 }
@@ -47,6 +49,7 @@ export default function Assignee({
 	searchURL,
 	triggerClassName,
 	triggerComponent: AssigneeTrigger,
+	userOnly,
 	value: initialValue,
 	...otherProps
 }: AssigneeProps) {
@@ -66,6 +69,7 @@ export default function Assignee({
 		resource: {
 			items: {
 				externalReferenceCode: string;
+				id?: number;
 				name: string;
 				portrait?: string;
 				type: string;
@@ -84,6 +88,25 @@ export default function Assignee({
 			[`${portletNamespace ?? ''}search`]: search,
 		},
 	});
+
+	function getValue(
+		userOnly: boolean,
+		value: AssigneeValue | null | {}
+	): string {
+		if (!userOnly) {
+			return JSON.stringify(value);
+		}
+
+		if (!value) {
+			return '0';
+		}
+
+		if (!('id' in value)) {
+			return '0';
+		}
+
+		return String(value.id);
+	}
 
 	const TriggerWrapper = useMemo(() => {
 		if (!AssigneeTrigger) {
@@ -142,6 +165,7 @@ export default function Assignee({
 			>
 				{(item: {
 					externalReferenceCode: string;
+					id?: number;
 					name: string;
 					portrait?: string;
 					type: string;
@@ -156,6 +180,7 @@ export default function Assignee({
 											value: {
 												externalReferenceCode:
 													item.externalReferenceCode,
+												id: item.id,
 												name: item.name,
 												type: item.type,
 											},
@@ -174,7 +199,11 @@ export default function Assignee({
 				}}
 			</Autocomplete>
 
-			<input name={name} type="hidden" value={JSON.stringify(value)} />
+			<input
+				name={name}
+				type="hidden"
+				value={getValue(Boolean(userOnly), value)}
+			/>
 		</FieldBase>
 	);
 }
