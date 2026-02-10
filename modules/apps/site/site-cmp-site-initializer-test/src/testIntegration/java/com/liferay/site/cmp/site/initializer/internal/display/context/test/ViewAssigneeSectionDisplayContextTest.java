@@ -13,7 +13,6 @@ import com.liferay.object.model.ObjectEntry;
 import com.liferay.object.rest.dto.v1_0.Assignee;
 import com.liferay.object.service.ObjectDefinitionLocalService;
 import com.liferay.object.service.ObjectEntryLocalService;
-import com.liferay.portal.kernel.json.JSONFactory;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.json.JSONUtil;
 import com.liferay.portal.kernel.model.ClassName;
@@ -21,29 +20,22 @@ import com.liferay.portal.kernel.model.Role;
 import com.liferay.portal.kernel.model.User;
 import com.liferay.portal.kernel.model.role.RoleConstants;
 import com.liferay.portal.kernel.service.ClassNameLocalService;
-import com.liferay.portal.kernel.service.CompanyLocalService;
 import com.liferay.portal.kernel.service.RoleLocalService;
 import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.service.UserLocalService;
-import com.liferay.portal.kernel.test.ReflectionTestUtil;
 import com.liferay.portal.kernel.test.rule.AggregateTestRule;
 import com.liferay.portal.kernel.test.rule.Sync;
 import com.liferay.portal.kernel.test.util.RandomTestUtil;
 import com.liferay.portal.kernel.test.util.ServiceContextTestUtil;
 import com.liferay.portal.kernel.test.util.TestPropsValues;
 import com.liferay.portal.kernel.test.util.UserTestUtil;
-import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.HashMapBuilder;
-import com.liferay.portal.kernel.util.LocaleUtil;
-import com.liferay.portal.kernel.util.Portal;
-import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
 import com.liferay.portal.test.rule.FeatureFlag;
 import com.liferay.portal.test.rule.FeatureFlags;
 import com.liferay.portal.test.rule.Inject;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 import com.liferay.portal.test.rule.PermissionCheckerMethodTestRule;
-import com.liferay.site.cmp.site.initializer.test.util.CMPTestUtil;
 
 import jakarta.servlet.http.HttpServletRequest;
 
@@ -60,7 +52,6 @@ import org.junit.runner.RunWith;
 
 import org.skyscreamer.jsonassert.JSONAssert;
 
-import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 
 /**
@@ -71,7 +62,8 @@ import org.springframework.mock.web.MockHttpServletResponse;
 )
 @RunWith(Arquillian.class)
 @Sync
-public class ViewAssigneeSectionDisplayContextTest {
+public class ViewAssigneeSectionDisplayContextTest
+	extends BaseAssigneeSectionDisplayContextTestCase {
 
 	@ClassRule
 	@Rule
@@ -82,9 +74,7 @@ public class ViewAssigneeSectionDisplayContextTest {
 
 	@Before
 	public void setUp() throws Exception {
-		CMPTestUtil.getOrAddGroup(ViewAssigneeSectionDisplayContextTest.class);
-
-		ObjectEntry projectObjectEntry = CMPTestUtil.addProjectObjectEntry();
+		super.setUp();
 
 		ObjectDefinition taskObjectDefinition =
 			_objectDefinitionLocalService.
@@ -107,34 +97,20 @@ public class ViewAssigneeSectionDisplayContextTest {
 			).build(),
 			serviceContext);
 
-		_httpServletRequest = new MockHttpServletRequest();
-
-		_httpServletRequest.setAttribute(
+		httpServletRequest.setAttribute(
 			InfoDisplayWebKeys.INFO_ITEM, _taskObjectEntry);
-
-		_themeDisplay = new ThemeDisplay() {
-			{
-				setCompany(
-					_companyLocalService.fetchCompany(
-						TestPropsValues.getCompanyId()));
-				setLocale(LocaleUtil.US);
-				setPathImage(_portal.getPathImage());
-				setScopeGroupId(TestPropsValues.getGroupId());
-			}
-		};
-
-		_httpServletRequest.setAttribute(WebKeys.THEME_DISPLAY, _themeDisplay);
 	}
 
 	@Test
 	public void testGetProperties() throws Exception {
-		Map<String, Object> properties = _getProperties();
+		Map<String, Object> properties = getProperties();
 
 		Assert.assertEquals("Assignee", properties.get("label"));
 		Assert.assertEquals("ObjectField_assignTo", properties.get("name"));
 		Assert.assertEquals(
 			"/o/headless-cmp/v1.0/task-assignees/",
 			properties.get("searchURL"));
+		Assert.assertFalse((Boolean)properties.get("userOnly"));
 		Assert.assertTrue((Boolean)properties.get("visible"));
 
 		ClassName className = _classNameLocalService.getClassName(
@@ -158,7 +134,20 @@ public class ViewAssigneeSectionDisplayContextTest {
 		_assertAssigneeFieldValue(
 			className.getClassNameId(), user.getUserId(),
 			user.getExternalReferenceCode(), user.getFullName(),
-			user.getPortraitURL(_themeDisplay), Assignee.Type.USER.toString());
+			user.getPortraitURL(themeDisplay), Assignee.Type.USER.toString());
+	}
+
+	@Override
+	protected Object getSectionDisplayContext(
+			HttpServletRequest httpServletRequest)
+		throws Exception {
+
+		_fragmentRenderer.render(
+			null, httpServletRequest, new MockHttpServletResponse());
+
+		return httpServletRequest.getAttribute(
+			"com.liferay.site.cmp.site.initializer.internal.display.context." +
+				"ViewAssigneeSectionDisplayContext");
 	}
 
 	private void _assertAssigneeFieldValue(
@@ -180,11 +169,11 @@ public class ViewAssigneeSectionDisplayContextTest {
 			).build(),
 			ServiceContextTestUtil.getServiceContext());
 
-		_httpServletRequest.setAttribute(
+		httpServletRequest.setAttribute(
 			InfoDisplayWebKeys.INFO_ITEM, _taskObjectEntry);
 
-		JSONObject jsonObject = _jsonFactory.createJSONObject(
-			_jsonFactory.looseSerializeDeep(_getProperties()));
+		JSONObject jsonObject = jsonFactory.createJSONObject(
+			jsonFactory.looseSerializeDeep(getProperties()));
 
 		JSONAssert.assertEquals(
 			JSONUtil.put(
@@ -199,32 +188,13 @@ public class ViewAssigneeSectionDisplayContextTest {
 			String.valueOf(jsonObject.getJSONObject("value")), true);
 	}
 
-	private Map<String, Object> _getProperties() throws Exception {
-		_fragmentRenderer.render(
-			null, _httpServletRequest, new MockHttpServletResponse());
-
-		return ReflectionTestUtil.invoke(
-			_httpServletRequest.getAttribute(
-				"com.liferay.site.cmp.site.initializer.internal.display." +
-					"context.ViewAssigneeSectionDisplayContext"),
-			"getProperties", new Class<?>[0]);
-	}
-
 	@Inject
 	private ClassNameLocalService _classNameLocalService;
-
-	@Inject
-	private CompanyLocalService _companyLocalService;
 
 	@Inject(
 		filter = "component.name=com.liferay.site.cmp.site.initializer.internal.fragment.renderer.ViewAssigneeJSPSectionFragmentRenderer"
 	)
 	private FragmentRenderer _fragmentRenderer;
-
-	private HttpServletRequest _httpServletRequest;
-
-	@Inject
-	private JSONFactory _jsonFactory;
 
 	@Inject
 	private ObjectDefinitionLocalService _objectDefinitionLocalService;
@@ -233,13 +203,9 @@ public class ViewAssigneeSectionDisplayContextTest {
 	private ObjectEntryLocalService _objectEntryLocalService;
 
 	@Inject
-	private Portal _portal;
-
-	@Inject
 	private RoleLocalService _roleLocalService;
 
 	private ObjectEntry _taskObjectEntry;
-	private ThemeDisplay _themeDisplay;
 
 	@Inject
 	private UserLocalService _userLocalService;
