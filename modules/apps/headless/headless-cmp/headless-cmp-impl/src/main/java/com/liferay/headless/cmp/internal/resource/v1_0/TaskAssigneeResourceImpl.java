@@ -19,8 +19,12 @@ import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.ListUtil;
 import com.liferay.portal.kernel.util.Portal;
 import com.liferay.portal.kernel.util.StringUtil;
+import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.vulcan.pagination.Page;
 import com.liferay.site.cms.site.initializer.util.CMSUserUtil;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -36,9 +40,11 @@ import org.osgi.service.component.annotations.ServiceScope;
 public class TaskAssigneeResourceImpl extends BaseTaskAssigneeResourceImpl {
 
 	@Override
-	public Page<TaskAssignee> getTaskAssigneesPage(String search) {
-		return Page.of(
-			ListUtil.concat(
+	public Page<TaskAssignee> getTaskAssigneesPage(String search, String type) {
+		List<TaskAssignee> taskAssignees = new ArrayList<>();
+
+		if (Validator.isNull(type) || StringUtil.contains(type, "Role")) {
+			taskAssignees.addAll(
 				transform(
 					ListUtil.filter(
 						_roleService.search(
@@ -49,9 +55,15 @@ public class TaskAssigneeResourceImpl extends BaseTaskAssigneeResourceImpl {
 							DepotRolesConstants.
 								ASSET_LIBRARY_CONNECTED_SITE_MEMBER,
 							role.getName())),
-					this::_toTaskAssignee),
-				transform(
-					CMSUserUtil.getUsers(search), this::_toTaskAssignee)));
+					this::_toTaskAssignee));
+		}
+
+		if (Validator.isNull(type) || StringUtil.contains(type, "User")) {
+			taskAssignees.addAll(
+				transform(CMSUserUtil.getUsers(search), this::_toTaskAssignee));
+		}
+
+		return Page.of(taskAssignees);
 	}
 
 	private TaskAssignee _toTaskAssignee(Role role) {
