@@ -26,6 +26,7 @@ import com.liferay.portal.test.rule.Inject;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 import com.liferay.portal.test.rule.PermissionCheckerMethodTestRule;
 
+import org.junit.Assert;
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
@@ -66,7 +67,7 @@ public class TaskAssigneeResourceTest extends BaseTaskAssigneeResourceTestCase {
 			ServiceContextTestUtil.getServiceContext());
 
 		Page<TaskAssignee> page = taskAssigneeResource.getTaskAssigneesPage(
-			"Custom");
+			"Custom", null);
 
 		assertEquals(
 			new TaskAssignee() {
@@ -78,7 +79,7 @@ public class TaskAssigneeResourceTest extends BaseTaskAssigneeResourceTestCase {
 			},
 			page.fetchFirstItem());
 
-		page = taskAssigneeResource.getTaskAssigneesPage("Doe");
+		page = taskAssigneeResource.getTaskAssigneesPage("Doe", null);
 
 		assertEquals(
 			new TaskAssignee() {
@@ -90,7 +91,7 @@ public class TaskAssigneeResourceTest extends BaseTaskAssigneeResourceTestCase {
 			},
 			page.fetchFirstItem());
 
-		page = taskAssigneeResource.getTaskAssigneesPage("John");
+		page = taskAssigneeResource.getTaskAssigneesPage("John", null);
 
 		assertEquals(
 			new TaskAssignee() {
@@ -101,10 +102,24 @@ public class TaskAssigneeResourceTest extends BaseTaskAssigneeResourceTestCase {
 				}
 			},
 			page.fetchFirstItem());
+
+		_assertAssigneeType(
+			taskAssigneeResource.getTaskAssigneesPage(null, "User"), "User");
+
+		_assertAssigneeType(
+			taskAssigneeResource.getTaskAssigneesPage(null, "Role"), "Role");
 	}
 
 	protected String[] getAdditionalAssertFieldNames() {
 		return new String[] {"externalReferenceCode", "name", "type"};
+	}
+
+	private void _assertAssigneeType(
+		Page<TaskAssignee> page, String expectedType) {
+
+		for (TaskAssignee taskAssignee : page.getItems()) {
+			Assert.assertEquals(expectedType, taskAssignee.getType());
+		}
 	}
 
 	@Inject
