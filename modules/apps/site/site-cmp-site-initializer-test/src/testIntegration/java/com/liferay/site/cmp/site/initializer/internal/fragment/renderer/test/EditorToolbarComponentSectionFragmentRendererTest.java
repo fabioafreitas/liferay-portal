@@ -93,14 +93,8 @@ public class EditorToolbarComponentSectionFragmentRendererTest
 
 		Assert.assertEquals(
 			"/redirect-url", MapUtil.getString(getProps(), "backURL"));
-		Assert.assertEquals(
-			StringBundler.concat(
-				themeDisplay.getPathFriendlyURLPublic(),
-				GroupConstants.CMS_FRIENDLY_URL, "/e/task/",
-				PortalUtil.getClassNameId(taskObjectDefinition.getClassName()),
-				StringPool.SLASH, taskObjectEntry.getObjectEntryId()),
-			MapUtil.getString(getProps(), "formSubmitURL"));
 		Assert.assertEquals("New Task", MapUtil.getString(getProps(), "title"));
+		Assert.assertNull(MapUtil.getString(getProps(), "formSubmitURL"));
 
 		mockHttpServletRequest.setParameter("action", "createGlobalTask");
 
