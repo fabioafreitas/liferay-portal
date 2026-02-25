@@ -9,18 +9,49 @@ import {dataApiHelpersTest} from '../../../fixtures/dataApiHelpersTest';
 import {featureFlagsTest} from '../../../fixtures/featureFlagsTest';
 import {loginTest} from '../../../fixtures/loginTest';
 import getRandomString from '../../../utils/getRandomString';
+import {featureFlagPagesTest} from '../../feature-flag-web/main/fixtures/featureFlagPagesTest';
 import {cmsPagesTest} from '../../site-cms-site-initializer/main/fixtures/cmsPagesTest';
 
 const test = mergeTests(
 	cmsPagesTest,
 	dataApiHelpersTest,
+	featureFlagPagesTest,
 	featureFlagsTest({
 		'LPD-11235': {enabled: true},
 		'LPD-17564': {enabled: true},
-		'LPD-58677': {enabled: true},
+		'LPD-34594': {enabled: true},
 	}),
-	loginTest()
+	loginTest()	
 );
+
+let spaceId: string;
+
+test.beforeEach('Manually enable CMP Feature Flag due to CMS dependency', async ({apiHelpers, homePage, page}) => {
+	await apiHelpers.featureFlag.updateFeatureFlag('LPD-58677', true);
+
+	spaceId = await apiHelpers.headlessAssetLibrary.createAssetLibrary(
+			{
+				name: `Space ${getRandomString()}`,
+				settings: {},
+				type: 'Space',
+			}
+		).then((response) => response.id);
+	
+	await homePage.goto();
+
+	while (
+		!(await page.getByText('Planning').isVisible())
+	) {
+		await page.reload();
+	}
+	
+});
+
+test.afterEach('Manually disable CMP Feature Flag', async ({apiHelpers}) => {
+	await apiHelpers.featureFlag.updateFeatureFlag('LPD-58677', false);
+
+	await apiHelpers.headlessAssetLibrary.deleteAssetLibrary(spaceId);
+});
 
 test(
 	'Bulk update the due date of an task',
@@ -223,10 +254,12 @@ test(
 
 				await page
 					.getByPlaceholder('Unassigned')
-					.fill('Publications Viewer');
+					.fill('Asset Library Content Reviewer');
 
 				await page
-					.getByRole('option', {name: 'Publications Viewer'})
+					.getByRole('option', {
+						name: 'Asset Library Content Reviewer',
+					})
 					.click();
 
 				await tasksPage.saveButton.click();
@@ -235,7 +268,9 @@ test(
 					await tasksPage.goto();
 
 					await expect(
-						page.getByRole('row', {name: 'Publications Viewer'})
+						page.getByRole('row', {
+							name: 'Asset Library Content Reviewer',
+						})
 					).toHaveCount(2, {timeout: 1000});
 				}).toPass({timeout: 10000});
 			});
