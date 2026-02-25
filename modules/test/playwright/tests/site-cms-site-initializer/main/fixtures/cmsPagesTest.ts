@@ -5,6 +5,7 @@
 
 import {test} from '@playwright/test';
 
+import {TasksPage} from '../../../site-cmp-site-initializer/main/pages/TasksPage';
 import {AssetsPage} from '../pages/AssetsPage';
 import {ContentsPage} from '../pages/ContentsPage';
 import {EditVocabularyPage} from '../pages/EditVocabularyPage';
@@ -17,7 +18,6 @@ import {SharedWithMePage} from '../pages/SharedWithMePage';
 import {SpaceSummaryPage} from '../pages/SpaceSummaryPage';
 import {StructuresPage} from '../pages/StructuresPage';
 import {TagsPage} from '../pages/TagsPage';
-import {TasksPage} from '../pages/TasksPage';
 import {VocabulariesPage} from '../pages/VocabulariesPage';
 
 const cmsPagesTest = test.extend<{
