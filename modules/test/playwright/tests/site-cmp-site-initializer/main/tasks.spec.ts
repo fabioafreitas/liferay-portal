@@ -1,23 +1,27 @@
 /**
- * SPDX-FileCopyrightText: (c) 2025 Liferay, Inc. https://liferay.com
+ * SPDX-FileCopyrightText: (c) 2026 Liferay, Inc. https://liferay.com
  * SPDX-License-Identifier: LGPL-2.1-or-later OR LicenseRef-Liferay-DXP-EULA-2.0.0-2023-06
  */
 
 import {expect, mergeTests} from '@playwright/test';
 
-import {dataApiHelpersTest} from '../../../../fixtures/dataApiHelpersTest';
-import {featureFlagsTest} from '../../../../fixtures/featureFlagsTest';
-import {loginTest} from '../../../../fixtures/loginTest';
-import getRandomString from '../../../../utils/getRandomString';
-import {cmsPagesTest} from '../fixtures/cmsPagesTest';
+import {dataApiHelpersTest} from '../../../fixtures/dataApiHelpersTest';
+import {featureFlagsTest} from '../../../fixtures/featureFlagsTest';
+import {loginTest} from '../../../fixtures/loginTest';
+import getRandomString from '../../../utils/getRandomString';
+import {cmsPagesTest} from '../../site-cms-site-initializer/main/fixtures/cmsPagesTest';
+import {cmpPagesTest} from './fixtures/cmpPagesTest';
+import {cmpSetupTest} from './fixtures/cmpSetupTest';
 
 const test = mergeTests(
+	cmpPagesTest,
+	cmpSetupTest,
 	cmsPagesTest,
 	dataApiHelpersTest,
 	featureFlagsTest({
 		'LPD-11235': {enabled: true},
 		'LPD-17564': {enabled: true},
-		'LPD-58677': {enabled: true},
+		'LPD-34594': {enabled: true},
 	}),
 	loginTest()
 );
@@ -223,10 +227,12 @@ test(
 
 				await page
 					.getByPlaceholder('Unassigned')
-					.fill('Publications Viewer');
+					.fill('Asset Library Content Reviewer');
 
 				await page
-					.getByRole('option', {name: 'Publications Viewer'})
+					.getByRole('option', {
+						name: 'Asset Library Content Reviewer',
+					})
 					.click();
 
 				await tasksPage.saveButton.click();
@@ -235,7 +241,9 @@ test(
 					await tasksPage.goto();
 
 					await expect(
-						page.getByRole('row', {name: 'Publications Viewer'})
+						page.getByRole('row', {
+							name: 'Asset Library Content Reviewer',
+						})
 					).toHaveCount(2, {timeout: 1000});
 				}).toPass({timeout: 10000});
 			});
