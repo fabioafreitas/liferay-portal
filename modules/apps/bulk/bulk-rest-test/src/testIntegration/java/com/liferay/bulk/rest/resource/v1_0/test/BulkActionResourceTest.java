@@ -12,6 +12,7 @@ import com.liferay.asset.kernel.service.AssetCategoryLocalService;
 import com.liferay.asset.kernel.service.AssetTagLocalService;
 import com.liferay.asset.kernel.service.AssetVocabularyLocalService;
 import com.liferay.bulk.rest.client.dto.v1_0.AssignStructureDefaultWorkflowBulkAction;
+import com.liferay.bulk.rest.client.dto.v1_0.AssignToBulkAction;
 import com.liferay.bulk.rest.client.dto.v1_0.BulkAction;
 import com.liferay.bulk.rest.client.dto.v1_0.BulkActionItem;
 import com.liferay.bulk.rest.client.dto.v1_0.BulkActionTask;
@@ -66,6 +67,8 @@ import com.liferay.portal.kernel.json.JSONFactory;
 import com.liferay.portal.kernel.json.JSONFactoryUtil;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.json.JSONUtil;
+import com.liferay.portal.kernel.log.Log;
+import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.model.ResourceConstants;
 import com.liferay.portal.kernel.model.ResourcePermission;
@@ -73,6 +76,7 @@ import com.liferay.portal.kernel.model.Role;
 import com.liferay.portal.kernel.model.User;
 import com.liferay.portal.kernel.model.WorkflowDefinitionLink;
 import com.liferay.portal.kernel.model.role.RoleConstants;
+import com.liferay.portal.kernel.module.util.SystemBundleUtil;
 import com.liferay.portal.kernel.security.permission.ActionKeys;
 import com.liferay.portal.kernel.service.ResourcePermissionLocalService;
 import com.liferay.portal.kernel.service.RoleLocalService;
@@ -122,6 +126,10 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.osgi.framework.Bundle;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.BundleException;
+
 /**
  * @author Alejandro Tardín
  */
@@ -169,6 +177,7 @@ public class BulkActionResourceTest extends BaseBulkActionResourceTestCase {
 	@Test
 	public void testPostBulkAction() throws Exception {
 		_testPostBulkActionWithTypeAssignStructureDefaultWorkflow();
+		_testPostBulkActionWithTypeAssignToBulkAction();
 		_testPostBulkActionWithTypeCopy();
 		_testPostBulkActionWithTypeDefaultPermission();
 		_testPostBulkActionWithTypeDefaultPermissionSingleRole();
@@ -657,6 +666,48 @@ public class BulkActionResourceTest extends BaseBulkActionResourceTestCase {
 				_cmsBulkActionTaskObjectDefinition.getClassName());
 
 		Assert.assertTrue(workflowDefinitionLinks.isEmpty());
+	}
+
+	private void _testPostBulkActionWithTypeAssignToBulkAction()
+		throws Exception {
+
+		AssignToBulkAction bulkAction = new AssignToBulkAction();
+
+		bulkAction.setBulkActionItems(
+			new BulkActionItem[] {new BulkActionItem()});
+		bulkAction.setType(BulkAction.Type.ASSIGN_TO_BULK_ACTION);
+
+		Map<Bundle, Integer> bundlesMap = new HashMap<>();
+
+		try {
+			for (Bundle bundle : _bundleContext.getBundles()) {
+				if (ArrayUtil.contains(
+						_CMP_BUNDLE_SYMBOLIC_NAMES, bundle.getSymbolicName())) {
+
+					bundlesMap.put(bundle, bundle.getState());
+
+					bundle.stop();
+				}
+			}
+
+			assertHttpResponseStatusCode(
+				400,
+				bulkActionResource.postBulkActionHttpResponse(
+					null, null, null, null, null, null, null, null,
+					bulkAction));
+		}
+		catch (BundleException bundleException) {
+			_log.error(bundleException);
+		}
+		finally {
+			for (Map.Entry<Bundle, Integer> entry : bundlesMap.entrySet()) {
+				if (entry.getValue() == Bundle.ACTIVE) {
+					Bundle bundle = entry.getKey();
+
+					bundle.start();
+				}
+			}
+		}
 	}
 
 	private void _testPostBulkActionWithTypeCopy() throws Exception {
@@ -1942,7 +1993,20 @@ public class BulkActionResourceTest extends BaseBulkActionResourceTestCase {
 		}
 	}
 
+	private static final String[] _CMP_BUNDLE_SYMBOLIC_NAMES = {
+		"com.liferay.headless.cmp.api", "com.liferay.headless.cmp.client",
+		"com.liferay.headless.cmp.impl",
+		"com.liferay.site.cmp.site.initializer",
+		"com.liferay.site.initializer.cmp"
+	};
+
 	private static final String _LANGUAGE_ID = "en_US";
+
+	private static final Log _log = LogFactoryUtil.getLog(
+		BulkActionResourceTest.class);
+
+	private static final BundleContext _bundleContext =
+		SystemBundleUtil.getBundleContext();
 
 	@Inject
 	private AssetCategoryLocalService _assetCategoryLocalService;
