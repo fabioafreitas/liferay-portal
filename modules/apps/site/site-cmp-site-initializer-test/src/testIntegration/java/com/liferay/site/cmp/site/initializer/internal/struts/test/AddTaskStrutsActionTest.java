@@ -70,6 +70,11 @@ public class AddTaskStrutsActionTest {
 	}
 
 	@Test
+	public void testDummy() {
+		Assert.assertTrue(true);
+	}
+
+	@Test
 	public void testExecute() throws Exception {
 		MockHttpServletRequest mockHttpServletRequest =
 			new MockHttpServletRequest();

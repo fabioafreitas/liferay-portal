@@ -9,6 +9,10 @@ import React from 'react';
 
 import ProjectSelector from '../../js/components/ProjectSelector';
 
+describe('TestDummy', () => {
+	expect(true).toBe(true);
+});
+
 describe('ProjectSelector', () => {
 	it('renders picker with items and shows selected project', () => {
 		render(

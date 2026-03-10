@@ -44,6 +44,11 @@ public class TaskAssigneeResourceTest extends BaseTaskAssigneeResourceTestCase {
 			new LiferayIntegrationTestRule(),
 			PermissionCheckerMethodTestRule.INSTANCE);
 
+	@Test
+	public void testDummy() {
+		Assert.assertTrue(true);
+	}
+
 	@Override
 	@Test
 	public void testGetTaskAssigneesPage() throws Exception {

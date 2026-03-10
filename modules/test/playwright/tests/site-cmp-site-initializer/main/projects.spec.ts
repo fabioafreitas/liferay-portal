@@ -22,6 +22,10 @@ const test = mergeTests(
 	loginTest()
 );
 
+test('TestDummy', async ({projectsPage}) => {
+	await expect(projectsPage).toBeDefined();
+});
+
 test(
 	'Project view tab navigation',
 	{tag: ['@LPD-77908']},
