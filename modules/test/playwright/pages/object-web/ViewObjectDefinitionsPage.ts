@@ -20,7 +20,10 @@ export class ViewObjectDefinitionsPage {
 	readonly deleteObjectDefinitionOption: Locator;
 	readonly deleteObjectFolderButton: Locator;
 	readonly exportObjectDefinitionOption: Locator;
+	readonly externalReferenceCodeInput: Locator;
 	readonly frontendDataSetEntries: Locator;
+	readonly hiddenFileInput: Locator;
+	readonly importObjectDefinitionOption: Locator;
 	readonly objectFolderActions: Locator;
 	readonly objectFolderCardHeader: Locator;
 	readonly objectFolderDeleteFolderOption: Locator;
@@ -28,6 +31,7 @@ export class ViewObjectDefinitionsPage {
 	readonly objectFolders: Locator;
 	readonly objectFolderLabelInput: Locator;
 	readonly page: Page;
+	readonly searchInput: Locator;
 	readonly viewInModelBuilderButton: Locator;
 
 	constructor(page: Page) {
@@ -54,7 +58,14 @@ export class ViewObjectDefinitionsPage {
 		this.exportObjectDefinitionOption = page.getByRole('menuitem', {
 			name: 'Export Object Definition',
 		});
+		this.externalReferenceCodeInput = page.getByRole('textbox', {
+			name: 'External Reference Code',
+		});
 		this.frontendDataSetEntries = page.locator('div.table-list-title a');
+		this.hiddenFileInput = page.locator('input[type="file"]');
+		this.importObjectDefinitionOption = page.getByRole('menuitem', {
+			name: 'Import Object Definition',
+		});
 		this.objectFolders = page
 			.getByRole('list')
 			.filter({hasText: 'Default'});
@@ -72,6 +83,7 @@ export class ViewObjectDefinitionsPage {
 		});
 		this.objectFolderLabelInput = page.locator('input[name="label"]');
 		this.page = page;
+		this.searchInput = page.getByPlaceholder('Search');
 		this.viewInModelBuilderButton = page.getByLabel(
 			'View in Model Builder'
 		);
