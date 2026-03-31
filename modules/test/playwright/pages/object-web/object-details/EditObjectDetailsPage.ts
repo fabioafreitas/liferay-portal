@@ -33,6 +33,9 @@ export class EditObjectDetailsPage {
 			name: 'Label Mandatory',
 		});
 		this.page = page;
+		this.pluralLabelFormGroup = page.locator('.form-group', {
+			has: page.getByLabel('Plural Label'),
+		});
 		this.publishButton = page.getByRole('button', {
 			exact: true,
 			name: 'Publish',

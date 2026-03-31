@@ -1139,14 +1139,10 @@ test.describe('Manage object definitions through View Object Definitions', () =>
 
 			await editObjectDetailsPage.saveButton.click();
 
-			const pluralLabelFormGroup = page.locator('.form-group', {
-				has: page.getByLabel('Plural Label'),
-			});
-
-			await expect(pluralLabelFormGroup).toHaveClass(/has-error/);
+			await expect(editObjectDetailsPage.pluralLabelFormGroup).toHaveClass(/has-error/);
 
 			await expect(
-				pluralLabelFormGroup.locator('.form-feedback-item')
+				editObjectDetailsPage.pluralLabelFormGroup.locator('.form-feedback-item')
 			).toHaveText('Required');
 		}
 		finally {

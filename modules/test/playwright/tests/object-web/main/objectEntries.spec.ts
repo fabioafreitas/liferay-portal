@@ -1980,6 +1980,7 @@ test.describe('Manage object entries through View Object Entries', () => {
 				'Attachment',
 				'Boolean',
 				'Date',
+				'DateTime',
 				'Decimal',
 				'Integer',
 				'LongInteger',
@@ -2534,7 +2535,7 @@ test.describe('Manage object entries through View Object Entries', () => {
 						{
 							name: 'timeStorage',
 							value: 'useInputAsEntered',
-						} as any,
+						},
 					],
 				},
 			],
@@ -2557,7 +2558,7 @@ test.describe('Manage object entries through View Object Entries', () => {
 			objectDefinition.label['en_US']
 		);
 
-		const date = new Date('2023-06-01 12:00');
+		const date = new Date(2023, 5, 1, 12, 0, 0);
 
 		await viewObjectEntriesPage.fillObjectEntry({
 			objectFieldLabel: objectFields[0].label['en_US'],
@@ -2851,7 +2852,7 @@ test.describe('Manage object entries through View Object Entries', () => {
 
 		await waitForAlert(
 			page,
-			'Error:The textField is already in use. Please enter a unique textField.',
+			`Error:The ${objectFieldLabel} is already in use. Please enter a unique ${objectFieldLabel}.`,
 			{type: 'danger'}
 		);
 	});
@@ -2919,7 +2920,7 @@ test.describe('Manage object entries through View Object Entries', () => {
 
 		await waitForAlert(
 			page,
-			'Error:The integerField is already in use. Please enter a unique integerField.',
+			`Error:The ${objectFieldLabel} is already in use. Please enter a unique ${objectFieldLabel}.`,
 			{type: 'danger'}
 		);
 	});
@@ -3030,7 +3031,7 @@ test.describe('Manage object entries through View Object Entries', () => {
 
 		await viewObjectEntriesPage.frontendDatasetItems.first().click();
 
-		const date = new Date('2024-07-02 10:00');
+		const date = new Date(2024, 6, 2, 10, 0, 0);
 
 		const objectFieldLabel = page.getByLabel(
 			objectFields[0].label['en_US']
@@ -3086,12 +3087,13 @@ test.describe('Manage object entries through View Object Entries', () => {
 		await viewObjectEntriesPage.clickAddObjectEntry(
 			objectDefinition.label['en_US']
 		);
+		
+		const autoIncrementFieldName = objectFields[1].name;
 
 		const autoIncrementInput = page
-			.locator('[data-field-reference^="autoincrement"]')
-			.locator('input.form-control');
+				.locator(`[data-field-name="${autoIncrementFieldName}"] .form-control`);
 
-		await expect(autoIncrementInput).not.toBeVisible();
+		await expect(autoIncrementInput).toBeHidden();
 
 		await viewObjectEntriesPage.saveObjectEntryButton.click();
 
