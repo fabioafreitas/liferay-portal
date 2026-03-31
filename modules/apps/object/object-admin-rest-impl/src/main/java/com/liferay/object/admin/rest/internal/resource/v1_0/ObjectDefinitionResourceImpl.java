@@ -37,6 +37,7 @@ import com.liferay.object.constants.ObjectDefinitionConstants;
 import com.liferay.object.constants.ObjectFieldConstants;
 import com.liferay.object.constants.ObjectPortletKeys;
 import com.liferay.object.constants.ObjectRelationshipConstants;
+import com.liferay.object.definition.util.ObjectDefinitionThreadLocal;
 import com.liferay.object.definition.util.ObjectDefinitionUtil;
 import com.liferay.object.definition.util.ObjectDefinitionValidationThreadLocal;
 import com.liferay.object.exception.ObjectDefinitionStatusException;
@@ -1000,47 +1001,59 @@ public class ObjectDefinitionResourceImpl
 		throws Exception {
 
 		if (objectActions != null) {
-			ObjectActionResource.Builder builder =
-				_objectActionResourceFactory.create();
+			try (SafeCloseable safeCloseable =
+					ObjectDefinitionThreadLocal.
+						setSkipBundleAllowedCheckWithSafeCloseable(true)) {
 
-			ObjectActionResource objectActionResource = builder.user(
-				contextUser
-			).build();
+				ObjectActionResource.Builder builder =
+					_objectActionResourceFactory.create();
 
-			for (ObjectAction objectAction : objectActions) {
-				com.liferay.object.model.ObjectAction
-					serviceBuilderObjectAction =
-						_objectActionLocalService.fetchObjectAction(
-							objectAction.getExternalReferenceCode(),
-							objectDefinitionId);
+				ObjectActionResource objectActionResource = builder.user(
+					contextUser
+				).build();
 
-				if (serviceBuilderObjectAction != null) {
-					if (FeatureFlagManagerUtil.isEnabled(
-							contextCompany.getCompanyId(), "LPD-17564") &&
-						ArrayUtil.contains(
-							ObjectActionConstants.
-								getSubscriptionObjectActionNames(),
-							objectAction.getName())) {
+				for (ObjectAction objectAction : objectActions) {
+					com.liferay.object.model.ObjectAction
+						serviceBuilderObjectAction =
+							_objectActionLocalService.fetchObjectAction(
+								objectAction.getExternalReferenceCode(),
+								objectDefinitionId);
 
-						objectAction.setActive(
-							serviceBuilderObjectAction::isActive);
+					if (serviceBuilderObjectAction == null) {
+						serviceBuilderObjectAction =
+							_objectActionLocalService.fetchObjectAction(
+								objectDefinitionId, objectAction.getName());
 					}
 
-					objectActionResource.putObjectAction(
-						serviceBuilderObjectAction.getObjectActionId(),
-						objectAction);
+					if (serviceBuilderObjectAction != null) {
+						if (FeatureFlagManagerUtil.isEnabled(
+								contextCompany.getCompanyId(), "LPD-17564") &&
+							ArrayUtil.contains(
+								ObjectActionConstants.
+									getSubscriptionObjectActionNames(),
+								objectAction.getName())) {
 
-					continue;
+							objectAction.setActive(
+								serviceBuilderObjectAction::isActive);
+						}
+
+						objectActionResource.putObjectAction(
+							serviceBuilderObjectAction.getObjectActionId(),
+							objectAction);
+
+						continue;
+					}
+
+					Map<String, String> i18nMap = objectAction.getLabel();
+
+					objectAction.setLabel(
+						() -> LocalizedMapUtil.populateI18nMap(
+							defaultLanguageId, i18nMap,
+							objectAction.getName()));
+
+					objectActionResource.postObjectDefinitionObjectAction(
+						objectDefinitionId, objectAction);
 				}
-
-				Map<String, String> i18nMap = objectAction.getLabel();
-
-				objectAction.setLabel(
-					() -> LocalizedMapUtil.populateI18nMap(
-						defaultLanguageId, i18nMap, objectAction.getName()));
-
-				objectActionResource.postObjectDefinitionObjectAction(
-					objectDefinitionId, objectAction);
 			}
 		}
 
