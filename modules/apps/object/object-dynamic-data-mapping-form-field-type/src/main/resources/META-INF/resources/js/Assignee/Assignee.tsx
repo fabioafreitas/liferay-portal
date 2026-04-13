@@ -120,6 +120,7 @@ export default function Assignee({
 				aria-label={label}
 				disabled={readOnly}
 				filterKey="name"
+				id={name}
 				items={resource?.items ?? []}
 				loadingState={networkStatus}
 				menuTrigger="focus"
