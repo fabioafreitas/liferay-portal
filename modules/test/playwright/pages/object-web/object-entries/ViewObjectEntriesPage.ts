@@ -189,13 +189,53 @@ export class ViewObjectEntriesPage {
 	async fillObjectEntry({
 		objectFieldBusinessType,
 		objectFieldLabel,
+		objectFieldName,
 		objectFieldValue,
 	}: {
 		objectFieldBusinessType?: ObjectField['businessType'];
 		objectFieldLabel?: string;
+		objectFieldName?: string;
 		objectFieldValue: string;
 	}) {
-		if (objectFieldBusinessType === 'RichText') {
+		if (objectFieldBusinessType === 'Assignee') {
+			await this.page
+				.getByLabel(objectFieldLabel, {exact: true})
+				.fill(objectFieldValue);
+
+			await this.page
+				.getByRole('option', {name: objectFieldValue})
+				.click();
+
+			return;
+		}
+		else if (objectFieldBusinessType === 'Boolean') {
+			await this.page
+				.getByLabel(objectFieldLabel, {exact: true})
+				.setChecked(objectFieldValue === 'true');
+
+			return;
+		}
+		else if (objectFieldBusinessType === 'MultiselectPicklist') {
+			await this.page
+				.locator(`[data-field-name="${objectFieldName}"] .form-control`)
+				.click();
+
+			await this.page
+				.getByRole('option', {name: objectFieldValue})
+				.click();
+
+			return;
+		}
+		else if (objectFieldBusinessType === 'Picklist') {
+			await this.page.getByLabel(objectFieldLabel, {exact: true}).click();
+
+			await this.page
+				.getByRole('option', {name: objectFieldValue as string})
+				.click();
+
+			return;
+		}
+		else if (objectFieldBusinessType === 'RichText') {
 			await this.page.waitForSelector('iframe');
 
 			const richTextInput = this.page
@@ -207,7 +247,7 @@ export class ViewObjectEntriesPage {
 
 			await richTextInput.clear();
 
-			await richTextInput.fill(objectFieldValue);
+			await richTextInput.fill(objectFieldValue + ' ');
 
 			await richTextInput.click({button: 'left'});
 
@@ -357,15 +397,11 @@ export class ViewObjectEntriesPage {
 		for (const objectField of objectFields) {
 			switch (objectField.businessType) {
 				case 'Assignee': {
-					await this.page
-						.getByLabel(objectField.label['en_US'], {exact: true})
-						.fill(objectEntry[objectField.name]);
-
-					await this.page
-						.getByRole('option', {
-							name: objectEntry[objectField.name],
-						})
-						.click();
+					await this.fillObjectEntry({
+						objectFieldBusinessType: objectField.businessType,
+						objectFieldLabel: objectField.label['en_US'],
+						objectFieldValue: objectEntry[objectField.name],
+					});
 
 					objectEntries.push({
 						businessType: objectField.businessType,
