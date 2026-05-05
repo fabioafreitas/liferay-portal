@@ -11,6 +11,7 @@ import {
 	ObjectFolder,
 	ObjectFolderAPI,
 } from '@liferay/object-admin-rest-client-js';
+import {expect} from '@playwright/test';
 
 import {getRandomInt} from '../utils/getRandomInt';
 import {ApiHelpers} from './ApiHelpers';
@@ -41,6 +42,29 @@ export class ObjectAdminApiHelper {
 		);
 
 		return items[0];
+	}
+
+	async waitForObjectDefinition(
+		name: string,
+		{
+			interval = 500,
+			timeout = 10_000,
+		}: {interval?: number; timeout?: number} = {}
+	): Promise<ObjectDefinition> {
+		let definition: ObjectDefinition | undefined;
+
+		await expect
+			.poll(
+				async () => {
+					definition = await this.getObjectDefinitionByName(name);
+
+					return Boolean(definition?.active);
+				},
+				{intervals: [interval], timeout}
+			)
+			.toBe(true);
+
+		return definition!;
 	}
 
 	async postObjectDefinitionObjectFieldBatch(
