@@ -156,9 +156,12 @@ export default function TasksFDSPropsTransformer({
 		thumbnail: 'columns',
 	};
 
+	const isProjectTasksContext =
+		id.endsWith('-task') || id.endsWith('-project-tasks');
+
 	return {
 		...otherProps,
-		atom: cmpTasksFDSAtom,
+		...(isProjectTasksContext && {atom: cmpTasksFDSAtom}),
 		creationMenu: {
 			...creationMenu,
 			primaryItems: addOnClickToCreationMenuItems(
@@ -367,7 +370,7 @@ export default function TasksFDSPropsTransformer({
 			action: any;
 			selectedData: any;
 		}) => {
-			if (action?.data?.id === 'assign-task') {
+			if (action?.data?.id === 'assign-to') {
 				await openCMPModal({
 					center: true,
 					contentComponent: ({
@@ -458,6 +461,8 @@ export default function TasksFDSPropsTransformer({
 				});
 			}
 		},
-		views: [...nonDefaultViews, kanbanView],
+		views: isProjectTasksContext
+			? [...nonDefaultViews, kanbanView]
+			: nonDefaultViews,
 	};
 }

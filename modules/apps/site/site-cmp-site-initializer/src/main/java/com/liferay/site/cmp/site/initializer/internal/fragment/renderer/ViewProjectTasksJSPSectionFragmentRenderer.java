@@ -18,7 +18,7 @@ import com.liferay.portal.kernel.service.ClassNameLocalService;
 import com.liferay.portal.kernel.service.RoleService;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.WebKeys;
-import com.liferay.site.cmp.site.initializer.internal.display.context.ViewTasksSectionDisplayContext;
+import com.liferay.site.cmp.site.initializer.internal.display.context.ViewProjectTasksSectionDisplayContext;
 
 import jakarta.servlet.http.HttpServletRequest;
 
@@ -29,8 +29,9 @@ import org.osgi.service.component.annotations.Reference;
  * @author Gabriel Albuquerque
  */
 @Component(service = FragmentRenderer.class)
-public class ViewTasksJSPSectionFragmentRenderer
-	extends BaseJSPSectionFragmentRenderer<ViewTasksSectionDisplayContext> {
+public class ViewProjectTasksJSPSectionFragmentRenderer
+	extends BaseJSPSectionFragmentRenderer
+		<ViewProjectTasksSectionDisplayContext> {
 
 	@Override
 	public String getCollectionKey() {
@@ -39,18 +40,18 @@ public class ViewTasksJSPSectionFragmentRenderer
 
 	@Override
 	public String getLabelKey() {
-		return "tasks";
+		return "project-tasks";
 	}
 
 	@Override
-	protected ViewTasksSectionDisplayContext getDisplayContext(
+	protected ViewProjectTasksSectionDisplayContext getDisplayContext(
 		HttpServletRequest httpServletRequest) {
 
 		ThemeDisplay themeDisplay =
 			(ThemeDisplay)httpServletRequest.getAttribute(
 				WebKeys.THEME_DISPLAY);
 
-		return new ViewTasksSectionDisplayContext(
+		return new ViewProjectTasksSectionDisplayContext(
 			_assetTagLocalService, _classNameLocalService,
 			_depotEntryLocalService, httpServletRequest,
 			_listTypeEntryLocalService, _objectEntryService,
@@ -67,7 +68,7 @@ public class ViewTasksJSPSectionFragmentRenderer
 
 	@Override
 	protected String getJSPPath() {
-		return "/view_tasks.jsp";
+		return "/view_project_tasks.jsp";
 	}
 
 	@Reference

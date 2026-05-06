@@ -8,27 +8,27 @@
 <%@ include file="/init.jsp" %>
 
 <%
-ViewTasksSectionDisplayContext viewTasksSectionDisplayContext = (ViewTasksSectionDisplayContext)request.getAttribute(ViewTasksSectionDisplayContext.class.getName());
+ViewProjectTasksSectionDisplayContext viewProjectTasksSectionDisplayContext = (ViewProjectTasksSectionDisplayContext)request.getAttribute(ViewProjectTasksSectionDisplayContext.class.getName());
 %>
 
 <div>
 	<react:component
 		module="{TasksQuickFilters} from site-cmp-site-initializer"
-		props="<%= viewTasksSectionDisplayContext.getTasksQuickFiltersProperties() %>"
+		props="<%= viewProjectTasksSectionDisplayContext.getTasksQuickFiltersProperties() %>"
 	/>
 </div>
 
 <div class="cms-section custom-empty-state">
 	<frontend-data-set:headless-display
-		additionalProps="<%= viewTasksSectionDisplayContext.getAdditionalProps() %>"
-		apiURL="<%= viewTasksSectionDisplayContext.getAPIURL() %>"
-		bulkActionDropdownItems="<%= viewTasksSectionDisplayContext.getBulkActionDropdownItems() %>"
-		creationMenu="<%= viewTasksSectionDisplayContext.getCreationMenu() %>"
-		emptyState="<%= viewTasksSectionDisplayContext.getEmptyState() %>"
-		fdsActionDropdownItems="<%= viewTasksSectionDisplayContext.getFDSActionDropdownItems() %>"
-		fdsFilters="<%= viewTasksSectionDisplayContext.getFDSFilters() %>"
+		additionalProps="<%= viewProjectTasksSectionDisplayContext.getAdditionalProps() %>"
+		apiURL="<%= viewProjectTasksSectionDisplayContext.getAPIURL() %>"
+		bulkActionDropdownItems="<%= viewProjectTasksSectionDisplayContext.getBulkActionDropdownItems() %>"
+		creationMenu="<%= viewProjectTasksSectionDisplayContext.getCreationMenu() %>"
+		emptyState="<%= viewProjectTasksSectionDisplayContext.getEmptyState() %>"
+		fdsActionDropdownItems="<%= viewProjectTasksSectionDisplayContext.getFDSActionDropdownItems() %>"
+		fdsFilters="<%= viewProjectTasksSectionDisplayContext.getFDSFilters() %>"
 		formName="fm"
-		id="<%= CMPSiteInitializerFDSNames.CMP_TASK %>"
+		id="<%= CMPSiteInitializerFDSNames.CMP_PROJECT_TASKS %>"
 		itemsPerPage="<%= 20 %>"
 		propsTransformer="{TasksFDSPropsTransformer} from site-cmp-site-initializer"
 		selectedItemsKey="embedded.id"
