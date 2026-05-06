@@ -3,15 +3,119 @@
 		"pageElements": [
 			{
 				"definition": {
+					"customCSS": ".[$FRAGMENT_CLASS$] {\n .navigation-bar .navbar-nav .nav-link {\n margin-bottom: 0px;\n border-color: #cdced9;\n }\n\n .navigation-bar .navbar-nav .nav-link.active {\n border-color: #cdced9 #cdced9 #fff;\n border-style: solid;\n border-width: 0.0625rem;\n border-radius: 0.5rem 0.5rem 0 0;\n}\n\n .navigation-bar .navbar-nav .nav-link.active::after {\n background-color: white !important;\n bottom: -0.2rem !important;}\n}\n\n.navbar-collapse\n{\nmargin-left: 16px;\n}",
 					"fragment": {
-						"key": "com.liferay.site.cmp.site.initializer.internal.fragment.renderer.ViewTasksJSPSectionFragmentRenderer"
+						"key": "tabs"
 					},
 					"fragmentConfig": {
+						"numberOfTabs": 3,
+						"persistSelectedTab": true
 					},
 					"fragmentFields": [
+						{
+							"id": "title1",
+							"value": {
+								"fragmentLink": {
+								},
+								"text": {
+									"value_i18n": {
+										"en_US": "All Tasks"
+									}
+								}
+							}
+						},
+						{
+							"id": "title2",
+							"value": {
+								"fragmentLink": {
+								},
+								"text": {
+									"value_i18n": {
+										"en_US": "Project Tasks"
+									}
+								}
+							}
+						},
+						{
+							"id": "title3",
+							"value": {
+								"fragmentLink": {
+								},
+								"text": {
+									"value_i18n": {
+										"en_US": "Workflow"
+									}
+								}
+							}
+						}
 					],
 					"indexed": true
 				},
+				"id": "cmp-global-tasks-list-navigation-tabs",
+				"pageElements": [
+					{
+						"definition": {
+							"fragmentDropZoneId": "1"
+						},
+						"pageElements": [
+							{
+								"definition": {
+									"fragment": {
+										"key": "BASIC_COMPONENT-paragraph"
+									},
+									"fragmentConfig": {
+									},
+									"fragmentFields": [
+										{
+											"id": "element-text",
+											"value": {
+												"fragmentLink": {
+												},
+												"text": {
+													"value_i18n": {
+														"en_US": "DIAGNOSTIC: paragraph fragment in tab 1 (LPD-86463 step 5a)"
+													}
+												}
+											}
+										}
+									],
+									"indexed": true
+								},
+								"type": "Fragment"
+							}
+						],
+						"type": "FragmentDropZone"
+					},
+					{
+						"definition": {
+							"fragmentDropZoneId": "2"
+						},
+						"pageElements": [
+							{
+								"definition": {
+									"fragment": {
+										"key": "com.liferay.site.cmp.site.initializer.internal.fragment.renderer.ViewTasksJSPSectionFragmentRenderer"
+									},
+									"fragmentConfig": {
+									},
+									"fragmentFields": [
+									],
+									"indexed": true
+								},
+								"type": "Fragment"
+							}
+						],
+						"type": "FragmentDropZone"
+					},
+					{
+						"definition": {
+							"fragmentDropZoneId": "3"
+						},
+						"pageElements": [
+						],
+						"type": "FragmentDropZone"
+					}
+				],
 				"type": "Fragment"
 			}
 		],
