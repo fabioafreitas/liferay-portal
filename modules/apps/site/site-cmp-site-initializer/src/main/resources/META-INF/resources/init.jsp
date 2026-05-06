@@ -18,7 +18,8 @@ page import="com.liferay.site.cmp.site.initializer.internal.display.context.View
 page import="com.liferay.site.cmp.site.initializer.internal.display.context.ViewProjectSponsorAssigneeSectionDisplayContext" %><%@
 page import="com.liferay.site.cmp.site.initializer.internal.display.context.ViewProjectsSectionDisplayContext" %><%@
 page import="com.liferay.site.cmp.site.initializer.internal.display.context.ViewTaskInfoSummarySectionDisplayContext" %><%@
-page import="com.liferay.site.cmp.site.initializer.internal.display.context.ViewProjectTasksSectionDisplayContext" %>
+page import="com.liferay.site.cmp.site.initializer.internal.display.context.ViewProjectTasksSectionDisplayContext" %><%@
+page import="com.liferay.site.cmp.site.initializer.internal.display.context.ViewWorkflowTasksSectionDisplayContext" %>
 
 <liferay-theme:defineObjects />
 
