@@ -10,6 +10,9 @@ package com.liferay.site.cmp.site.initializer.internal.constants;
  */
 public class CMPSiteInitializerFDSNames {
 
+	public static final String CMP_ALL_TASKS =
+		CMPSiteInitializerConstants.BUNDLE_SYMBOLIC_NAME + "-all-tasks";
+
 	public static final String CMP_PROJECT =
 		CMPSiteInitializerConstants.BUNDLE_SYMBOLIC_NAME + "-project";
 

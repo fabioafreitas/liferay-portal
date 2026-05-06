@@ -70,6 +70,19 @@
 							"fragmentDropZoneId": "1"
 						},
 						"pageElements": [
+							{
+								"definition": {
+									"fragment": {
+										"key": "com.liferay.site.cmp.site.initializer.internal.fragment.renderer.ViewAllTasksJSPSectionFragmentRenderer"
+									},
+									"fragmentConfig": {
+									},
+									"fragmentFields": [
+									],
+									"indexed": true
+								},
+								"type": "Fragment"
+							}
 						],
 						"type": "FragmentDropZone"
 					},
