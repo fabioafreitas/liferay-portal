@@ -30,7 +30,7 @@ ViewProjectTasksSectionDisplayContext viewProjectTasksSectionDisplayContext = (V
 		formName="fm"
 		id="<%= CMPSiteInitializerFDSNames.CMP_PROJECT_TASKS %>"
 		itemsPerPage="<%= 20 %>"
-		propsTransformer="{TasksFDSPropsTransformer} from site-cmp-site-initializer"
+		propsTransformer="{ProjectTasksFDSPropsTransformer} from site-cmp-site-initializer"
 		selectedItemsKey="embedded.id"
 		selectionType="multiple"
 	/>

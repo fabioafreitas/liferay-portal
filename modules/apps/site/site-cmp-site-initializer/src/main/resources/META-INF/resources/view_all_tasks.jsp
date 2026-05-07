@@ -23,7 +23,7 @@ ViewAllTasksSectionDisplayContext viewAllTasksSectionDisplayContext = (ViewAllTa
 		formName="fm"
 		id="<%= CMPSiteInitializerFDSNames.CMP_ALL_TASKS %>"
 		itemsPerPage="<%= 20 %>"
-		propsTransformer="{TasksFDSPropsTransformer} from site-cmp-site-initializer"
+		propsTransformer="{AllTasksFDSPropsTransformer} from site-cmp-site-initializer"
 		selectedItemsKey="embedded.id"
 		selectionType="multiple"
 	/>

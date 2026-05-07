@@ -112,8 +112,6 @@ public abstract class BaseTasksSectionDisplayContext
 		).build();
 	}
 
-	public abstract String getAPIURL();
-
 	@Override
 	public CreationMenu getCreationMenu() throws Exception {
 		if (!hasAddObjectEntryPortletResourcePermission()) {

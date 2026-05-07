@@ -22,6 +22,7 @@ ViewWorkflowTasksSectionDisplayContext viewWorkflowTasksSectionDisplayContext = 
 		formName="fm"
 		id="<%= CMPSiteInitializerFDSNames.CMP_WORKFLOW_TASKS %>"
 		itemsPerPage="<%= 20 %>"
+		propsTransformer="{WorkflowTasksFDSPropsTransformer} from site-cmp-site-initializer"
 		selectedItemsKey="embedded.id"
 		selectionType="multiple"
 	/>
