@@ -9,8 +9,6 @@ import com.liferay.asset.kernel.service.AssetTagLocalService;
 import com.liferay.depot.service.DepotEntryLocalService;
 import com.liferay.frontend.data.set.filter.FDSFilter;
 import com.liferay.frontend.data.set.model.FDSActionDropdownItem;
-import com.liferay.frontend.data.set.model.FDSActionDropdownItemBuilder;
-import com.liferay.frontend.data.set.model.FDSActionDropdownItemList;
 import com.liferay.list.type.service.ListTypeEntryLocalService;
 import com.liferay.object.model.ObjectDefinition;
 import com.liferay.object.service.ObjectEntryService;
@@ -82,7 +80,8 @@ public class ViewProjectTasksSectionDisplayContext
 	@Override
 	public List<FDSActionDropdownItem> getFDSActionDropdownItems() {
 		return sectionDisplayContextHelper.
-			getProjectTasksFDSActionDropdownItems(objectDefinition.getClassName());
+			getProjectTasksFDSActionDropdownItems(
+				objectDefinition.getClassName());
 	}
 
 	@Override

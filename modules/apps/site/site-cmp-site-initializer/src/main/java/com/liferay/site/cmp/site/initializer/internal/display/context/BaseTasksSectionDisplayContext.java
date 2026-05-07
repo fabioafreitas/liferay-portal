@@ -68,9 +68,8 @@ public abstract class BaseTasksSectionDisplayContext
 		this.projectObjectDefinition = projectObjectDefinition;
 		this.roleService = roleService;
 
-		sectionDisplayContextHelper =
-			new SectionDisplayContextHelper(
-				httpServletRequest, objectDefinition, themeDisplay);
+		sectionDisplayContextHelper = new SectionDisplayContextHelper(
+			httpServletRequest, objectDefinition, themeDisplay);
 	}
 
 	public Map<String, Object> getAdditionalProps() throws Exception {
@@ -189,7 +188,6 @@ public abstract class BaseTasksSectionDisplayContext
 	protected final ObjectDefinition projectObjectDefinition;
 	protected final RoleService roleService;
 	protected final SectionDisplayContextHelper sectionDisplayContextHelper;
-
 
 	private JSONArray _getNextStatesJSONArray(
 		ListTypeEntry currentListTypeEntry, ObjectField objectField) {

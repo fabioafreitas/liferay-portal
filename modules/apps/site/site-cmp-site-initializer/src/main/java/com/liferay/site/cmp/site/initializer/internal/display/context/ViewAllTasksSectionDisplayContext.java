@@ -19,15 +19,10 @@ import com.liferay.object.service.ObjectStateFlowLocalService;
 import com.liferay.object.service.ObjectStateLocalService;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.petra.string.StringPool;
-import com.liferay.portal.kernel.language.LanguageUtil;
-import com.liferay.portal.kernel.portlet.url.builder.PortletURLBuilder;
 import com.liferay.portal.kernel.service.ClassNameLocalService;
 import com.liferay.portal.kernel.service.RoleService;
-import com.liferay.portal.kernel.util.HashMapBuilder;
 import com.liferay.portal.kernel.util.HtmlUtil;
 import com.liferay.portal.kernel.util.ListUtil;
-import com.liferay.portal.kernel.util.PortalUtil;
-import com.liferay.portal.kernel.util.PortletKeys;
 import com.liferay.portal.workflow.kaleo.model.KaleoTaskInstanceToken;
 import com.liferay.site.cmp.site.initializer.internal.frontend.data.set.filter.AssigneeSelectionFDSFilter;
 import com.liferay.site.cmp.site.initializer.internal.frontend.data.set.filter.CreateDateFDSFilter;
@@ -36,11 +31,8 @@ import com.liferay.site.cmp.site.initializer.internal.frontend.data.set.filter.P
 import com.liferay.site.cmp.site.initializer.internal.frontend.data.set.filter.StateSelectionFDSFilter;
 import com.liferay.site.cmp.site.initializer.internal.frontend.data.set.filter.TagSelectionFDSFilter;
 
-import jakarta.portlet.ActionRequest;
-
 import jakarta.servlet.http.HttpServletRequest;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -106,9 +98,11 @@ public class ViewAllTasksSectionDisplayContext
 			),
 			FDSActionDropdownItemBuilder.setFDSActionDropdownItems(
 				ListUtil.concat(
-					sectionDisplayContextHelper.getProjectTasksFDSActionDropdownItems(objectDefinition.getClassName()),
-					sectionDisplayContextHelper.getWorkflowTasksFDSActionDropdownItems()
-					)
+					sectionDisplayContextHelper.
+						getProjectTasksFDSActionDropdownItems(
+							objectDefinition.getClassName()),
+					sectionDisplayContextHelper.
+						getWorkflowTasksFDSActionDropdownItems())
 			).setSeparator(
 				true
 			).setType(

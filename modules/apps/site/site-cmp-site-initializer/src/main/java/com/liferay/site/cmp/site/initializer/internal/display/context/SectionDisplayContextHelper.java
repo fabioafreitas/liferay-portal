@@ -40,87 +40,13 @@ public class SectionDisplayContextHelper {
 		_themeDisplay = themeDisplay;
 	}
 
-	public List<FDSActionDropdownItem> getWorkflowTasksFDSActionDropdownItems() {
-		return ListUtil.fromArray(
-			FDSActionDropdownItemBuilder.setHref(
-				PortletURLBuilder.create(
-					PortalUtil.getControlPanelPortletURL(
-						_httpServletRequest,
-						PortletKeys.MY_WORKFLOW_TASK,
-						ActionRequest.RENDER_PHASE)
-				).setMVCPath(
-					"/edit_workflow_task.jsp"
-				).setRedirect(
-					_themeDisplay.getURLCurrent()
-				).setParameter(
-					"workflowTaskId", "{embedded.id}"
-				).buildString()
-			).setIcon(
-				"view"
-			).setLabel(
-				LanguageUtil.get(_httpServletRequest, "view")
-			).setPermissionKey(
-				"get"
-			).setVisibilityFilters(
-				HashMapBuilder.<String, Object>put(
-					"entryClassName",
-					KaleoTaskInstanceToken.class.getName()
-				).build()
-			).build(
-				"actionLinkWorkflowTask"
-			),
-			FDSActionDropdownItemBuilder.setLabel(
-				LanguageUtil.get(_httpServletRequest, "assign-to-me")
-			).setPermissionKey(
-				"assignToMe"
-			).setVisibilityFilters(
-				HashMapBuilder.<String, Object>put(
-					"embedded.assignedToMe", false
-				).put(
-					"embedded.completed", false
-				).put(
-					"entryClassName",
-					KaleoTaskInstanceToken.class.getName()
-				).build()
-			).build(
-				"assignToMeWorkflowTask"
-			),
-			FDSActionDropdownItemBuilder.setLabel(
-				LanguageUtil.get(_httpServletRequest, "assign-to-...")
-			).setPermissionKey(
-				"assignToUser"
-			).setVisibilityFilters(
-				HashMapBuilder.<String, Object>put(
-					"embedded.completed", false
-				).put(
-					"entryClassName",
-					KaleoTaskInstanceToken.class.getName()
-				).build()
-			).build(
-				"assignToWorkflowTask"
-			),
-			FDSActionDropdownItemBuilder.setIcon(
-				"date-time"
-			).setLabel(
-				LanguageUtil.get(_httpServletRequest, "update-due-date")
-			).setPermissionKey(
-				"updateDueDate"
-			).setVisibilityFilters(
-				HashMapBuilder.<String, Object>put(
-					"embedded.completed", false
-				).put(
-					"entryClassName",
-					KaleoTaskInstanceToken.class.getName()
-				).build()
-			).build(
-				"updateDueDateWorkflowTask"
-			));
-	}
+	public List<FDSActionDropdownItem> getProjectTasksFDSActionDropdownItems(
+		String entryClassName) {
 
-	public List<FDSActionDropdownItem> getProjectTasksFDSActionDropdownItems(String entryClassName) {
-		Map<String, Object> visibilityFilters = HashMapBuilder.<String, Object>put(
-			"entryClassName", entryClassName
-		).build();
+		Map<String, Object> visibilityFilters =
+			HashMapBuilder.<String, Object>put(
+				"entryClassName", entryClassName
+			).build();
 
 		return ListUtil.fromArray(
 			FDSActionDropdownItemBuilder.setHref(
@@ -218,6 +144,80 @@ public class SectionDisplayContextHelper {
 				visibilityFilters
 			).build(
 				"delete"
+			));
+	}
+
+	public List<FDSActionDropdownItem>
+		getWorkflowTasksFDSActionDropdownItems() {
+
+		return ListUtil.fromArray(
+			FDSActionDropdownItemBuilder.setHref(
+				PortletURLBuilder.create(
+					PortalUtil.getControlPanelPortletURL(
+						_httpServletRequest, PortletKeys.MY_WORKFLOW_TASK,
+						ActionRequest.RENDER_PHASE)
+				).setMVCPath(
+					"/edit_workflow_task.jsp"
+				).setRedirect(
+					_themeDisplay.getURLCurrent()
+				).setParameter(
+					"workflowTaskId", "{embedded.id}"
+				).buildString()
+			).setIcon(
+				"view"
+			).setLabel(
+				LanguageUtil.get(_httpServletRequest, "view")
+			).setPermissionKey(
+				"get"
+			).setVisibilityFilters(
+				HashMapBuilder.<String, Object>put(
+					"entryClassName", KaleoTaskInstanceToken.class.getName()
+				).build()
+			).build(
+				"actionLinkWorkflowTask"
+			),
+			FDSActionDropdownItemBuilder.setLabel(
+				LanguageUtil.get(_httpServletRequest, "assign-to-me")
+			).setPermissionKey(
+				"assignToMe"
+			).setVisibilityFilters(
+				HashMapBuilder.<String, Object>put(
+					"embedded.assignedToMe", false
+				).put(
+					"embedded.completed", false
+				).put(
+					"entryClassName", KaleoTaskInstanceToken.class.getName()
+				).build()
+			).build(
+				"assignToMeWorkflowTask"
+			),
+			FDSActionDropdownItemBuilder.setLabel(
+				LanguageUtil.get(_httpServletRequest, "assign-to-...")
+			).setPermissionKey(
+				"assignToUser"
+			).setVisibilityFilters(
+				HashMapBuilder.<String, Object>put(
+					"embedded.completed", false
+				).put(
+					"entryClassName", KaleoTaskInstanceToken.class.getName()
+				).build()
+			).build(
+				"assignToWorkflowTask"
+			),
+			FDSActionDropdownItemBuilder.setIcon(
+				"date-time"
+			).setLabel(
+				LanguageUtil.get(_httpServletRequest, "update-due-date")
+			).setPermissionKey(
+				"updateDueDate"
+			).setVisibilityFilters(
+				HashMapBuilder.<String, Object>put(
+					"embedded.completed", false
+				).put(
+					"entryClassName", KaleoTaskInstanceToken.class.getName()
+				).build()
+			).build(
+				"updateDueDateWorkflowTask"
 			));
 	}
 
