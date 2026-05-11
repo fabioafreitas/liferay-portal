@@ -55,17 +55,16 @@ public class WorkflowTaskSectionTableFDSView extends BaseTableFDSView {
 			fdsTableSchemaField -> fdsTableSchemaField.setContentRenderer(
 				"dueDateTableCellRenderer")
 		).add(
-			"project", "project",
-			fdsTableSchemaField -> fdsTableSchemaField.setContentRenderer(
-				"projectTableCellRenderer")
-		).add(
 			"state", "state-status",
 			fdsTableSchemaField -> fdsTableSchemaField.setContentRenderer(
 				"workflowStateTableCellRenderer")
 		).add(
-			"lastActivityDate", "last-activity-date",
+			"dateModified", "last-activity-date",
 			fdsTableSchemaField -> fdsTableSchemaField.setContentRenderer(
-				"lastActivityDateTableCellRenderer")
+				"dateTime"
+			).setSortable(
+				true
+			)
 		).build();
 	}
 
