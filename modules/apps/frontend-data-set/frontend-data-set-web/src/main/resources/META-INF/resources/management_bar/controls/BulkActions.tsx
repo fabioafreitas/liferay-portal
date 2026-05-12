@@ -113,6 +113,11 @@ function BulkActions({
 		sidePanelId: string | undefined
 	) {
 		const {data, href, slug, target} = actionDefinition;
+
+		if (data?.disabled) {
+			return;
+		}
+
 		if (target === 'sidePanel') {
 			const sidePanelActionPayload = {
 				baseURL: href,
@@ -284,6 +289,10 @@ function BulkActions({
 											>
 												<ClayButton
 													className="bulk-action-btn nav-link"
+													disabled={
+														highlightedBulkAction
+															.data?.disabled
+													}
 													displayType="unstyled"
 													onClick={() =>
 														handleActionClick(
@@ -338,6 +347,10 @@ function BulkActions({
 											{filteredBulkActions.map(
 												(actionDefinition) => (
 													<DropDown.Item
+														disabled={
+															actionDefinition
+																.data?.disabled
+														}
 														key={
 															actionDefinition.label
 														}

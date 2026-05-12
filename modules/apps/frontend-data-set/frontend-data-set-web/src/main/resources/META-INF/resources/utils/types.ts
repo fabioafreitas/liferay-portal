@@ -110,12 +110,24 @@ export interface IBaseActions {
 
 export interface IBulkActionItem {
 	data?: {
+		disabled?: boolean;
 		highlighted?: boolean;
 		id?: string;
 		size?: string;
 	};
 	href?: string;
 	icon?: string;
+	isDisabled?: ({
+		activeFilters,
+		activeSearch,
+		allItemsSelectedActive,
+		selectedItems,
+	}: {
+		activeFilters?: Array<IBaseFilterState>;
+		activeSearch?: ISearch;
+		allItemsSelectedActive?: boolean;
+		selectedItems?: Array<any>;
+	}) => boolean;
 	isVisible?: ({
 		activeFilters,
 		activeSearch,

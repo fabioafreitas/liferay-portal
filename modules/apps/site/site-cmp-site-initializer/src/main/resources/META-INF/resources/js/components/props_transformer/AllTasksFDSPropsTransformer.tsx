@@ -90,6 +90,7 @@ const isWorkflowRow = (itemData: any) =>
 
 export default function AllTasksFDSPropsTransformer({
 	additionalProps,
+	bulkActions = [],
 	creationMenu,
 	id,
 	itemsActions = [],
@@ -97,6 +98,7 @@ export default function AllTasksFDSPropsTransformer({
 	...otherProps
 }: {
 	additionalProps: any;
+	bulkActions?: any[];
 	apiURL: string;
 	creationMenu: any;
 	id: string;
@@ -112,6 +114,26 @@ export default function AllTasksFDSPropsTransformer({
 
 	return {
 		...otherProps,
+		bulkActions: bulkActions.map((action) => ({
+			...action,
+			isDisabled: ({
+				allItemsSelectedActive,
+				selectedItems,
+			}: {
+				allItemsSelectedActive: boolean;
+				selectedItems: any[];
+			}) => {
+				if (allItemsSelectedActive || !selectedItems?.length) {
+					return false;
+				}
+
+				const firstType = selectedItems[0]?.entryClassName;
+
+				return selectedItems.some(
+					(item) => item?.entryClassName !== firstType
+				);
+			},
+		})),
 		creationMenu: {
 			...creationMenu,
 			primaryItems: addOnClickToCreationMenuItems(
