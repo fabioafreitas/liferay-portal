@@ -9,6 +9,8 @@ import com.liferay.asset.kernel.service.AssetTagLocalService;
 import com.liferay.depot.service.DepotEntryLocalService;
 import com.liferay.frontend.data.set.filter.FDSFilter;
 import com.liferay.frontend.data.set.model.FDSActionDropdownItem;
+import com.liferay.frontend.data.set.model.FDSActionDropdownItemBuilder;
+import com.liferay.frontend.data.set.model.FDSActionDropdownItemList;
 import com.liferay.frontend.taglib.clay.servlet.taglib.util.CreationMenu;
 import com.liferay.frontend.taglib.clay.servlet.taglib.util.DropdownItem;
 import com.liferay.list.type.service.ListTypeEntryLocalService;
@@ -83,8 +85,31 @@ public class ViewWorkflowTasksSectionDisplayContext
 
 	@Override
 	public List<FDSActionDropdownItem> getFDSActionDropdownItems() {
-		return sectionDisplayContextHelper.
-			getWorkflowTasksFDSActionDropdownItems();
+		return FDSActionDropdownItemList.of(
+			FDSActionDropdownItemBuilder.setFDSActionDropdownItems(
+				FDSActionDropdownItemList.of(
+					FDSActionDropdownItemBuilder.setTarget(
+						"modal-workflow-transition"
+					).build(
+						"workflow-transition"
+					))
+			).setSeparator(
+				true
+			).setType(
+				"group"
+			).build(
+				"workflow-transitions"
+			),
+			FDSActionDropdownItemBuilder.setFDSActionDropdownItems(
+				sectionDisplayContextHelper.
+					getWorkflowTasksFDSActionDropdownItems()
+			).setSeparator(
+				true
+			).setType(
+				"group"
+			).build(
+				"other-actions"
+			));
 	}
 
 	@Override
