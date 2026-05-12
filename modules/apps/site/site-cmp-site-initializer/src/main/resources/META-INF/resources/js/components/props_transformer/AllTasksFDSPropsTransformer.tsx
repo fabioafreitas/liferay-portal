@@ -28,8 +28,7 @@ import BulkEditStateModalContent from '../modal/BulkEditStateModalContent';
 import EditAssigneeModalContent from '../modal/EditAssigneeModalContent';
 import ACTIONS from './actions/creationMenuActions';
 import AssigneeRenderer from './cell_renderers/AssigneeRenderer';
-import WorkflowAssigneeCell from './cell_renderers/WorkflowAssigneeCell';
-import WorkflowStateCell from './cell_renderers/WorkflowStateCell';
+import WorkflowStateRenderer from './cell_renderers/WorkflowStateRenderer';
 
 const _CLASS_NAME_KALEO_TASK_INSTANCE_TOKEN =
 	'com.liferay.portal.workflow.kaleo.model.KaleoTaskInstanceToken';
@@ -123,17 +122,38 @@ export default function AllTasksFDSPropsTransformer({
 		customRenderers: {
 			tableCell: [
 				{
-					component: ({itemData}) =>
-						isWorkflowRow(itemData) ? (
-							<WorkflowAssigneeCell
-								embedded={itemData.embedded}
-							/>
-						) : (
+					component: ({itemData}) => {
+						if (
+							itemData.entryClassName ===
+							_CLASS_NAME_KALEO_TASK_INSTANCE_TOKEN
+						) {
+							if (itemData.embedded?.assigneePerson) {
+								return (
+									<AssigneeRenderer
+										image={
+											itemData.embedded.assigneePerson
+												.image
+										}
+										name={
+											itemData.embedded.assigneePerson
+												.name
+										}
+									/>
+								);
+							}
+
+							return itemData.embedded?.assigneeRoles
+								?.map(({name}: {name: string}) => name)
+								.join(', ');
+						}
+
+						return (
 							<AssigneeRenderer
 								image={itemData.embedded?.assignTo?.portrait}
 								name={itemData.embedded?.assignTo?.name}
 							/>
-						),
+						);
+					},
 					name: 'assigneeTableCellRenderer',
 					type: 'internal',
 				} as IInternalRenderer,
@@ -174,7 +194,7 @@ export default function AllTasksFDSPropsTransformer({
 				{
 					component: ({itemData}) =>
 						isWorkflowRow(itemData) ? (
-							<WorkflowStateCell embedded={itemData.embedded} />
+							<WorkflowStateRenderer embedded={itemData.embedded} />
 						) : (
 							StateLabel({
 								dueDate: itemData.embedded?.dueDate,

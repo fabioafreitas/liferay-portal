@@ -7,7 +7,7 @@ import React from 'react';
 
 import StateLabel from '../../StateLabel';
 
-const WorkflowStateCell = ({embedded}: {embedded: any}) => {
+export default function WorkflowStateRenderer({embedded}: {embedded: any}) {
 	return StateLabel({
 		state: embedded?.completed
 			? {
@@ -20,5 +20,3 @@ const WorkflowStateCell = ({embedded}: {embedded: any}) => {
 				},
 	});
 };
-
-export default WorkflowStateCell;

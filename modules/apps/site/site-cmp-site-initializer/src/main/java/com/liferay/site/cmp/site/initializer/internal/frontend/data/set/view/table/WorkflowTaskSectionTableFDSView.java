@@ -43,9 +43,8 @@ public class WorkflowTaskSectionTableFDSView extends BaseTableFDSView {
 			fdsTableSchemaField -> fdsTableSchemaField.setContentRenderer(
 				"assetTypeTableCellRenderer")
 		).add(
-			"author", "author",
-			fdsTableSchemaField -> fdsTableSchemaField.setContentRenderer(
-				"authorTableCellRenderer")
+			"embedded.creator.name", "author",
+			fdsTableSchemaField -> fdsTableSchemaField.setLocalizeLabel(true)
 		).add(
 			"task", "task",
 			fdsTableSchemaField -> fdsTableSchemaField.setContentRenderer(

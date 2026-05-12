@@ -17,8 +17,7 @@ import React from 'react';
 
 import {openCMPModal} from '../../utils/openCMPModal';
 import {TaskAction, TaskItemData} from './AllTasksFDSPropsTransformer';
-import AssigneeRenderer from './cell_renderers/AssigneeRenderer';
-import WorkflowStateCell from './cell_renderers/WorkflowStateCell';
+import WorkflowStateRenderer from './cell_renderers/WorkflowStateRenderer';
 
 const WORKFLOW_TASK_MODALS: Record<
 	string,
@@ -78,16 +77,6 @@ export default function WorkflowTasksFDSPropsTransformer({
 					type: 'internal',
 				} as IInternalRenderer,
 				{
-					component: ({itemData}) => (
-						<AssigneeRenderer
-							image={itemData.embedded?.creatorPerson?.image}
-							name={itemData.embedded?.creatorPerson?.name}
-						/>
-					),
-					name: 'authorTableCellRenderer',
-					type: 'internal',
-				} as IInternalRenderer,
-				{
 					component: ({itemData}) =>
 						itemData.embedded?.title ?? itemData.embedded?.name,
 					name: 'taskTableCellRenderer',
@@ -107,7 +96,7 @@ export default function WorkflowTasksFDSPropsTransformer({
 				} as IInternalRenderer,
 				{
 					component: ({itemData}) => (
-						<WorkflowStateCell embedded={itemData.embedded} />
+						<WorkflowStateRenderer embedded={itemData.embedded} />
 					),
 					name: 'workflowStateTableCellRenderer',
 					type: 'internal',
