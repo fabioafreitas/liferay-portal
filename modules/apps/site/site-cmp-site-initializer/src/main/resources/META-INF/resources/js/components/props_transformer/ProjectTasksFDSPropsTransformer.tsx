@@ -5,13 +5,12 @@
 
 import {
 	DateRenderer,
+	FDS_PAGINATION_DELTA_ALL,
 	IInternalRenderer,
 	IView,
 } from '@liferay/frontend-data-set-web';
 import {
-	AssignToModalContent,
 	SimpleActionLinkRenderer,
-	UpdateDueDateModalContent,
 	addOnClickToCreationMenuItems,
 	deleteAssetEntriesBulkAction,
 	deleteItemAction,
@@ -21,50 +20,18 @@ import React from 'react';
 
 import {styleActions, styleBulkActions} from '../../utils/actionStyles';
 import {openCMPModal} from '../../utils/openCMPModal';
-import {
-	ProjectTaskItemData,
-	TaskAction,
-	WorkflowTaskItemData,
-} from '../../utils/types';
+import {ProjectTaskItemData, TaskAction} from '../../utils/types';
 import StateLabel from '../StateLabel';
 import BulkEditAssigneeModalContent from '../modal/BulkEditAssigneeModalContent';
 import BulkEditDueDateModalContent from '../modal/BulkEditDueDateModalContent';
 import BulkEditStateModalContent from '../modal/BulkEditStateModalContent';
 import EditAssigneeModalContent from '../modal/EditAssigneeModalContent';
 import ACTIONS from './actions/creationMenuActions';
+import {cmpTasksFDSAtom} from './atoms';
 import AssigneeRenderer from './cell_renderers/AssigneeRenderer';
-import WorkflowStateRenderer from './cell_renderers/WorkflowStateRenderer';
-import WorkflowTaskActionLinkRenderer from './cell_renderers/WorkflowTaskActionLinkRenderer';
+import KanbanView from './views/kanban_view/KanbanView';
 
-const _CLASS_NAME_KALEO_TASK_INSTANCE_TOKEN =
-	'com.liferay.portal.workflow.kaleo.model.KaleoTaskInstanceToken';
-
-const WORKFLOW_TASK_MODALS: Record<
-	string,
-	(baseProps: {
-		closeModal: () => void;
-		dueDate: string;
-		loadData: () => Promise<void>;
-		workflowTaskId: number;
-	}) => JSX.Element
-> = {
-	assignToMeWorkflowTask: (props) => (
-		<AssignToModalContent {...props} assignable={false} />
-	),
-	assignToWorkflowTask: (props) => (
-		<AssignToModalContent {...props} assignable={true} />
-	),
-	updateDueDateWorkflowTask: (props) => (
-		<UpdateDueDateModalContent {...props} />
-	),
-};
-
-const isWorkflowRow = (
-	itemData: ProjectTaskItemData | WorkflowTaskItemData
-): itemData is WorkflowTaskItemData =>
-	itemData.entryClassName === _CLASS_NAME_KALEO_TASK_INSTANCE_TOKEN;
-
-export default function AllTasksFDSPropsTransformer({
+export default function ProjectTasksFDSPropsTransformer({
 	additionalProps,
 	bulkActions = [],
 	creationMenu,
@@ -88,28 +55,29 @@ export default function AllTasksFDSPropsTransformer({
 		initialPaginationDelta: 20,
 	}));
 
+	const kanbanView: IView = {
+		component: (props: any) =>
+			KanbanView({...props, projectId: additionalProps.projectId}),
+		default: false,
+		initialPaginationDelta: FDS_PAGINATION_DELTA_ALL,
+		label: Liferay.Language.get('kanban'),
+		name: 'kanban',
+		schema: {
+			description: 'description',
+			image: 'imageURL',
+			link: '',
+			sticker: '',
+			symbol: '',
+			title: 'embedded.title',
+		},
+		showPagination: false,
+		thumbnail: 'columns',
+	};
+
 	return {
 		...otherProps,
-		bulkActions: styleBulkActions(bulkActions).map((action) => ({
-			...action,
-			isDisabled: ({
-				allItemsSelectedActive,
-				selectedItems,
-			}: {
-				allItemsSelectedActive: boolean;
-				selectedItems: any[];
-			}) => {
-				if (allItemsSelectedActive || !selectedItems?.length) {
-					return false;
-				}
-
-				const firstType = selectedItems[0]?.entryClassName;
-
-				return selectedItems.some(
-					(item) => item?.entryClassName !== firstType
-				);
-			},
-		})),
+		atom: cmpTasksFDSAtom,
+		bulkActions: styleBulkActions(bulkActions),
 		creationMenu: {
 			...creationMenu,
 			primaryItems: addOnClickToCreationMenuItems(
@@ -120,91 +88,45 @@ export default function AllTasksFDSPropsTransformer({
 		customRenderers: {
 			tableCell: [
 				{
-					component: ({itemData}) => {
-						if (
-							itemData.entryClassName ===
-							_CLASS_NAME_KALEO_TASK_INSTANCE_TOKEN
-						) {
-							if (itemData.embedded?.assigneePerson) {
-								return (
-									<AssigneeRenderer
-										image={
-											itemData.embedded.assigneePerson
-												.image
-										}
-										name={
-											itemData.embedded.assigneePerson
-												.name
-										}
-									/>
-								);
-							}
-
-							return itemData.embedded?.assigneeRoles
-								?.map(({name}: {name: string}) => name)
-								.join(', ');
-						}
-
-						return (
-							<AssigneeRenderer
-								image={itemData.embedded?.assignTo?.portrait}
-								name={itemData.embedded?.assignTo?.name}
-							/>
-						);
-					},
+					component: ({itemData}) => (
+						<AssigneeRenderer
+							image={itemData.embedded?.assignTo?.portrait}
+							name={itemData.embedded?.assignTo?.name}
+						/>
+					),
 					name: 'assigneeTableCellRenderer',
 					type: 'internal',
 				} as IInternalRenderer,
 				{
 					component: ({itemData}) =>
-						DateRenderer({
-							value: isWorkflowRow(itemData)
-								? itemData.embedded?.dateDue
-								: itemData.embedded?.dueDate,
-						}),
+						DateRenderer({value: itemData.embedded?.dueDate}),
 					name: 'dueDateTableCellRenderer',
 					type: 'internal',
 				} as IInternalRenderer,
 				{
 					component: ({itemData}) =>
-						isWorkflowRow(itemData)
-							? '-'
-							: itemData.embedded
-									?.r_cmpProjectToCMPTasks_c_cmpProject
-									?.title,
+						itemData.embedded?.r_cmpProjectToCMPTasks_c_cmpProject
+							?.title,
 					name: 'projectTitleTableCellRenderer',
 					type: 'internal',
 				} as IInternalRenderer,
 				{
 					component: ({actions, itemData, options}) =>
-						isWorkflowRow(itemData) ? (
-							<WorkflowTaskActionLinkRenderer
-								actions={actions}
-								itemData={itemData}
-							/>
-						) : (
-							SimpleActionLinkRenderer({
-								actions,
-								itemData,
-								options,
-								value: itemData.embedded?.title,
-							})
-						),
+						SimpleActionLinkRenderer({
+							actions,
+							itemData,
+							options,
+							value: itemData.embedded?.title,
+						}),
 					name: 'simpleActionLinkTableCellRenderer',
 					type: 'internal',
 				} as IInternalRenderer,
 				{
 					component: ({itemData}) =>
-						isWorkflowRow(itemData) ? (
-							<WorkflowStateRenderer
-								embedded={itemData.embedded}
-							/>
-						) : (
-							StateLabel({
-								dueDate: itemData.embedded?.dueDate,
-								state: itemData.embedded?.state,
-							})
-						),
+						StateLabel({
+							dueDate: itemData.embedded?.dueDate,
+							state: itemData.embedded?.state,
+						}),
 					name: 'stateTableCellRenderer',
 					type: 'internal',
 				} as IInternalRenderer,
@@ -219,29 +141,9 @@ export default function AllTasksFDSPropsTransformer({
 			loadData,
 		}: {
 			action: TaskAction;
-			itemData: ProjectTaskItemData | WorkflowTaskItemData;
+			itemData: ProjectTaskItemData;
 			loadData: () => Promise<void>;
 		}) {
-			if (isWorkflowRow(itemData)) {
-				await openCMPModal({
-					center: true,
-					contentComponent: ({
-						closeModal,
-					}: {
-						closeModal: () => void;
-					}) =>
-						WORKFLOW_TASK_MODALS[action?.data?.id]({
-							closeModal,
-							dueDate: itemData.embedded?.dateDue,
-							loadData,
-							workflowTaskId: itemData.embedded?.id,
-						}),
-					size: 'md',
-				});
-
-				return;
-			}
-
 			if (action?.data?.id === 'delete') {
 				await deleteItemAction(
 					sub(
@@ -370,6 +272,6 @@ export default function AllTasksFDSPropsTransformer({
 				});
 			}
 		},
-		views: nonDefaultViews,
+		views: [...nonDefaultViews, kanbanView],
 	};
 }
