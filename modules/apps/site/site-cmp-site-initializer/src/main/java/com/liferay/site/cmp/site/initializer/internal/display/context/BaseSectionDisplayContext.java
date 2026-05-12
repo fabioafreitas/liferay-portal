@@ -7,6 +7,7 @@ package com.liferay.site.cmp.site.initializer.internal.display.context;
 
 import com.liferay.asset.kernel.model.AssetEntry;
 import com.liferay.frontend.data.set.model.FDSActionDropdownItem;
+import com.liferay.frontend.data.set.model.FDSActionDropdownItemBuilder;
 import com.liferay.frontend.taglib.clay.servlet.taglib.util.CreationMenu;
 import com.liferay.frontend.taglib.clay.servlet.taglib.util.DropdownItem;
 import com.liferay.object.constants.ObjectActionKeys;
@@ -47,22 +48,54 @@ public abstract class BaseSectionDisplayContext {
 
 	public List<DropdownItem> getBulkActionDropdownItems() {
 		return ListUtil.fromArray(
-			new FDSActionDropdownItem(
-				null, "date-time", "update-due-date",
-				LanguageUtil.get(httpServletRequest, "update-due-date"), "post",
-				"update-due-date", null),
-			new FDSActionDropdownItem(
-				"#", "user", "assign-task",
-				LanguageUtil.get(httpServletRequest, "assign-task"), null, null,
-				null),
-			new FDSActionDropdownItem(
-				null, "arrow-start", "update-state",
-				LanguageUtil.get(httpServletRequest, "update-state"), "post",
-				"update-state", null),
-			new FDSActionDropdownItem(
-				"#", "trash", "delete",
-				LanguageUtil.get(httpServletRequest, "delete"), null, null,
-				null));
+			FDSActionDropdownItemBuilder.setHighlighted(
+				true
+			).setIcon(
+				"date-time"
+			).setLabel(
+				LanguageUtil.get(httpServletRequest, "update-due-date")
+			).setMethod(
+				"post"
+			).setPermissionKey(
+				"update-due-date"
+			).build(
+				"update-due-date"
+			),
+			FDSActionDropdownItemBuilder.setHighlighted(
+				true
+			).setHref(
+				"#"
+			).setIcon(
+				"user"
+			).setLabel(
+				LanguageUtil.get(httpServletRequest, "assign-to-...")
+			).build(
+				"assign-to"
+			),
+			FDSActionDropdownItemBuilder.setHighlighted(
+				true
+			).setIcon(
+				"arrow-start"
+			).setLabel(
+				LanguageUtil.get(httpServletRequest, "update-state")
+			).setMethod(
+				"post"
+			).setPermissionKey(
+				"update-state"
+			).build(
+				"update-state"
+			),
+			FDSActionDropdownItemBuilder.setHighlighted(
+				true
+			).setHref(
+				"#"
+			).setIcon(
+				"trash"
+			).setLabel(
+				LanguageUtil.get(httpServletRequest, "delete")
+			).build(
+				"delete"
+			));
 	}
 
 	public abstract CreationMenu getCreationMenu() throws Exception;
