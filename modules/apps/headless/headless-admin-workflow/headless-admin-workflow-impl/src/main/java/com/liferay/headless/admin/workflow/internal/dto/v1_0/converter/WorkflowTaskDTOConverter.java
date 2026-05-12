@@ -13,19 +13,24 @@ import com.liferay.headless.admin.workflow.internal.dto.v1_0.util.RoleUtil;
 import com.liferay.headless.admin.workflow.internal.resource.v1_0.WorkflowTaskResourceImpl;
 import com.liferay.portal.kernel.language.Language;
 import com.liferay.portal.kernel.model.User;
+import com.liferay.portal.kernel.security.auth.CompanyThreadLocal;
 import com.liferay.portal.kernel.service.RoleLocalService;
 import com.liferay.portal.kernel.service.UserLocalService;
+import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.Portal;
 import com.liferay.portal.kernel.util.ResourceBundleUtil;
 import com.liferay.portal.kernel.util.StringUtil;
+import com.liferay.portal.kernel.workflow.WorkflowConstants;
 import com.liferay.portal.kernel.workflow.WorkflowTaskAssignee;
 import com.liferay.portal.kernel.workflow.WorkflowTaskManager;
 import com.liferay.portal.vulcan.dto.converter.DTOConverter;
 import com.liferay.portal.vulcan.dto.converter.DTOConverterContext;
 import com.liferay.portal.workflow.kaleo.model.KaleoTaskInstanceToken;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 import org.osgi.service.component.annotations.Component;
@@ -62,8 +67,8 @@ public class WorkflowTaskDTOConverter
 
 	@Override
 	public WorkflowTask toDTO(
-			DTOConverterContext dtoConverterContext,
-			KaleoTaskInstanceToken kaleoTaskInstanceToken)
+		DTOConverterContext dtoConverterContext,
+		KaleoTaskInstanceToken kaleoTaskInstanceToken)
 		throws Exception {
 
 		return _toWorkflowTask(
@@ -73,12 +78,18 @@ public class WorkflowTaskDTOConverter
 	}
 
 	private WorkflowTask _toWorkflowTask(
-			DTOConverterContext dtoConverterContext,
-			com.liferay.portal.kernel.workflow.WorkflowTask workflowTask)
+		DTOConverterContext dtoConverterContext,
+		com.liferay.portal.kernel.workflow.WorkflowTask workflowTask)
 		throws Exception {
 
 		User assignedUser = _userLocalService.fetchUser(
 			workflowTask.getAssigneeUserId());
+
+		Map<String, Serializable> optionalAttributes =
+			workflowTask.getOptionalAttributes();
+
+		User creatorUser = _userLocalService.fetchUser(GetterUtil.getLong(
+			optionalAttributes.get(WorkflowConstants.CONTEXT_USER_ID)));
 
 		return new WorkflowTask() {
 			{
@@ -100,12 +111,12 @@ public class WorkflowTaskDTOConverter
 						List<Role> roles = new ArrayList<>();
 
 						for (WorkflowTaskAssignee workflowTaskAssignee :
-								workflowTask.getWorkflowTaskAssignees()) {
+							workflowTask.getWorkflowTaskAssignees()) {
 
 							if (!StringUtil.equals(
-									workflowTaskAssignee.getAssigneeClassName(),
-									com.liferay.portal.kernel.model.Role.class.
-										getName())) {
+								workflowTaskAssignee.getAssigneeClassName(),
+								com.liferay.portal.kernel.model.Role.class.
+									getName())) {
 
 								continue;
 							}
@@ -126,6 +137,8 @@ public class WorkflowTaskDTOConverter
 						return roles.toArray(new Role[0]);
 					});
 				setCompleted(workflowTask::isCompleted);
+				setCreator(
+					() -> CreatorUtil.toCreator(_portal, creatorUser));
 				setDateCompletion(workflowTask::getCompletionDate);
 				setDateCreated(workflowTask::getCreateDate);
 				setDateDue(workflowTask::getDueDate);
