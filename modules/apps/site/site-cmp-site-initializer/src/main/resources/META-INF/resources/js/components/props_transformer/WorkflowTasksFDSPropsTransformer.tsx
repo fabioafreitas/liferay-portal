@@ -10,7 +10,6 @@ import {
 } from '@liferay/frontend-data-set-web';
 import {
 	AssignToModalContent,
-	SimpleActionLinkRenderer,
 	UpdateDueDateModalContent,
 } from '@liferay/site-cms-site-initializer';
 import React from 'react';
@@ -18,6 +17,7 @@ import React from 'react';
 import {openCMPModal} from '../../utils/openCMPModal';
 import {TaskAction, TaskItemData} from './AllTasksFDSPropsTransformer';
 import WorkflowStateRenderer from './cell_renderers/WorkflowStateRenderer';
+import WorkflowTaskActionLinkRenderer from './cell_renderers/WorkflowTaskActionLinkRenderer';
 
 const WORKFLOW_TASK_MODALS: Record<
 	string,
@@ -60,13 +60,12 @@ export default function WorkflowTasksFDSPropsTransformer({
 		customRenderers: {
 			tableCell: [
 				{
-					component: ({actions, itemData}) =>
-						SimpleActionLinkRenderer({
-							actions,
-							itemData,
-							options: {actionId: 'actionLinkWorkflowTask'},
-							value: itemData.embedded?.objectReviewed?.assetTitle,
-						}),
+					component: ({actions, itemData}) => (
+						<WorkflowTaskActionLinkRenderer
+							actions={actions}
+							itemData={itemData}
+						/>
+					),
 					name: 'assetTitleTableCellRenderer',
 					type: 'internal',
 				} as IInternalRenderer,

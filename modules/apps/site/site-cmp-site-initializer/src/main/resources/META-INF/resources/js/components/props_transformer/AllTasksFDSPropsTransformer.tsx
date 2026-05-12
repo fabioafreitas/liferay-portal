@@ -29,6 +29,7 @@ import EditAssigneeModalContent from '../modal/EditAssigneeModalContent';
 import ACTIONS from './actions/creationMenuActions';
 import AssigneeRenderer from './cell_renderers/AssigneeRenderer';
 import WorkflowStateRenderer from './cell_renderers/WorkflowStateRenderer';
+import WorkflowTaskActionLinkRenderer from './cell_renderers/WorkflowTaskActionLinkRenderer';
 
 const _CLASS_NAME_KALEO_TASK_INSTANCE_TOKEN =
 	'com.liferay.portal.workflow.kaleo.model.KaleoTaskInstanceToken';
@@ -206,16 +207,19 @@ export default function AllTasksFDSPropsTransformer({
 				} as IInternalRenderer,
 				{
 					component: ({actions, itemData, options}) =>
-						SimpleActionLinkRenderer({
-							actions,
-							itemData,
-							options: isWorkflowRow(itemData)
-								? {actionId: 'actionLinkWorkflowTask'}
-								: options,
-							value: isWorkflowRow(itemData)
-								? itemData.embedded?.objectReviewed?.assetTitle
-								: itemData.embedded?.title,
-						}),
+						isWorkflowRow(itemData) ? (
+							<WorkflowTaskActionLinkRenderer
+								actions={actions}
+								itemData={itemData}
+							/>
+						) : (
+							SimpleActionLinkRenderer({
+								actions,
+								itemData,
+								options,
+								value: itemData.embedded?.title,
+							})
+						),
 					name: 'simpleActionLinkTableCellRenderer',
 					type: 'internal',
 				} as IInternalRenderer,
