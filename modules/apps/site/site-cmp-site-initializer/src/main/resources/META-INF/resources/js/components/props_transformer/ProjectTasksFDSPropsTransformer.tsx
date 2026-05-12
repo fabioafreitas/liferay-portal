@@ -45,6 +45,7 @@ const styleActions = (actions: any[]): any[] =>
 
 export default function ProjectTasksFDSPropsTransformer({
 	additionalProps,
+	bulkActions = [],
 	creationMenu,
 	id,
 	itemsActions = [],
@@ -53,6 +54,7 @@ export default function ProjectTasksFDSPropsTransformer({
 }: {
 	additionalProps: any;
 	apiURL: string;
+	bulkActions?: any[];
 	creationMenu: any;
 	id: string;
 	itemsActions?: any[];
@@ -86,6 +88,17 @@ export default function ProjectTasksFDSPropsTransformer({
 
 	return {
 		...otherProps,
+		bulkActions: bulkActions.map((action) =>
+			action?.data?.id === 'delete'
+				? {
+						...action,
+						data: {
+							...action.data,
+							className: 'text-danger',
+						},
+					}
+				: action
+		),
 		atom: cmpTasksFDSAtom,
 		creationMenu: {
 			...creationMenu,

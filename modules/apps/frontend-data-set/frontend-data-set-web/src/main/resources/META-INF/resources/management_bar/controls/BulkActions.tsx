@@ -6,6 +6,7 @@
 import ClayButton, {ClayButtonWithIcon} from '@clayui/button';
 import DropDown from '@clayui/drop-down';
 import ClayIcon from '@clayui/icon';
+import classNames from 'classnames';
 import {ManagementToolbar} from 'frontend-js-components-web';
 
 // @ts-ignore
@@ -288,7 +289,11 @@ function BulkActions({
 												}
 											>
 												<ClayButton
-													className="bulk-action-btn nav-link"
+													className={classNames(
+														'bulk-action-btn nav-link',
+														highlightedBulkAction
+															.data?.className
+													)}
 													disabled={
 														highlightedBulkAction
 															.data?.disabled
@@ -347,6 +352,10 @@ function BulkActions({
 											{filteredBulkActions.map(
 												(actionDefinition) => (
 													<DropDown.Item
+														className={
+															actionDefinition
+																.data?.className
+														}
 														disabled={
 															actionDefinition
 																.data?.disabled

@@ -116,6 +116,12 @@ export default function AllTasksFDSPropsTransformer({
 		...otherProps,
 		bulkActions: bulkActions.map((action) => ({
 			...action,
+			data: {
+				...action.data,
+				...(action.data?.id === 'delete' && {
+					className: 'text-danger',
+				}),
+			},
 			isDisabled: ({
 				allItemsSelectedActive,
 				selectedItems,

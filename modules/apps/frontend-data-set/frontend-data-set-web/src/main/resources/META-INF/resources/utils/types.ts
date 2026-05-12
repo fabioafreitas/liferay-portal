@@ -110,6 +110,7 @@ export interface IBaseActions {
 
 export interface IBulkActionItem {
 	data?: {
+		className?: string;
 		disabled?: boolean;
 		highlighted?: boolean;
 		id?: string;
