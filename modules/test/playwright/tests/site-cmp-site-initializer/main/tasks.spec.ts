@@ -74,6 +74,40 @@ test.afterEach(async ({apiHelpers}) => {
 	}
 });
 
+test(
+	'Tasks page shows All / Project / Workflow tabs and switches between them',
+	{tag: ['@LPD-88846']},
+	async ({page, tasksPage}) => {
+		await tasksPage.goto();
+
+		const allTasksTab = page.getByRole('tab', {name: 'All Tasks'});
+		const projectTasksTab = page.getByRole('tab', {name: 'Project Tasks'});
+		const workflowTab = page.getByRole('tab', {name: 'Workflow'});
+
+		await expect(allTasksTab).toBeVisible();
+		await expect(projectTasksTab).toBeVisible();
+		await expect(workflowTab).toBeVisible();
+
+		await test.step('All Tasks tab lists the created project tasks', async () => {
+			await allTasksTab.click();
+
+			await expect(page.getByLabel(taskNames[0])).toBeVisible();
+		});
+
+		await test.step('Project Tasks tab lists the created project tasks', async () => {
+			await projectTasksTab.click();
+
+			await expect(page.getByLabel(taskNames[0])).toBeVisible();
+		});
+
+		await test.step('Workflow tab does not list project tasks', async () => {
+			await workflowTab.click();
+
+			await expect(page.getByLabel(taskNames[0])).toBeHidden();
+		});
+	}
+);
+
 test('Bulk delete tasks', {tag: ['@LPD-75299']}, async ({page, tasksPage}) => {
 	await test.step('Select 2 task and delete them using the Bulk Action', async () => {
 		await tasksPage.goto();
