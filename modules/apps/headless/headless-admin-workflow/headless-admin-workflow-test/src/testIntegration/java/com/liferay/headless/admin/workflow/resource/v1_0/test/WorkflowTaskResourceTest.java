@@ -8,6 +8,7 @@ package com.liferay.headless.admin.workflow.resource.v1_0.test;
 import com.liferay.arquillian.extension.junit.bridge.junit.Arquillian;
 import com.liferay.headless.admin.workflow.client.dto.v1_0.Assignee;
 import com.liferay.headless.admin.workflow.client.dto.v1_0.ChangeTransition;
+import com.liferay.headless.admin.workflow.client.dto.v1_0.Creator;
 import com.liferay.headless.admin.workflow.client.dto.v1_0.ObjectReviewed;
 import com.liferay.headless.admin.workflow.client.dto.v1_0.WorkflowDefinition;
 import com.liferay.headless.admin.workflow.client.dto.v1_0.WorkflowInstance;
@@ -209,6 +210,24 @@ public class WorkflowTaskResourceTest extends BaseWorkflowTaskResourceTestCase {
 			pagination ->
 				workflowTaskResource.getWorkflowInstanceWorkflowTasksPage(
 					_workflowInstance.getId(), null, pagination));
+	}
+
+	@Test
+	public void testGetWorkflowTaskCreator() throws Exception {
+		Page<WorkflowTask> page =
+			workflowTaskResource.getWorkflowInstanceWorkflowTasksPage(
+				_workflowInstance.getId(), null, Pagination.of(1, 1));
+
+		List<WorkflowTask> workflowTasks = (List<WorkflowTask>)page.getItems();
+
+		WorkflowTask workflowTask = workflowTasks.get(0);
+
+		Creator creator = workflowTask.getCreator();
+
+		Assert.assertNotNull(creator);
+		Assert.assertEquals(
+			TestPropsValues.getUserId(), GetterUtil.getLong(creator.getId()));
+		Assert.assertNotNull(creator.getName());
 	}
 
 	@Override

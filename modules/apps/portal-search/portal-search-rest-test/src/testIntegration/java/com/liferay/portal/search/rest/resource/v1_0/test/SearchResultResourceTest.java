@@ -371,6 +371,7 @@ public class SearchResultResourceTest extends BaseSearchResultResourceTestCase {
 		_testPostSearchPageWithCustomFacetConfiguration();
 		_testPostSearchPageWithDateRangeFacetConfiguration();
 		_testPostSearchPageWithEmbeddedNestedFields();
+		_testPostSearchPageAppliesForcedPermissionFilterWhenEmbedded();
 		_testPostSearchPageWithEmptyScope();
 		_testPostSearchPageWithFaultyScope();
 		_testPostSearchPageWithFilter();
@@ -991,6 +992,78 @@ public class SearchResultResourceTest extends BaseSearchResultResourceTestCase {
 
 		_testPostSearchPageWithEmbeddedNestedFieldsInLayout();
 		_testPostSearchPageWithEmbeddedNestedFieldsInObjectEntry();
+	}
+
+	private void _testPostSearchPageAppliesForcedPermissionFilterWhenEmbedded()
+		throws Exception {
+
+		// Covers c235959: when isPermissionAware=false on the model
+		// configurator (KaleoTaskInstanceTokenModelSearchConfigurator),
+		// SearchResultResourceImpl sets the
+		// "search.permission.filter.forced" SearchContext attribute on
+		// /o/search requests that include nestedFields=embedded.
+		// IndexerSearcherImpl consults the attribute as a fallback path
+		// for the post-permission filter, so rows the caller cannot view
+		// are dropped before _setEmbedded would null them out.
+		//
+		// Contract:
+		//   nestedFields=embedded     -> only viewable rows in items[]
+		//   no nestedFields=embedded  -> all matching rows in items[]
+		//                                (metadata-only, pre-fix behavior)
+		//
+		// TODO(search): wire a KaleoTaskInstanceToken fixture: a workflow
+		// task created by an admin and assigned only to a role the
+		// authenticated test user does not hold. Both _postSearchPage
+		// calls below should run as that non-privileged user. The kaleo
+		// helpers live in :apps:portal-workflow:portal-workflow-kaleo-api
+		// and :modules/apps/portal-workflow/portal-workflow-kaleo-test
+		// (WorkflowTaskTestUtil etc.) — add the relevant
+		// testIntegrationImplementation deps to this module's
+		// build.gradle to access them.
+
+		if (Objects.equals(_searchEngine.getVendor(), "Solr")) {
+			return;
+		}
+
+		String kaleoTaskInstanceTokenClassName =
+			"com.liferay.portal.workflow.kaleo.model.KaleoTaskInstanceToken";
+
+		SearchPage<SearchResult> withEmbeddedPage = _postSearchPage(
+			HashMapBuilder.put(
+				"emptySearch", "true"
+			).put(
+				"entryClassNames", kaleoTaskInstanceTokenClassName
+			).put(
+				"nestedFields", "embedded"
+			).build(),
+			new SearchRequestBody());
+
+		SearchPage<SearchResult> withoutEmbeddedPage = _postSearchPage(
+			HashMapBuilder.put(
+				"emptySearch", "true"
+			).put(
+				"entryClassNames", kaleoTaskInstanceTokenClassName
+			).build(),
+			new SearchRequestBody());
+
+		// With embedded: every returned row must have a non-null
+		// embedded payload — the forced filter dropped any row whose
+		// embedded resolution would have failed.
+		for (SearchResult searchResult : withEmbeddedPage.getItems()) {
+			Assert.assertNotNull(
+				"Row leaked through forced filter: " + searchResult,
+				searchResult.getEmbedded());
+		}
+
+		// Without embedded: the forced filter is NOT applied, so the
+		// result set must be a (non-strict) superset of the
+		// embedded-mode result set — metadata-only callers keep their
+		// pre-fix behavior.
+		Assert.assertTrue(
+			"Without-embedded must return at least as many rows as " +
+				"with-embedded",
+			withoutEmbeddedPage.getTotalCount() >=
+				withEmbeddedPage.getTotalCount());
 	}
 
 	private void _testPostSearchPageWithEmbeddedNestedFieldsInLayout()

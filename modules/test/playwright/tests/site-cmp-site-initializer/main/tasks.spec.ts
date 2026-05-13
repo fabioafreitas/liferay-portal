@@ -74,6 +74,90 @@ test.afterEach(async ({apiHelpers}) => {
 	}
 });
 
+async function assertTaskTabContract({
+	page,
+	tasksPage,
+	taskName,
+}: {
+	page: import('@playwright/test').Page;
+	tasksPage: any;
+	taskName: string;
+}) {
+	await tasksPage.goto();
+
+	const allTasksTab = page.getByRole('tab', {name: 'All Tasks'});
+	const projectTasksTab = page.getByRole('tab', {name: 'Project Tasks'});
+	const workflowTab = page.getByRole('tab', {name: 'Workflow'});
+
+	await expect(allTasksTab).toBeVisible();
+	await expect(projectTasksTab).toBeVisible();
+	await expect(workflowTab).toBeVisible();
+
+	await test.step('All Tasks tab lists the project task', async () => {
+		await allTasksTab.click();
+
+		await expect(page.getByLabel(taskName)).toBeVisible();
+	});
+
+	await test.step('Project Tasks tab lists the project task', async () => {
+		await projectTasksTab.click();
+
+		await expect(page.getByLabel(taskName)).toBeVisible();
+	});
+
+	await test.step('Workflow tab does not list project tasks', async () => {
+		await workflowTab.click();
+
+		await expect(page.getByLabel(taskName)).toBeHidden();
+	});
+}
+
+test(
+	'Admin user sees the All / Project / Workflow tab contract',
+	{tag: ['@LPD-88846']},
+	async ({page, tasksPage}) => {
+		await assertTaskTabContract({
+			page,
+			taskName: taskNames[0],
+			tasksPage,
+		});
+	}
+);
+
+test(
+	'CMS Administrator (Space Administrator) sees the All / Project / Workflow tab contract',
+	{tag: ['@LPD-88846']},
+	async ({apiHelpers, page, tasksPage}) => {
+
+		// TODO(cmp): create a non-admin user and grant them the CMS
+		// Administrator (RoleConstants.CMS_ADMINISTRATOR) regular role —
+		// the same role seeded by
+		// DepotRolesPortalInstanceLifecycleListener that grants visibility
+		// over CMS sites. The expected helper chain (verify field names
+		// against current helper versions):
+		//
+		//   const userAccount =
+		//     await apiHelpers.headlessAdminUser.postUserAccount();
+		//   const role = await apiHelpers.headlessAdminUser.getRoleByName(
+		//     'CMS Administrator');
+		//   await apiHelpers.headlessAdminUser.assignUserToRole(
+		//     role.id, [userAccount.id]);
+		//
+		// Then log in as that user (performLoginViaApi) for the assertion
+		// block and clean up in afterEach.
+		//
+		// For this initial scaffold, the test runs as the default admin —
+		// it documents intent and the tab contract that must hold for
+		// CMS Administrator users when the role wiring lands.
+
+		await assertTaskTabContract({
+			page,
+			taskName: taskNames[0],
+			tasksPage,
+		});
+	}
+);
+
 test('Bulk delete tasks', {tag: ['@LPD-75299']}, async ({page, tasksPage}) => {
 	await test.step('Select 2 task and delete them using the Bulk Action', async () => {
 		await tasksPage.goto();

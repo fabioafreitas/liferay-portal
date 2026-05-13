@@ -57,7 +57,7 @@ import org.springframework.mock.web.MockHttpServletResponse;
 )
 @RunWith(Arquillian.class)
 @Sync
-public class ViewTasksSectionDisplayContextTest
+public class ViewAllTasksSectionDisplayContextTest
 	extends BaseSectionDisplayContextTestCase {
 
 	@ClassRule
@@ -91,26 +91,16 @@ public class ViewTasksSectionDisplayContextTest
 
 	@Test
 	public void testGetAPIURL() throws Exception {
-		Assert.assertTrue(
-			StringUtil.equals(
-				getAPIURL(null),
-				StringBundler.concat(
-					"/o/search/v1.0/search?emptySearch=true&entryClassNames=",
-					HtmlUtil.escapeURL(objectDefinition.getClassName()), ",",
-					_CLASS_NAME_KALEO_TASK_INSTANCE_TOKEN,
-					"&filter=(objectDefinitionId eq ",
-					objectDefinition.getObjectDefinitionId(),
-					" or keywords/any(k:startswith(k, 'L_CMP_TASK')))",
-					"&nestedFields=cmpProjectToCMPTasks,embedded")));
-		Assert.assertTrue(
-			StringUtil.equals(
-				getAPIURL(_assetEntry),
-				StringBundler.concat(
-					"/o/search/v1.0/search?emptySearch=true&filter=",
-					"(objectDefinitionId eq ",
-					objectDefinition.getObjectDefinitionId(),
-					" and scopeGroupId eq ", _assetEntry.getGroupId(),
-					")&nestedFields=cmpProjectToCMPTasks,embedded")));
+		Assert.assertEquals(
+			StringBundler.concat(
+				"/o/search/v1.0/search?emptySearch=true&entryClassNames=",
+				HtmlUtil.escapeURL(objectDefinition.getClassName()), ",",
+				_CLASS_NAME_KALEO_TASK_INSTANCE_TOKEN,
+				"&filter=(objectDefinitionId eq ",
+				objectDefinition.getObjectDefinitionId(),
+				" or keywords/any(k:startswith(k, 'L_CMP_TASK')))",
+				"&nestedFields=cmpProjectToCMPTasks,embedded"),
+			getAPIURL(null));
 	}
 
 	@Test
@@ -310,7 +300,7 @@ public class ViewTasksSectionDisplayContextTest
 
 		return httpServletRequest.getAttribute(
 			"com.liferay.site.cmp.site.initializer.internal.display.context." +
-				"ViewTasksSectionDisplayContext");
+				"ViewAllTasksSectionDisplayContext");
 	}
 
 	private DropdownItem _getDropdownItem(CreationMenu creationMenu) {
@@ -331,7 +321,7 @@ public class ViewTasksSectionDisplayContextTest
 	private AssetEntryLocalService _assetEntryLocalService;
 
 	@Inject(
-		filter = "component.name=com.liferay.site.cmp.site.initializer.internal.fragment.renderer.ViewTasksJSPSectionFragmentRenderer"
+		filter = "component.name=com.liferay.site.cmp.site.initializer.internal.fragment.renderer.ViewAllTasksJSPSectionFragmentRenderer"
 	)
 	private FragmentRenderer _fragmentRenderer;
 

@@ -115,4 +115,154 @@ describe('filterBulkActions', () => {
 			});
 		});
 	});
+
+	describe('when isDisabled is not defined', () => {
+		it('returns the action without stamping data.disabled', () => {
+			const bulkActions: IBulkActionItem[] = [
+				{data: {id: 'plain-action'}},
+			];
+
+			const result = filterBulkActions({
+				allItemsSelectedActive: false,
+				bulkActions,
+				globalFDSState,
+				selectedItems,
+			});
+
+			expect(result).toHaveLength(1);
+			expect(result[0].data).not.toHaveProperty('disabled');
+		});
+	});
+
+	describe('when isDisabled is defined', () => {
+		it('invokes isDisabled with the same context shape as isVisible', () => {
+			const isDisabledFn = jest.fn().mockReturnValue(false);
+			const bulkActions: IBulkActionItem[] = [
+				{
+					data: {id: 'evaluated-action'},
+					isDisabled: isDisabledFn,
+				},
+			];
+
+			filterBulkActions({
+				allItemsSelectedActive: false,
+				bulkActions,
+				globalFDSState,
+				selectedItems,
+			});
+
+			expect(isDisabledFn).toHaveBeenCalledWith({
+				activeFilters: [],
+				activeSearch: {query: ''},
+				allItemsSelectedActive: false,
+				selectedItems,
+			});
+		});
+
+		it('stamps data.disabled to true and preserves other data fields when isDisabled returns true', () => {
+			const bulkActions: IBulkActionItem[] = [
+				{
+					data: {
+						className: 'text-danger',
+						highlighted: true,
+						id: 'delete',
+					},
+					isDisabled: () => true,
+				},
+			];
+
+			const result = filterBulkActions({
+				allItemsSelectedActive: false,
+				bulkActions,
+				globalFDSState,
+				selectedItems,
+			});
+
+			expect(result).toHaveLength(1);
+			expect(result[0].data).toEqual({
+				className: 'text-danger',
+				disabled: true,
+				highlighted: true,
+				id: 'delete',
+			});
+		});
+
+		it('stamps data.disabled to false when isDisabled returns false', () => {
+			const bulkActions: IBulkActionItem[] = [
+				{
+					data: {id: 'evaluated-action'},
+					isDisabled: () => false,
+				},
+			];
+
+			const result = filterBulkActions({
+				allItemsSelectedActive: false,
+				bulkActions,
+				globalFDSState,
+				selectedItems,
+			});
+
+			expect(result[0].data?.disabled).toBe(false);
+		});
+
+		it('includes a visible+disabled action and stamps data.disabled', () => {
+			const bulkActions: IBulkActionItem[] = [
+				{
+					data: {id: 'visible-and-disabled'},
+					isDisabled: () => true,
+					isVisible: () => true,
+				},
+			];
+
+			const result = filterBulkActions({
+				allItemsSelectedActive: false,
+				bulkActions,
+				globalFDSState,
+				selectedItems,
+			});
+
+			expect(result).toHaveLength(1);
+			expect(result[0].data?.disabled).toBe(true);
+		});
+
+		it('drops a not-visible action without invoking isDisabled', () => {
+			const isDisabledFn = jest.fn().mockReturnValue(true);
+			const bulkActions: IBulkActionItem[] = [
+				{
+					data: {id: 'hidden'},
+					isDisabled: isDisabledFn,
+					isVisible: () => false,
+				},
+			];
+
+			const result = filterBulkActions({
+				allItemsSelectedActive: false,
+				bulkActions,
+				globalFDSState,
+				selectedItems,
+			});
+
+			expect(result).toHaveLength(0);
+			expect(isDisabledFn).not.toHaveBeenCalled();
+		});
+
+		it('does not mutate the input bulkActions array or its data objects', () => {
+			const original: IBulkActionItem = {
+				data: {id: 'mutable-check'},
+				isDisabled: () => true,
+			};
+			const originalDataReference = original.data;
+			const bulkActions: IBulkActionItem[] = [original];
+
+			filterBulkActions({
+				allItemsSelectedActive: false,
+				bulkActions,
+				globalFDSState,
+				selectedItems,
+			});
+
+			expect(original.data).toBe(originalDataReference);
+			expect(original.data).not.toHaveProperty('disabled');
+		});
+	});
 });
