@@ -386,8 +386,10 @@ public class SearchResultResourceImpl extends BaseSearchResultResourceImpl {
 						searchRequestBody.getAttributes(), filter, scope, search,
 						searchContext, sorts);
 
-					searchContext.setAttribute(
-						"search.permission.filter.forced", Boolean.TRUE);
+					if (_isEmbedded()) {
+						searchContext.setAttribute(
+							"search.permission.filter.forced", Boolean.TRUE);
+					}
 				}
 			);
 
