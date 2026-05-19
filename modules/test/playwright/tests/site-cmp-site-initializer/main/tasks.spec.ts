@@ -7,8 +7,12 @@ import {expect, mergeTests} from '@playwright/test';
 
 import {dataApiHelpersTest} from '../../../fixtures/dataApiHelpersTest';
 import {featureFlagsTest} from '../../../fixtures/featureFlagsTest';
+import {globalMenuPagesTest} from '../../../fixtures/globalMenuPagesTest';
 import {loginTest} from '../../../fixtures/loginTest';
+import {workflowPagesTest} from '../../../fixtures/workflowPagesTest';
+import {addSpaceUser} from '../../../utils/addSpaceUser';
 import getRandomString from '../../../utils/getRandomString';
+import {performUserSwitch} from '../../../utils/performLogin';
 import {waitForAlert} from '../../../utils/waitForAlert';
 import {cmsPagesTest} from '../../site-cms-site-initializer/main/fixtures/cmsPagesTest';
 import {cmpPagesTest} from './fixtures/cmpPagesTest';
@@ -20,17 +24,25 @@ const test = mergeTests(
 	featureFlagsTest({
 		'LPD-58677': {enabled: true},
 	}),
-	loginTest()
+	globalMenuPagesTest,
+	loginTest(),
+	workflowPagesTest
 );
 
 const cmpProject = 'cmp/projects';
 const cmpTask = 'cmp/tasks';
 let project;
 const tasks = [];
-let taskNames = [];
+let taskNames: string[] = [];
+let taskTags: string[] = [];
+
+const generateTaskTag = () =>
+	'L_CMP_TASK_' + Math.floor(Math.random() * 100000000);
 
 test.beforeEach(async ({apiHelpers}) => {
 	taskNames = [getRandomString(), getRandomString(), getRandomString()];
+	taskTags = [];
+
 	project = await apiHelpers.objectEntry.postObjectEntry(
 		{
 			title: getRandomString(),
@@ -39,8 +51,13 @@ test.beforeEach(async ({apiHelpers}) => {
 	);
 
 	for (const taskName of taskNames) {
+		const taskTag = generateTaskTag();
+
+		taskTags.push(taskTag);
+
 		const task = await apiHelpers.objectEntry.postObjectEntry(
 			{
+				keywords: [taskTag],
 				r_cmpProjectToCMPTasks_c_cmpProjectId: project.id,
 				title: taskName,
 			},
@@ -78,6 +95,8 @@ test('Bulk delete tasks', {tag: ['@LPD-75299']}, async ({page, tasksPage}) => {
 	await test.step('Select 2 task and delete them using the Bulk Action', async () => {
 		await tasksPage.goto();
 
+		await tasksPage.projectTasksTab.click();
+
 		await tasksPage
 			.getItem(taskNames[0])
 			.locator('input[title="Select Item"]')
@@ -89,7 +108,7 @@ test('Bulk delete tasks', {tag: ['@LPD-75299']}, async ({page, tasksPage}) => {
 
 		await tasksPage.execBulkItemAction('Delete');
 
-		await tasksPage.deleteButton.click();
+		await tasksPage.dialogDeleteButton.click();
 
 		await waitForAlert(page, 'Info:Delete action started for 2 tasks.', {
 			autoClose: true,
@@ -107,11 +126,60 @@ test('Bulk delete tasks', {tag: ['@LPD-75299']}, async ({page, tasksPage}) => {
 });
 
 test(
+	'Bulk update the assignee of an task',
+	{tag: ['@LPD-75299']},
+	async ({page, tasksPage}) => {
+		await test.step('Select 2 task and update its assignee using the Bulk Action', async () => {
+			await tasksPage.goto();
+
+			await tasksPage.projectTasksTab.click();
+
+			await tasksPage
+				.getItem(taskNames[0])
+				.locator('input[title="Select Item"]')
+				.check();
+			await tasksPage
+				.getItem(taskNames[1])
+				.locator('input[title="Select Item"]')
+				.check();
+
+			await tasksPage.execBulkItemAction('Assign to...');
+
+			await expect(tasksPage.assignTaskToDialog).toBeVisible();
+
+			await page
+				.getByPlaceholder('Unassigned')
+				.fill('Asset Library Content Reviewer');
+
+			await page
+				.getByRole('option', {
+					name: 'Asset Library Content Reviewer',
+				})
+				.click();
+
+			await tasksPage.saveButton.click();
+
+			await expect(async () => {
+				await tasksPage.goto();
+
+				await expect(
+					page.getByRole('row', {
+						name: 'Asset Library Content Reviewer',
+					})
+				).toHaveCount(2, {timeout: 1000});
+			}).toPass({timeout: 10000});
+		});
+	}
+);
+
+test(
 	'Bulk update the due date of an task',
 	{tag: ['@LPD-75299']},
 	async ({page, tasksPage}) => {
 		await test.step('Select 2 task and update its due date using the Bulk Action', async () => {
 			await tasksPage.goto();
+
+			await tasksPage.projectTasksTab.click();
 
 			await tasksPage
 				.getItem(taskNames[0])
@@ -162,56 +230,13 @@ test(
 );
 
 test(
-	'Bulk update the assignee of an task',
-	{tag: ['@LPD-75299']},
-	async ({page, tasksPage}) => {
-		await test.step('Select 2 task and update its assignee using the Bulk Action', async () => {
-			await tasksPage.goto();
-
-			await tasksPage
-				.getItem(taskNames[0])
-				.locator('input[title="Select Item"]')
-				.check();
-			await tasksPage
-				.getItem(taskNames[1])
-				.locator('input[title="Select Item"]')
-				.check();
-
-			await tasksPage.execBulkItemAction('Assign Task');
-
-			await expect(tasksPage.assignTaskToDialog).toBeVisible();
-
-			await page
-				.getByPlaceholder('Unassigned')
-				.fill('Asset Library Content Reviewer');
-
-			await page
-				.getByRole('option', {
-					name: 'Asset Library Content Reviewer',
-				})
-				.click();
-
-			await tasksPage.saveButton.click();
-
-			await expect(async () => {
-				await tasksPage.goto();
-
-				await expect(
-					page.getByRole('row', {
-						name: 'Asset Library Content Reviewer',
-					})
-				).toHaveCount(2, {timeout: 1000});
-			}).toPass({timeout: 10000});
-		});
-	}
-);
-
-test(
 	'Bulk update the state of an task',
 	{tag: ['@LPD-75299']},
 	async ({page, tasksPage}) => {
 		await test.step('Select 2 task and update its state using the Bulk Action', async () => {
 			await tasksPage.goto();
+
+			await tasksPage.projectTasksTab.click();
 
 			await tasksPage
 				.getItem(taskNames[0])
@@ -244,6 +269,45 @@ test(
 );
 
 test(
+	'Ensure that the "All Tasks" tab disables highlighted bulk actions when project and workflow tasks are selected together',
+	{tag: ['@LPD-88846']},
+	async ({apiHelpers, assignWorkflowToAssetType, page, tasksPage}) => {
+		await assignWorkflowToAssetType('Single Approver', 'Blog');
+
+		const blogTitle = getRandomString();
+
+		await apiHelpers.objectEntry.postObjectEntry(
+			{
+				keywords: [taskTags[0]],
+				objectEntryFolderExternalReferenceCode: 'L_CONTENTS',
+				title: blogTitle,
+			},
+			'cms/blogs',
+			'Default'
+		);
+
+		await tasksPage.goto();
+
+		await tasksPage.allTasksTab.click();
+
+		await tasksPage.getItem(taskNames[0]).getByLabel('Select Item').check();
+
+		await tasksPage.getItem(blogTitle).getByLabel('Select Item').check();
+
+		await expect(
+			page.getByRole('button', {name: 'Update Due Date'})
+		).toBeDisabled();
+		await expect(
+			page.getByRole('button', {name: 'Assign to...'})
+		).toBeDisabled();
+		await expect(
+			page.getByRole('button', {name: 'Update State'})
+		).toBeDisabled();
+		await expect(page.getByRole('button', {name: 'Delete'})).toBeDisabled();
+	}
+);
+
+test(
 	'Kanban View Task creation generates a tag',
 	{tag: ['@LPD-80545']},
 	async ({apiHelpers, page, tasksPage}) => {
@@ -270,6 +334,8 @@ test(
 
 		await test.step('Go to tasks page and switch to kanban view', async () => {
 			await tasksPage.goto();
+
+			await tasksPage.projectTasksTab.click();
 
 			await tasksPage.tableViewButton.click();
 
@@ -301,5 +367,153 @@ test(
 				'L_CMP_TASK_'
 			);
 		});
+	}
+);
+
+test(
+	'Verify task visibility across Global Tasks tabs based on user permission',
+	{tag: ['@LPD-88846']},
+	async ({apiHelpers, assignWorkflowToAssetType, page, tasksPage}) => {
+		await assignWorkflowToAssetType('Single Approver', 'Blog');
+
+		const spaces =
+			await apiHelpers.headlessAssetLibrary.getAssetLibrariesPage();
+
+		const defaultSpace = spaces.find((space) => space.name === 'Default');
+
+		const user = await addSpaceUser(
+			apiHelpers,
+			defaultSpace.externalReferenceCode,
+			'Asset Library Administrator'
+		);
+
+		await addSpaceUser(
+			apiHelpers,
+			project.systemProperties.scope.externalReferenceCode,
+			'Asset Library Administrator',
+			user
+		);
+
+		const assignedBlogTitle = getRandomString();
+		const unassignedBlogTitle = getRandomString();
+
+		await test.step('Create two CMS Blog entries; both generate KaleoTaskInstanceTokens', async () => {
+			await apiHelpers.objectEntry.postObjectEntry(
+				{
+					keywords: [taskTags[0]],
+					objectEntryFolderExternalReferenceCode: 'L_CONTENTS',
+					title: assignedBlogTitle,
+				},
+				'cms/blogs',
+				'Default'
+			);
+
+			await apiHelpers.objectEntry.postObjectEntry(
+				{
+					keywords: [taskTags[0]],
+					objectEntryFolderExternalReferenceCode: 'L_CONTENTS',
+					title: unassignedBlogTitle,
+				},
+				'cms/blogs',
+				'Default'
+			);
+		});
+
+		await test.step('Assign a workflow tasks to admin user', async () => {
+			await tasksPage.goto();
+
+			await tasksPage
+				.getItem(assignedBlogTitle)
+				.getByRole('button')
+				.click();
+
+			await page.getByRole('menuitem', {name: 'Assign to Me'}).click();
+
+			await tasksPage.saveButton.click();
+
+			await page.reload();
+		});
+
+		await test.step('Admin sees tasks separated by tab regardless of assignment', async () => {
+			await tasksPage.goto();
+
+			await tasksPage.allTasksTab.click();
+
+			await expect(tasksPage.getItem(taskNames[0])).toBeVisible();
+			await expect(tasksPage.getItem(assignedBlogTitle)).toBeVisible();
+			await expect(tasksPage.getItem(unassignedBlogTitle)).toBeVisible();
+
+			await tasksPage.projectTasksTab.click();
+
+			await expect(tasksPage.getItem(taskNames[0])).toBeVisible();
+			await expect(tasksPage.getItem(assignedBlogTitle)).toBeHidden();
+			await expect(tasksPage.getItem(unassignedBlogTitle)).toBeHidden();
+
+			await tasksPage.workflowTasksTab.click();
+
+			await expect(tasksPage.getItem(taskNames[0])).toBeHidden();
+			await expect(tasksPage.getItem(assignedBlogTitle)).toBeVisible();
+			await expect(tasksPage.getItem(unassignedBlogTitle)).toBeVisible();
+		});
+
+		await test.step('Space admin sees tasks separated by tab based on assignment', async () => {
+			await performUserSwitch(page, user.alternateName);
+
+			await tasksPage.goto();
+
+			await tasksPage.allTasksTab.click();
+
+			await expect(tasksPage.getItem(taskNames[0])).toBeVisible();
+			await expect(tasksPage.getItem(assignedBlogTitle)).toBeHidden();
+			await expect(tasksPage.getItem(unassignedBlogTitle)).toBeVisible();
+
+			await tasksPage.projectTasksTab.click();
+
+			await expect(tasksPage.getItem(taskNames[0])).toBeVisible();
+			await expect(tasksPage.getItem(assignedBlogTitle)).toBeHidden();
+			await expect(tasksPage.getItem(unassignedBlogTitle)).toBeHidden();
+
+			await tasksPage.workflowTasksTab.click();
+
+			await expect(tasksPage.getItem(taskNames[0])).toBeHidden();
+			await expect(tasksPage.getItem(assignedBlogTitle)).toBeHidden();
+			await expect(tasksPage.getItem(unassignedBlogTitle)).toBeVisible();
+		});
+
+		await performUserSwitch(page, 'test');
+	}
+);
+
+test(
+	'View selector is visible only on Project Tasks tab',
+	{tag: ['@LPD-88846']},
+	async ({apiHelpers, assignWorkflowToAssetType, tasksPage}) => {
+		await assignWorkflowToAssetType('Single Approver', 'Blog');
+
+		const blogTitle = getRandomString();
+
+		await apiHelpers.objectEntry.postObjectEntry(
+			{
+				keywords: [taskTags[0]],
+				objectEntryFolderExternalReferenceCode: 'L_CONTENTS',
+				title: blogTitle,
+			},
+			'cms/blogs',
+			'Default'
+		);
+
+		await tasksPage.goto();
+
+		await tasksPage.allTasksTab.click();
+
+		await expect(tasksPage.viewSelectorButton).toBeHidden();
+
+		await tasksPage.projectTasksTab.click();
+
+		await expect(tasksPage.viewSelectorButton).toBeVisible();
+
+		await tasksPage.workflowTasksTab.click();
+
+		await expect(tasksPage.viewSelectorButton).toBeHidden();
 	}
 );
