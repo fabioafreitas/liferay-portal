@@ -6,6 +6,7 @@
 package com.liferay.ai.hub.rest.client.serdes.v1_0;
 
 import com.liferay.ai.hub.rest.client.dto.v1_0.ProvisioningRequest;
+import com.liferay.ai.hub.rest.client.dto.v1_0.UserAccount;
 import com.liferay.ai.hub.rest.client.json.BaseJSONParser;
 
 import jakarta.annotation.Generated;
@@ -46,18 +47,80 @@ public class ProvisioningRequestSerDes {
 
 		sb.append("{");
 
-		if (provisioningRequest.getCustomerName() != null) {
+		if (provisioningRequest.getAccountExternalReferenceCode() != null) {
 			if (sb.length() > 1) {
 				sb.append(", ");
 			}
 
-			sb.append("\"customerName\": ");
+			sb.append("\"accountExternalReferenceCode\": ");
 
 			sb.append("\"");
 
-			sb.append(_escape(provisioningRequest.getCustomerName()));
+			sb.append(
+				_escape(provisioningRequest.getAccountExternalReferenceCode()));
 
 			sb.append("\"");
+		}
+
+		if (provisioningRequest.getAccountId() != null) {
+			if (sb.length() > 1) {
+				sb.append(", ");
+			}
+
+			sb.append("\"accountId\": ");
+
+			sb.append(provisioningRequest.getAccountId());
+		}
+
+		if (provisioningRequest.getAccountName() != null) {
+			if (sb.length() > 1) {
+				sb.append(", ");
+			}
+
+			sb.append("\"accountName\": ");
+
+			sb.append("\"");
+
+			sb.append(_escape(provisioningRequest.getAccountName()));
+
+			sb.append("\"");
+		}
+
+		if (provisioningRequest.getLiferayDXPURL() != null) {
+			if (sb.length() > 1) {
+				sb.append(", ");
+			}
+
+			sb.append("\"liferayDXPURL\": ");
+
+			sb.append("\"");
+
+			sb.append(_escape(provisioningRequest.getLiferayDXPURL()));
+
+			sb.append("\"");
+		}
+
+		if (provisioningRequest.getUserAccounts() != null) {
+			if (sb.length() > 1) {
+				sb.append(", ");
+			}
+
+			sb.append("\"userAccounts\": ");
+
+			sb.append("[");
+
+			for (int i = 0; i < provisioningRequest.getUserAccounts().length;
+				 i++) {
+
+				sb.append(
+					String.valueOf(provisioningRequest.getUserAccounts()[i]));
+
+				if ((i + 1) < provisioningRequest.getUserAccounts().length) {
+					sb.append(", ");
+				}
+			}
+
+			sb.append("]");
 		}
 
 		sb.append("}");
@@ -81,13 +144,50 @@ public class ProvisioningRequestSerDes {
 
 		Map<String, String> map = new TreeMap<>();
 
-		if (provisioningRequest.getCustomerName() == null) {
-			map.put("customerName", null);
+		if (provisioningRequest.getAccountExternalReferenceCode() == null) {
+			map.put("accountExternalReferenceCode", null);
 		}
 		else {
 			map.put(
-				"customerName",
-				String.valueOf(provisioningRequest.getCustomerName()));
+				"accountExternalReferenceCode",
+				String.valueOf(
+					provisioningRequest.getAccountExternalReferenceCode()));
+		}
+
+		if (provisioningRequest.getAccountId() == null) {
+			map.put("accountId", null);
+		}
+		else {
+			map.put(
+				"accountId",
+				String.valueOf(provisioningRequest.getAccountId()));
+		}
+
+		if (provisioningRequest.getAccountName() == null) {
+			map.put("accountName", null);
+		}
+		else {
+			map.put(
+				"accountName",
+				String.valueOf(provisioningRequest.getAccountName()));
+		}
+
+		if (provisioningRequest.getLiferayDXPURL() == null) {
+			map.put("liferayDXPURL", null);
+		}
+		else {
+			map.put(
+				"liferayDXPURL",
+				String.valueOf(provisioningRequest.getLiferayDXPURL()));
+		}
+
+		if (provisioningRequest.getUserAccounts() == null) {
+			map.put("userAccounts", null);
+		}
+		else {
+			map.put(
+				"userAccounts",
+				String.valueOf(provisioningRequest.getUserAccounts()));
 		}
 
 		return map;
@@ -108,7 +208,21 @@ public class ProvisioningRequestSerDes {
 
 		@Override
 		protected boolean parseMaps(String jsonParserFieldName) {
-			if (Objects.equals(jsonParserFieldName, "customerName")) {
+			if (Objects.equals(
+					jsonParserFieldName, "accountExternalReferenceCode")) {
+
+				return false;
+			}
+			else if (Objects.equals(jsonParserFieldName, "accountId")) {
+				return false;
+			}
+			else if (Objects.equals(jsonParserFieldName, "accountName")) {
+				return false;
+			}
+			else if (Objects.equals(jsonParserFieldName, "liferayDXPURL")) {
+				return false;
+			}
+			else if (Objects.equals(jsonParserFieldName, "userAccounts")) {
 				return false;
 			}
 
@@ -120,10 +234,46 @@ public class ProvisioningRequestSerDes {
 			ProvisioningRequest provisioningRequest, String jsonParserFieldName,
 			Object jsonParserFieldValue) {
 
-			if (Objects.equals(jsonParserFieldName, "customerName")) {
+			if (Objects.equals(
+					jsonParserFieldName, "accountExternalReferenceCode")) {
+
 				if (jsonParserFieldValue != null) {
-					provisioningRequest.setCustomerName(
+					provisioningRequest.setAccountExternalReferenceCode(
 						(String)jsonParserFieldValue);
+				}
+			}
+			else if (Objects.equals(jsonParserFieldName, "accountId")) {
+				if (jsonParserFieldValue != null) {
+					provisioningRequest.setAccountId(
+						Long.valueOf((String)jsonParserFieldValue));
+				}
+			}
+			else if (Objects.equals(jsonParserFieldName, "accountName")) {
+				if (jsonParserFieldValue != null) {
+					provisioningRequest.setAccountName(
+						(String)jsonParserFieldValue);
+				}
+			}
+			else if (Objects.equals(jsonParserFieldName, "liferayDXPURL")) {
+				if (jsonParserFieldValue != null) {
+					provisioningRequest.setLiferayDXPURL(
+						(String)jsonParserFieldValue);
+				}
+			}
+			else if (Objects.equals(jsonParserFieldName, "userAccounts")) {
+				if (jsonParserFieldValue != null) {
+					Object[] jsonParserFieldValues =
+						(Object[])jsonParserFieldValue;
+
+					UserAccount[] userAccountsArray =
+						new UserAccount[jsonParserFieldValues.length];
+
+					for (int i = 0; i < userAccountsArray.length; i++) {
+						userAccountsArray[i] = UserAccountSerDes.toDTO(
+							(String)jsonParserFieldValues[i]);
+					}
+
+					provisioningRequest.setUserAccounts(userAccountsArray);
 				}
 			}
 		}
@@ -207,4 +357,4 @@ public class ProvisioningRequestSerDes {
 	}
 
 }
-// LIFERAY-REST-BUILDER-HASH:270323919
+// LIFERAY-REST-BUILDER-HASH:833808494

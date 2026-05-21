@@ -25,26 +25,114 @@ public class ProvisioningRequest implements Cloneable, Serializable {
 		return ProvisioningRequestSerDes.toDTO(json);
 	}
 
-	public String getCustomerName() {
-		return customerName;
+	public String getAccountExternalReferenceCode() {
+		return accountExternalReferenceCode;
 	}
 
-	public void setCustomerName(String customerName) {
-		this.customerName = customerName;
+	public void setAccountExternalReferenceCode(
+		String accountExternalReferenceCode) {
+
+		this.accountExternalReferenceCode = accountExternalReferenceCode;
 	}
 
-	public void setCustomerName(
-		UnsafeSupplier<String, Exception> customerNameUnsafeSupplier) {
+	public void setAccountExternalReferenceCode(
+		UnsafeSupplier<String, Exception>
+			accountExternalReferenceCodeUnsafeSupplier) {
 
 		try {
-			customerName = customerNameUnsafeSupplier.get();
+			accountExternalReferenceCode =
+				accountExternalReferenceCodeUnsafeSupplier.get();
 		}
 		catch (Exception e) {
 			throw new RuntimeException(e);
 		}
 	}
 
-	protected String customerName;
+	protected String accountExternalReferenceCode;
+
+	public Long getAccountId() {
+		return accountId;
+	}
+
+	public void setAccountId(Long accountId) {
+		this.accountId = accountId;
+	}
+
+	public void setAccountId(
+		UnsafeSupplier<Long, Exception> accountIdUnsafeSupplier) {
+
+		try {
+			accountId = accountIdUnsafeSupplier.get();
+		}
+		catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	protected Long accountId;
+
+	public String getAccountName() {
+		return accountName;
+	}
+
+	public void setAccountName(String accountName) {
+		this.accountName = accountName;
+	}
+
+	public void setAccountName(
+		UnsafeSupplier<String, Exception> accountNameUnsafeSupplier) {
+
+		try {
+			accountName = accountNameUnsafeSupplier.get();
+		}
+		catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	protected String accountName;
+
+	public String getLiferayDXPURL() {
+		return liferayDXPURL;
+	}
+
+	public void setLiferayDXPURL(String liferayDXPURL) {
+		this.liferayDXPURL = liferayDXPURL;
+	}
+
+	public void setLiferayDXPURL(
+		UnsafeSupplier<String, Exception> liferayDXPURLUnsafeSupplier) {
+
+		try {
+			liferayDXPURL = liferayDXPURLUnsafeSupplier.get();
+		}
+		catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	protected String liferayDXPURL;
+
+	public UserAccount[] getUserAccounts() {
+		return userAccounts;
+	}
+
+	public void setUserAccounts(UserAccount[] userAccounts) {
+		this.userAccounts = userAccounts;
+	}
+
+	public void setUserAccounts(
+		UnsafeSupplier<UserAccount[], Exception> userAccountsUnsafeSupplier) {
+
+		try {
+			userAccounts = userAccountsUnsafeSupplier.get();
+		}
+		catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	protected UserAccount[] userAccounts;
 
 	@Override
 	public ProvisioningRequest clone() throws CloneNotSupportedException {
@@ -78,4 +166,4 @@ public class ProvisioningRequest implements Cloneable, Serializable {
 	}
 
 }
-// LIFERAY-REST-BUILDER-HASH:-528621504
+// LIFERAY-REST-BUILDER-HASH:1010208806

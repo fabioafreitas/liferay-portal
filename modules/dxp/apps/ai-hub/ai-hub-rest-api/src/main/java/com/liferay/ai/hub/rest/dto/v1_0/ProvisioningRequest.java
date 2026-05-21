@@ -18,6 +18,10 @@ import com.liferay.portal.vulcan.util.ObjectMapperUtil;
 
 import jakarta.annotation.Generated;
 
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
+
 import jakarta.xml.bind.annotation.XmlRootElement;
 
 import java.io.Serializable;
@@ -34,6 +38,9 @@ import java.util.function.Supplier;
  */
 @Generated("")
 @GraphQLName("ProvisioningRequest")
+@io.swagger.v3.oas.annotations.media.Schema(
+	requiredProperties = {"accountName", "liferayDXPURL", "userAccounts"}
+)
 @JsonFilter("Liferay.Vulcan")
 @XmlRootElement(name = "ProvisioningRequest")
 public class ProvisioningRequest implements Serializable {
@@ -48,29 +55,33 @@ public class ProvisioningRequest implements Serializable {
 	}
 
 	@io.swagger.v3.oas.annotations.media.Schema
-	public String getCustomerName() {
-		if (_customerNameSupplier != null) {
-			customerName = _customerNameSupplier.get();
+	public String getAccountExternalReferenceCode() {
+		if (_accountExternalReferenceCodeSupplier != null) {
+			accountExternalReferenceCode =
+				_accountExternalReferenceCodeSupplier.get();
 
-			_customerNameSupplier = null;
+			_accountExternalReferenceCodeSupplier = null;
 		}
 
-		return customerName;
+		return accountExternalReferenceCode;
 	}
 
-	public void setCustomerName(String customerName) {
-		this.customerName = customerName;
+	public void setAccountExternalReferenceCode(
+		String accountExternalReferenceCode) {
 
-		_customerNameSupplier = null;
+		this.accountExternalReferenceCode = accountExternalReferenceCode;
+
+		_accountExternalReferenceCodeSupplier = null;
 	}
 
 	@JsonIgnore
-	public void setCustomerName(
-		UnsafeSupplier<String, Exception> customerNameUnsafeSupplier) {
+	public void setAccountExternalReferenceCode(
+		UnsafeSupplier<String, Exception>
+			accountExternalReferenceCodeUnsafeSupplier) {
 
-		_customerNameSupplier = () -> {
+		_accountExternalReferenceCodeSupplier = () -> {
 			try {
-				return customerNameUnsafeSupplier.get();
+				return accountExternalReferenceCodeUnsafeSupplier.get();
 			}
 			catch (RuntimeException runtimeException) {
 				throw runtimeException;
@@ -83,10 +94,178 @@ public class ProvisioningRequest implements Serializable {
 
 	@GraphQLField
 	@JsonProperty(access = JsonProperty.Access.READ_WRITE)
-	protected String customerName;
+	protected String accountExternalReferenceCode;
 
 	@JsonIgnore
-	private Supplier<String> _customerNameSupplier;
+	private Supplier<String> _accountExternalReferenceCodeSupplier;
+
+	@io.swagger.v3.oas.annotations.media.Schema
+	public Long getAccountId() {
+		if (_accountIdSupplier != null) {
+			accountId = _accountIdSupplier.get();
+
+			_accountIdSupplier = null;
+		}
+
+		return accountId;
+	}
+
+	public void setAccountId(Long accountId) {
+		this.accountId = accountId;
+
+		_accountIdSupplier = null;
+	}
+
+	@JsonIgnore
+	public void setAccountId(
+		UnsafeSupplier<Long, Exception> accountIdUnsafeSupplier) {
+
+		_accountIdSupplier = () -> {
+			try {
+				return accountIdUnsafeSupplier.get();
+			}
+			catch (RuntimeException runtimeException) {
+				throw runtimeException;
+			}
+			catch (Exception exception) {
+				throw new RuntimeException(exception);
+			}
+		};
+	}
+
+	@GraphQLField
+	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
+	protected Long accountId;
+
+	@JsonIgnore
+	private Supplier<Long> _accountIdSupplier;
+
+	@io.swagger.v3.oas.annotations.media.Schema
+	public String getAccountName() {
+		if (_accountNameSupplier != null) {
+			accountName = _accountNameSupplier.get();
+
+			_accountNameSupplier = null;
+		}
+
+		return accountName;
+	}
+
+	public void setAccountName(String accountName) {
+		this.accountName = accountName;
+
+		_accountNameSupplier = null;
+	}
+
+	@JsonIgnore
+	public void setAccountName(
+		UnsafeSupplier<String, Exception> accountNameUnsafeSupplier) {
+
+		_accountNameSupplier = () -> {
+			try {
+				return accountNameUnsafeSupplier.get();
+			}
+			catch (RuntimeException runtimeException) {
+				throw runtimeException;
+			}
+			catch (Exception exception) {
+				throw new RuntimeException(exception);
+			}
+		};
+	}
+
+	@GraphQLField
+	@JsonProperty(access = JsonProperty.Access.READ_WRITE)
+	@NotEmpty
+	protected String accountName;
+
+	@JsonIgnore
+	private Supplier<String> _accountNameSupplier;
+
+	@io.swagger.v3.oas.annotations.media.Schema
+	public String getLiferayDXPURL() {
+		if (_liferayDXPURLSupplier != null) {
+			liferayDXPURL = _liferayDXPURLSupplier.get();
+
+			_liferayDXPURLSupplier = null;
+		}
+
+		return liferayDXPURL;
+	}
+
+	public void setLiferayDXPURL(String liferayDXPURL) {
+		this.liferayDXPURL = liferayDXPURL;
+
+		_liferayDXPURLSupplier = null;
+	}
+
+	@JsonIgnore
+	public void setLiferayDXPURL(
+		UnsafeSupplier<String, Exception> liferayDXPURLUnsafeSupplier) {
+
+		_liferayDXPURLSupplier = () -> {
+			try {
+				return liferayDXPURLUnsafeSupplier.get();
+			}
+			catch (RuntimeException runtimeException) {
+				throw runtimeException;
+			}
+			catch (Exception exception) {
+				throw new RuntimeException(exception);
+			}
+		};
+	}
+
+	@GraphQLField
+	@JsonProperty(access = JsonProperty.Access.READ_WRITE)
+	@NotEmpty
+	protected String liferayDXPURL;
+
+	@JsonIgnore
+	private Supplier<String> _liferayDXPURLSupplier;
+
+	@io.swagger.v3.oas.annotations.media.Schema
+	@Valid
+	public UserAccount[] getUserAccounts() {
+		if (_userAccountsSupplier != null) {
+			userAccounts = _userAccountsSupplier.get();
+
+			_userAccountsSupplier = null;
+		}
+
+		return userAccounts;
+	}
+
+	public void setUserAccounts(UserAccount[] userAccounts) {
+		this.userAccounts = userAccounts;
+
+		_userAccountsSupplier = null;
+	}
+
+	@JsonIgnore
+	public void setUserAccounts(
+		UnsafeSupplier<UserAccount[], Exception> userAccountsUnsafeSupplier) {
+
+		_userAccountsSupplier = () -> {
+			try {
+				return userAccountsUnsafeSupplier.get();
+			}
+			catch (RuntimeException runtimeException) {
+				throw runtimeException;
+			}
+			catch (Exception exception) {
+				throw new RuntimeException(exception);
+			}
+		};
+	}
+
+	@GraphQLField
+	@JsonProperty(access = JsonProperty.Access.READ_WRITE)
+	@NotNull
+	protected UserAccount[] userAccounts;
+
+	@JsonIgnore
+	private Supplier<UserAccount[]> _userAccountsSupplier;
 
 	@Override
 	public boolean equals(Object object) {
@@ -115,20 +294,86 @@ public class ProvisioningRequest implements Serializable {
 
 		sb.append("{");
 
-		String customerName = getCustomerName();
+		String accountExternalReferenceCode = getAccountExternalReferenceCode();
 
-		if (customerName != null) {
+		if (accountExternalReferenceCode != null) {
 			if (sb.length() > 1) {
 				sb.append(", ");
 			}
 
-			sb.append("\"customerName\": ");
+			sb.append("\"accountExternalReferenceCode\": ");
 
 			sb.append("\"");
 
-			sb.append(_escape(customerName));
+			sb.append(_escape(accountExternalReferenceCode));
 
 			sb.append("\"");
+		}
+
+		Long accountId = getAccountId();
+
+		if (accountId != null) {
+			if (sb.length() > 1) {
+				sb.append(", ");
+			}
+
+			sb.append("\"accountId\": ");
+
+			sb.append(accountId);
+		}
+
+		String accountName = getAccountName();
+
+		if (accountName != null) {
+			if (sb.length() > 1) {
+				sb.append(", ");
+			}
+
+			sb.append("\"accountName\": ");
+
+			sb.append("\"");
+
+			sb.append(_escape(accountName));
+
+			sb.append("\"");
+		}
+
+		String liferayDXPURL = getLiferayDXPURL();
+
+		if (liferayDXPURL != null) {
+			if (sb.length() > 1) {
+				sb.append(", ");
+			}
+
+			sb.append("\"liferayDXPURL\": ");
+
+			sb.append("\"");
+
+			sb.append(_escape(liferayDXPURL));
+
+			sb.append("\"");
+		}
+
+		UserAccount[] userAccounts = getUserAccounts();
+
+		if (userAccounts != null) {
+			if (sb.length() > 1) {
+				sb.append(", ");
+			}
+
+			sb.append("\"userAccounts\": ");
+
+			sb.append("[");
+
+			for (int i = 0; i < userAccounts.length; i++) {
+				sb.append(String.valueOf(userAccounts[i]));
+
+				if ((i + 1) < userAccounts.length) {
+					sb.append(", ");
+				}
+			}
+
+			sb.append("]");
 		}
 
 		sb.append("}");
@@ -232,4 +477,4 @@ public class ProvisioningRequest implements Serializable {
 	private Map<String, Serializable> _extendedProperties;
 
 }
-// LIFERAY-REST-BUILDER-HASH:913423964
+// LIFERAY-REST-BUILDER-HASH:-14222986
