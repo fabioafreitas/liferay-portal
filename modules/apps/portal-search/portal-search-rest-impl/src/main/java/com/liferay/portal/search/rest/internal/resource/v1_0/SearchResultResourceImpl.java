@@ -381,16 +381,9 @@ public class SearchResultResourceImpl extends BaseSearchResultResourceImpl {
 			).size(
 				pagination.getPageSize()
 			).withSearchContext(
-				searchContext -> {
-					_populateSearchContext(
-						searchRequestBody.getAttributes(), filter, scope,
-						search, searchContext, sorts);
-
-					if (_isEmbedded()) {
-						searchContext.setAttribute(
-							"search.permission.filter.forced", Boolean.TRUE);
-					}
-				}
+				searchContext -> _populateSearchContext(
+					searchRequestBody.getAttributes(), filter, scope, search,
+					searchContext, sorts)
 			);
 
 		String[] entryClassNamesArray = ValueUtil.toArray(entryClassNames);

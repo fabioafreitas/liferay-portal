@@ -18,7 +18,6 @@ import com.liferay.portal.kernel.search.SearchResultPermissionFilterSearcher;
 import com.liferay.portal.kernel.search.hits.HitsProcessorRegistry;
 import com.liferay.portal.kernel.security.permission.PermissionChecker;
 import com.liferay.portal.kernel.security.permission.PermissionThreadLocal;
-import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.search.indexer.IndexerPermissionPostFilter;
 import com.liferay.portal.search.indexer.IndexerQueryBuilder;
 import com.liferay.portal.search.indexer.IndexerSearcher;
@@ -151,21 +150,15 @@ public class IndexerSearcherImpl<T extends BaseModel<?>>
 			searchResultPermissionFilterSearcher, permissionChecker);
 	}
 
-	private boolean _isUseSearchResultPermissionFilter(
-		SearchContext searchContext) {
+	private boolean _isUseSearchResultPermissionFilter() {
+		if (_indexerPermissionPostFilter.isPermissionAware() &&
+			_modelSearchSettings.isPermissionAware() &&
+			!_modelSearchSettings.isSearchResultPermissionFilterSuppressed()) {
 
-		if (!_indexerPermissionPostFilter.isPermissionAware() ||
-			_modelSearchSettings.isSearchResultPermissionFilterSuppressed()) {
-
-			return false;
-		}
-
-		if (_modelSearchSettings.isPermissionAware()) {
 			return true;
 		}
 
-		return GetterUtil.getBoolean(
-			searchContext.getAttribute(_FORCE_PERMISSION_FILTER_ATTRIBUTE));
+		return false;
 	}
 
 	private void _processHits(SearchContext searchContext, Hits hits) {
@@ -179,7 +172,7 @@ public class IndexerSearcherImpl<T extends BaseModel<?>>
 
 	private Hits _search(SearchContext searchContext) {
 		try {
-			if (_isUseSearchResultPermissionFilter(searchContext)) {
+			if (_isUseSearchResultPermissionFilter()) {
 				SearchResultPermissionFilter searchResultPermissionFilter =
 					_getSearchResultPermissionFilter(
 						searchContext, this::_doSearch);
@@ -195,9 +188,6 @@ public class IndexerSearcherImpl<T extends BaseModel<?>>
 			throw new RuntimeException(searchException);
 		}
 	}
-
-	private static final String _FORCE_PERMISSION_FILTER_ATTRIBUTE =
-		"search.permission.filter.forced";
 
 	private final HitsProcessorRegistry _hitsProcessorRegistry;
 	private final IndexerPermissionPostFilter _indexerPermissionPostFilter;
