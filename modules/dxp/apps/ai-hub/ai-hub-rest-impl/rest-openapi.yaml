@@ -57,6 +57,45 @@ components:
                 sseEventSinkKey:
                     type: string
             type: object
+        AgentIssueReport:
+            properties:
+                agentDefinitionExternalReferenceCode:
+                    type: string
+                category:
+                    enum:
+                        -   agentError
+                        -   harmfulContent
+                        -   incorrect
+                        -   other
+                        -   piiExposure
+                    type: string
+                dateCreated:
+                    format: date-time
+                    readOnly: true
+                    type: string
+                description:
+                    type: string
+                externalReferenceCode:
+                    readOnly: true
+                    type: string
+                id:
+                    format: int64
+                    readOnly: true
+                    type: integer
+                surface:
+                    enum:
+                        -   aiHub
+                        -   clickToChat
+                        -   cmsAssistant
+                    type: string
+                traceId:
+                    type: string
+            required:
+                -   agentDefinitionExternalReferenceCode
+                -   category
+                -   surface
+                -   traceId
+            type: object
         Chat:
             properties:
                 externalReferenceCode:
@@ -278,6 +317,27 @@ paths:
                     content:
                         text/event-stream: {}
             tags: ["AgentInstance"]
+    "/agent-issue-reports":
+        post:
+            operationId: postAgentIssueReport
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: "#/components/schemas/AgentIssueReport"
+                    application/xml:
+                        schema:
+                            $ref: "#/components/schemas/AgentIssueReport"
+            responses:
+                200:
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/AgentIssueReport"
+                        application/xml:
+                            schema:
+                                $ref: "#/components/schemas/AgentIssueReport"
+            tags: ["AgentIssueReport"]
     "/chats/by-external-reference-code/{externalReferenceCode}/messages":
         post:
             operationId: postChatByExternalReferenceCodeMessage
