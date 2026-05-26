@@ -89,6 +89,8 @@ public class OpenAPIResourceImpl {
 
 			add(AgentInstanceResourceImpl.class);
 
+			add(AgentIssueReportResourceImpl.class);
+
 			add(ChatResourceImpl.class);
 
 			add(ContentRetrieverResourceImpl.class);
@@ -104,4 +106,4 @@ public class OpenAPIResourceImpl {
 	};
 
 }
-// LIFERAY-REST-BUILDER-HASH:-197497947
+// LIFERAY-REST-BUILDER-HASH:-688391707
