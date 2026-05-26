@@ -9,12 +9,15 @@ import {userData} from './performLogin';
 export async function addSpaceUser(
 	apiHelpers: DataApiHelpers,
 	spaceExternalReferenceCode: string,
-	roleName: string
+	roleName: string,
+	user?: TUserAccount
 ): Promise<TUserAccount> {
-	const user =
-		(await apiHelpers.headlessAdminUser.postUserAccount()) as TUserAccount & {
-			externalReferenceCode: string;
-		};
+	if (!user) {
+		user =
+			(await apiHelpers.headlessAdminUser.postUserAccount()) as TUserAccount & {
+				externalReferenceCode: string;
+			};
+	}
 
 	userData[user.alternateName] = {
 		name: user.givenName,
