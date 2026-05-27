@@ -1,0 +1,13 @@
+{
+	"deletionType": "cascade",
+	"externalReferenceCode": "L_AI_HUB_AGENT_DEFINITION_TO_L_AI_HUB_AGENT_ISSUE_REPORTS",
+	"label": {
+		"en_US": "Agent Definition to Agent Issue Reports"
+	},
+	"name": "agentToIssueReports",
+	"objectDefinitionId1": "[$OBJECT_DEFINITION_ID:AIHubAgentDefinition$]",
+	"objectDefinitionId2": "[$OBJECT_DEFINITION_ID:AIHubAgentIssueReport$]",
+	"objectDefinitionName2": "AIHubAgentIssueReport",
+	"system": true,
+	"type": "oneToMany"
+}

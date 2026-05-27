@@ -1,0 +1,150 @@
+{
+	"accountEntryRestricted": true,
+	"accountEntryRestrictedObjectFieldName": "r_accountToAIHubAgentIssueReports_accountEntryId",
+	"className": "com.liferay.object.model.ObjectDefinition#I9R7",
+	"enableFormContainer": false,
+	"enableIndexSearch": true,
+	"enableObjectEntryHistory": true,
+	"externalReferenceCode": "L_AI_HUB_AGENT_ISSUE_REPORT",
+	"friendlyURLSeparator": "l",
+	"label": {
+		"en_US": "Agent Issue Report"
+	},
+	"modifiable": true,
+	"name": "AIHubAgentIssueReport",
+	"objectFields": [
+		{
+			"DBType": "Long",
+			"businessType": "Relationship",
+			"defaultValue": "null",
+			"externalReferenceCode": "ACCOUNT_TO_AI_HUB_AGENT_ISSUE_REPORTS",
+			"indexed": true,
+			"indexedLanguageId": "en_US",
+			"label": {
+				"en_US": "Account to Agent Issue Reports"
+			},
+			"name": "r_accountToAIHubAgentIssueReports_accountEntryId",
+			"objectDefinitionExternalReferenceCode1": "L_ACCOUNT",
+			"objectFieldSettings": [
+				{
+					"name": "objectDefinition1ShortName",
+					"value": "AccountEntry"
+				},
+				{
+					"name": "objectRelationshipERCObjectFieldName",
+					"value": "r_accountToAIHubAgentIssueReports_accountEntryERC"
+				}
+			],
+			"objectRelationshipExternalReferenceCode": "L_ACCOUNT_TO_L_AI_HUB_AGENT_ISSUE_REPORTS",
+			"readOnly": false,
+			"relationshipType": "oneToMany",
+			"required": true,
+			"system": true,
+			"type": "Long"
+		},
+		{
+			"DBType": "Long",
+			"businessType": "Relationship",
+			"defaultValue": "null",
+			"externalReferenceCode": "AI_HUB_AGENT_DEFINITION_TO_AI_HUB_AGENT_ISSUE_REPORTS",
+			"indexed": true,
+			"indexedLanguageId": "en_US",
+			"label": {
+				"en_US": "Agent Definition to Agent Issue Reports"
+			},
+			"name": "r_agentToIssueReports_aiHubAgentDefinitionId",
+			"objectDefinitionExternalReferenceCode1": "L_AI_HUB_AGENT_DEFINITION",
+			"objectFieldSettings": [
+				{
+					"name": "objectDefinition1ShortName",
+					"value": "AIHubAgentDefinition"
+				},
+				{
+					"name": "objectRelationshipERCObjectFieldName",
+					"value": "r_agentToIssueReports_aiHubAgentDefinitionERC"
+				}
+			],
+			"objectRelationshipExternalReferenceCode": "L_AI_HUB_AGENT_DEFINITION_TO_L_AI_HUB_AGENT_ISSUE_REPORTS",
+			"readOnly": false,
+			"relationshipType": "oneToMany",
+			"required": true,
+			"system": true,
+			"type": "Long"
+		},
+		{
+			"DBType": "String",
+			"businessType": "Picklist",
+			"defaultValue": "null",
+			"externalReferenceCode": "REASON",
+			"indexed": true,
+			"indexedLanguageId": "en_US",
+			"label": {
+				"en_US": "Reason"
+			},
+			"listTypeDefinitionExternalReferenceCode": "L_AI_HUB_AGENT_ISSUE_REPORT_REASONS",
+			"name": "reason",
+			"readOnly": false,
+			"required": true,
+			"system": true,
+			"type": "String"
+		},
+		{
+			"DBType": "Clob",
+			"businessType": "LongText",
+			"defaultValue": "null",
+			"externalReferenceCode": "DESCRIPTION",
+			"indexed": true,
+			"indexedLanguageId": "en_US",
+			"label": {
+				"en_US": "Description"
+			},
+			"name": "description",
+			"readOnly": false,
+			"readOnlyConditionExpression": "",
+			"system": true,
+			"type": "Clob"
+		},
+		{
+			"DBType": "String",
+			"businessType": "Picklist",
+			"defaultValue": "null",
+			"externalReferenceCode": "SURFACE",
+			"indexed": true,
+			"indexedLanguageId": "en_US",
+			"label": {
+				"en_US": "Surface"
+			},
+			"listTypeDefinitionExternalReferenceCode": "L_AI_HUB_AGENT_ISSUE_REPORT_SURFACES",
+			"name": "surface",
+			"readOnly": false,
+			"required": true,
+			"system": true,
+			"type": "String"
+		},
+		{
+			"DBType": "String",
+			"businessType": "Text",
+			"defaultValue": "null",
+			"externalReferenceCode": "TRACE_ID",
+			"indexed": true,
+			"indexedLanguageId": "en_US",
+			"label": {
+				"en_US": "Trace ID"
+			},
+			"name": "traceId",
+			"readOnly": false,
+			"required": true,
+			"system": true,
+			"type": "String"
+		}
+	],
+	"objectFolderExternalReferenceCode": "default",
+	"panelCategoryKey": "control_panel.object",
+	"pluralLabel": {
+		"en_US": "Agent Issue Reports"
+	},
+	"portlet": true,
+	"scope": "company",
+	"system": true,
+	"titleObjectFieldName": "externalReferenceCode"
+}

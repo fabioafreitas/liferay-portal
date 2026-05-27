@@ -1,0 +1,19 @@
+{
+	"externalReferenceCode": "L_AI_HUB_AGENT_ISSUE_REPORT_SURFACES",
+	"listTypeEntries": [
+		{
+			"externalReferenceCode": "CLICK_TO_CHAT",
+			"key": "clickToChat",
+			"name": "Click-to-Chat",
+			"system": true
+		},
+		{
+			"externalReferenceCode": "AI_ASSISTANT",
+			"key": "aiAssistant",
+			"name": "AI Assistant",
+			"system": true
+		}
+	],
+	"name": "AI Hub Agent Issue Report Surfaces",
+	"system": true
+}
