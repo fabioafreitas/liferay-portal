@@ -59,13 +59,13 @@ components:
             type: object
         AgentIssueReport:
             properties:
-                agentDefinitionExternalReferenceCode:
-                    type: string
+                agentDefinitionExternalReferenceCodes:
+                    items:
+                        type: string
+                    type: array
                 dateCreated:
                     format: date-time
                     readOnly: true
-                    type: string
-                description:
                     type: string
                 externalReferenceCode:
                     readOnly: true
@@ -80,8 +80,10 @@ components:
                     type: string
                 traceId:
                     type: string
+                userMessage:
+                    type: string
             required:
-                -   agentDefinitionExternalReferenceCode
+                -   agentDefinitionExternalReferenceCodes
                 -   reason
                 -   surface
                 -   traceId

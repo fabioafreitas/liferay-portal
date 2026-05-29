@@ -13,6 +13,7 @@ import com.liferay.portal.kernel.uuid.PortalUUIDUtil;
 import jakarta.ws.rs.sse.Sse;
 import jakarta.ws.rs.sse.SseEventSink;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -59,6 +60,13 @@ public class SseUtil {
 	public static void send(
 		String data, String name, String nodeName, String sseEventSinkKey) {
 
+		send(data, name, nodeName, null, sseEventSinkKey);
+	}
+
+	public static void send(
+		String data, String name, String nodeName,
+		String[] agentDefinitionExternalReferenceCodes, String sseEventSinkKey) {
+
 		if (Validator.isBlank(sseEventSinkKey)) {
 			return;
 		}
@@ -71,6 +79,11 @@ public class SseUtil {
 			).data(
 				String.class,
 				JSONUtil.put(
+					"agentDefinitionExternalReferenceCodes",
+					agentDefinitionExternalReferenceCodes == null ? null :
+					JSONUtil.putAll(
+						(Object[])agentDefinitionExternalReferenceCodes)
+				).put(
 					"data", data
 				).put(
 					"nodeName", nodeName

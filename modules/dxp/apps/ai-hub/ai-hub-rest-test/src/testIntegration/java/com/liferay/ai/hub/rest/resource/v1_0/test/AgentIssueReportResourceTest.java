@@ -131,12 +131,13 @@ public class AgentIssueReportResourceTest
 
 		AgentIssueReport agentIssueReport = new AgentIssueReport() {
 			{
-				agentDefinitionExternalReferenceCode =
-					objectEntry.getExternalReferenceCode();
-				description = RandomTestUtil.randomString();
+				agentDefinitionExternalReferenceCodes = new String[] {
+					objectEntry.getExternalReferenceCode()
+				};
 				reason = "harmfulContent";
 				surface = "clickToChat";
 				traceId = RandomTestUtil.randomString();
+				userMessage = RandomTestUtil.randomString();
 			}
 		};
 
@@ -161,8 +162,8 @@ public class AgentIssueReportResourceTest
 	@Override
 	protected String[] getAdditionalAssertFieldNames() {
 		return new String[] {
-			"agentDefinitionExternalReferenceCode", "description", "reason",
-			"surface", "traceId"
+			"agentDefinitionExternalReferenceCodes", "reason", "surface",
+			"traceId", "userMessage"
 		};
 	}
 

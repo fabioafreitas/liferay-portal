@@ -43,35 +43,6 @@
 			"type": "Long"
 		},
 		{
-			"DBType": "Long",
-			"businessType": "Relationship",
-			"defaultValue": "null",
-			"externalReferenceCode": "AI_HUB_AGENT_DEFINITION_TO_AI_HUB_AGENT_ISSUE_REPORTS",
-			"indexed": true,
-			"indexedLanguageId": "en_US",
-			"label": {
-				"en_US": "Agent Definition to Agent Issue Reports"
-			},
-			"name": "r_agentToIssueReports_aiHubAgentDefinitionId",
-			"objectDefinitionExternalReferenceCode1": "L_AI_HUB_AGENT_DEFINITION",
-			"objectFieldSettings": [
-				{
-					"name": "objectDefinition1ShortName",
-					"value": "AIHubAgentDefinition"
-				},
-				{
-					"name": "objectRelationshipERCObjectFieldName",
-					"value": "r_agentToIssueReports_aiHubAgentDefinitionERC"
-				}
-			],
-			"objectRelationshipExternalReferenceCode": "L_AI_HUB_AGENT_DEFINITION_TO_L_AI_HUB_AGENT_ISSUE_REPORTS",
-			"readOnly": false,
-			"relationshipType": "oneToMany",
-			"required": true,
-			"system": true,
-			"type": "Long"
-		},
-		{
 			"DBType": "String",
 			"businessType": "Picklist",
 			"defaultValue": "null",
@@ -92,13 +63,13 @@
 			"DBType": "Clob",
 			"businessType": "LongText",
 			"defaultValue": "null",
-			"externalReferenceCode": "DESCRIPTION",
+			"externalReferenceCode": "USER_MESSAGE",
 			"indexed": true,
 			"indexedLanguageId": "en_US",
 			"label": {
-				"en_US": "Description"
+				"en_US": "User Message"
 			},
-			"name": "description",
+			"name": "userMessage",
 			"readOnly": false,
 			"readOnlyConditionExpression": "",
 			"system": true,
