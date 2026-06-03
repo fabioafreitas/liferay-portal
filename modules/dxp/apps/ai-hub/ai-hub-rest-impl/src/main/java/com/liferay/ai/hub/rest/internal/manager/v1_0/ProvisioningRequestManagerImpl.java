@@ -336,19 +336,24 @@ public class ProvisioningRequestManagerImpl
 			},
 			new long[0], user.getUserId());
 
-		Role role = _roleLocalService.getRole(
-			aiHubAccountEntry.getCompanyId(), "AI Hub Agent Manager");
+		for (String roleName :
+				new String[] {"AI Hub Administrator", "AI Hub Agent Manager"}) {
 
-		AccountRole accountRole =
-			_accountRoleLocalService.getAccountRoleByRoleId(role.getRoleId());
+			Role role = _roleLocalService.getRole(
+				aiHubAccountEntry.getCompanyId(), roleName);
 
-		if (!_accountRoleLocalService.hasUserAccountRole(
-				customerAccountEntry.getAccountEntryId(),
-				accountRole.getAccountRoleId(), user.getUserId())) {
+			AccountRole accountRole =
+				_accountRoleLocalService.getAccountRoleByRoleId(
+					role.getRoleId());
 
-			_accountRoleLocalService.associateUser(
-				customerAccountEntry.getAccountEntryId(),
-				accountRole.getAccountRoleId(), user.getUserId());
+			if (!_accountRoleLocalService.hasUserAccountRole(
+					customerAccountEntry.getAccountEntryId(),
+					accountRole.getAccountRoleId(), user.getUserId())) {
+
+				_accountRoleLocalService.associateUser(
+					customerAccountEntry.getAccountEntryId(),
+					accountRole.getAccountRoleId(), user.getUserId());
+			}
 		}
 	}
 
