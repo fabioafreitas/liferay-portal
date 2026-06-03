@@ -260,12 +260,6 @@ public class ProvisioningRequestResourceTest
 			Arrays.toString(actualUserAccounts), expectedUserAccounts.length,
 			actualUserAccounts.length);
 
-		Role role = _roleLocalService.getRole(
-			aiHubAccountEntry.getCompanyId(), "AI Hub Agent Manager");
-
-		AccountRole accountRole =
-			_accountRoleLocalService.getAccountRoleByRoleId(role.getRoleId());
-
 		for (int i = 0; i < actualUserAccounts.length; i++) {
 			UserAccount actualUserAccount = actualUserAccounts[i];
 			UserAccount expectedUserAccount = expectedUserAccounts[i];
@@ -305,14 +299,24 @@ public class ProvisioningRequestResourceTest
 					customerAccountEntry.getAccountEntryId(),
 					user.getUserId()));
 
-			Assert.assertTrue(
-				_accountRoleLocalService.hasUserAccountRole(
-					customerAccountEntry.getAccountEntryId(),
-					accountRole.getAccountRoleId(), user.getUserId()));
-			Assert.assertTrue(
-				_accountRoleLocalService.hasUserAccountRole(
-					customerAccountEntry.getAccountEntryId(),
-					accountRole.getAccountRoleId(), user.getUserId()));
+			for (String roleName :
+					new String[] {
+						"AI Hub Administrator", "AI Hub Agent Manager"
+					}) {
+
+				Role role = _roleLocalService.getRole(
+					aiHubAccountEntry.getCompanyId(), roleName);
+
+				AccountRole accountRole =
+					_accountRoleLocalService.getAccountRoleByRoleId(
+						role.getRoleId());
+
+				Assert.assertTrue(
+					roleName,
+					_accountRoleLocalService.hasUserAccountRole(
+						customerAccountEntry.getAccountEntryId(),
+						accountRole.getAccountRoleId(), user.getUserId()));
+			}
 
 			Assert.assertTrue(
 				_userLocalService.hasGroupUser(
