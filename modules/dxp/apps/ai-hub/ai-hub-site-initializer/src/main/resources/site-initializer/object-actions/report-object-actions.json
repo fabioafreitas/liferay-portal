@@ -1,0 +1,24 @@
+{
+	"object-actions": [
+		{
+			"active": true,
+			"conditionExpression": "reason == \"personalDataExposure\" OR reason == \"harmfulContent\"",
+			"errorMessage": {
+				"en_US": ""
+			},
+			"externalReferenceCode": "L_AI_HUB_REPORT_OBJECT_ACTION",
+			"label": {
+				"en_US": "Notify Critical Agent Issue Report"
+			},
+			"name": "notifyCriticalAgentIssueReport",
+			"objectActionExecutorKey": "notification",
+			"objectActionTriggerKey": "onAfterAdd",
+			"parameters": {
+				"notificationTemplateExternalReferenceCode": "L_AI_HUB_REPORT_EMAIL_NOTIFICATION_TEMPLATE",
+				"type": "email"
+			},
+			"system": true
+		}
+	],
+	"objectDefinitionId": "[$OBJECT_DEFINITION_ID:AIHubReport$]"
+}
