@@ -7,12 +7,17 @@ package com.liferay.ai.hub.rest.resource.v1_0.test;
 
 import com.liferay.account.constants.AccountConstants;
 import com.liferay.account.model.AccountEntry;
+import com.liferay.account.model.AccountRole;
 import com.liferay.account.service.AccountEntryLocalService;
 import com.liferay.account.service.AccountEntryUserRelLocalService;
+import com.liferay.account.service.AccountRoleLocalService;
+import com.liferay.account.service.AccountRoleLocalServiceUtil;
 import com.liferay.ai.hub.rest.client.dto.v1_0.Report;
 import com.liferay.ai.hub.rest.client.resource.v1_0.ReportResource;
 import com.liferay.arquillian.extension.junit.bridge.junit.Arquillian;
 import com.liferay.object.constants.ObjectDefinitionConstants;
+import com.liferay.notification.model.NotificationQueueEntry;
+import com.liferay.notification.service.NotificationQueueEntryLocalService;
 import com.liferay.object.model.ObjectDefinition;
 import com.liferay.object.rest.dto.v1_0.ObjectEntry;
 import com.liferay.object.rest.manager.v1_0.DefaultObjectEntryManager;
@@ -21,17 +26,22 @@ import com.liferay.object.service.ObjectDefinitionLocalService;
 import com.liferay.object.service.ObjectRelationshipLocalService;
 import com.liferay.petra.function.transform.TransformUtil;
 import com.liferay.petra.string.StringPool;
+import com.liferay.portal.kernel.dao.orm.QueryUtil;
+import com.liferay.portal.kernel.model.Role;
 import com.liferay.portal.kernel.model.User;
 import com.liferay.portal.kernel.model.UserConstants;
 import com.liferay.portal.kernel.security.auth.PrincipalThreadLocal;
 import com.liferay.portal.kernel.security.permission.PermissionChecker;
 import com.liferay.portal.kernel.security.permission.PermissionCheckerFactoryUtil;
 import com.liferay.portal.kernel.security.permission.PermissionThreadLocal;
+import com.liferay.portal.kernel.service.RoleLocalService;
+import com.liferay.portal.kernel.service.RoleLocalServiceUtil;
 import com.liferay.portal.kernel.service.ServiceContextThreadLocal;
 import com.liferay.portal.kernel.service.UserLocalService;
 import com.liferay.portal.kernel.test.util.RandomTestUtil;
 import com.liferay.portal.kernel.test.util.ServiceContextTestUtil;
 import com.liferay.portal.kernel.test.util.TestPropsValues;
+import com.liferay.portal.kernel.util.ListUtil;
 import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.PortalUtil;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
@@ -46,7 +56,9 @@ import com.liferay.site.initializer.SiteInitializerRegistry;
 
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -125,6 +137,17 @@ public class ReportResourceTest extends BaseReportResourceTestCase {
 			aiHubAccountEntry.getAccountEntryId(), user.getUserId());
 		_accountEntryUserRelLocalService.addAccountEntryUserRel(
 			_accountEntry.getAccountEntryId(), user.getUserId());
+
+		Role role = RoleLocalServiceUtil.getRole(
+			TestPropsValues.getCompanyId(), "AI Hub Administrator");
+
+		AccountRole accountRole =
+			AccountRoleLocalServiceUtil.fetchAccountRoleByRoleId(
+				role.getRoleId());
+
+		AccountRoleLocalServiceUtil.associateUser(
+			_accountEntry.getAccountEntryId(), accountRole.getAccountRoleId(),
+			TestPropsValues.getUserId());
 	}
 
 	@AfterClass
@@ -177,6 +200,8 @@ public class ReportResourceTest extends BaseReportResourceTestCase {
 				LocaleUtil.getDefault()
 			).build(),
 			chatbotExternalReferenceCode);
+
+		_testPostReportNotification();
 	}
 
 	@Override
@@ -215,6 +240,62 @@ public class ReportResourceTest extends BaseReportResourceTestCase {
 	@Override
 	protected Report testPostReport_addReport(Report report) throws Exception {
 		return reportResource.postReport(report);
+	}
+
+	private void _deleteReportNotificationQueueEntries() throws Exception {
+		for (NotificationQueueEntry notificationQueueEntry :
+				_getReportNotificationQueueEntries()) {
+
+			_notificationQueueEntryLocalService.deleteNotificationQueueEntry(
+				notificationQueueEntry);
+		}
+	}
+
+	private List<NotificationQueueEntry> _getReportNotificationQueueEntries() {
+		return ListUtil.filter(
+			_notificationQueueEntryLocalService.getNotificationQueueEntries(
+				QueryUtil.ALL_POS, QueryUtil.ALL_POS),
+			notificationQueueEntry -> Objects.equals(
+				notificationQueueEntry.getSubject(),
+				"A critical AI issue was reported"));
+	}
+
+	private void _postReport(String reason) throws Exception {
+		Report report = randomReport(
+			new String[] {"L_FIX_SPELLING_AND_GRAMMAR"}, null);
+
+		report.setReason(reason);
+
+		reportResource.postReport(report);
+	}
+
+	private void _testPostReportNotification() throws Exception {
+		_deleteReportNotificationQueueEntries();
+
+		for (String reason :
+				new String[] {"agentError", "incorrect", "other"}) {
+
+			_postReport(reason);
+
+			Assert.assertTrue(
+				_getReportNotificationQueueEntries().toString(),
+				_getReportNotificationQueueEntries().isEmpty());
+		}
+
+		for (String reason : new String[] {"piiExposure", "harmfulContent"}) {
+			_postReport(reason);
+
+			List<NotificationQueueEntry> notificationQueueEntries =
+				_getReportNotificationQueueEntries();
+
+			_deleteReportNotificationQueueEntries();
+
+			Assert.assertEquals(
+				notificationQueueEntries.toString(), 1,
+				notificationQueueEntries.size());
+		}
+
+		_deleteReportNotificationQueueEntries();
 	}
 
 	private void _testPostReports(
@@ -284,9 +365,19 @@ public class ReportResourceTest extends BaseReportResourceTestCase {
 	private static UserLocalService _userLocalService;
 
 	@Inject
+	private AccountRoleLocalService _accountRoleLocalService;
+
+	@Inject
+	private NotificationQueueEntryLocalService
+		_notificationQueueEntryLocalService;
+
+	@Inject
 	private ObjectDefinitionLocalService _objectDefinitionLocalService;
 
 	@Inject
 	private ObjectRelationshipLocalService _objectRelationshipLocalService;
+
+	@Inject
+	private RoleLocalService _roleLocalService;
 
 }
