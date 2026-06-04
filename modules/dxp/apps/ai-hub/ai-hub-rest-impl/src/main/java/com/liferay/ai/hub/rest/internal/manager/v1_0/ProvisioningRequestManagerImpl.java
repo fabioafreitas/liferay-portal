@@ -95,7 +95,6 @@ public class ProvisioningRequestManagerImpl
 					customerAccountEntry::getExternalReferenceCode);
 				setAccountEntryId(customerAccountEntry::getAccountEntryId);
 				setAccountEntryName(customerAccountEntry::getName);
-				setLiferayDXPURL(provisioningRequest::getLiferayDXPURL);
 				setUserAccounts(
 					() -> TransformUtil.transformToArray(
 						users, user -> _toUserAccount(user),
@@ -149,8 +148,8 @@ public class ProvisioningRequestManagerImpl
 			user.getUserId(), OAuth2SecureRandomGenerator.generateClientId(),
 			ClientProfile.HEADLESS_SERVER.id(),
 			OAuth2SecureRandomGenerator.generateClientSecret(), null, List.of(),
-			provisioningRequest.getLiferayDXPURL(), 0, null,
-			provisioningRequest.getAccountEntryName(), null, null, false,
+			null, 0, null, provisioningRequest.getAccountEntryName(), null,
+			null, false,
 			Arrays.asList(
 				"Liferay.AI.Hub.REST.everything",
 				"Liferay.AI.Hub.REST.everything.read",
