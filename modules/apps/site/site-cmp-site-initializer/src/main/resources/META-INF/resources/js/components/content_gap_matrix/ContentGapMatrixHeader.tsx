@@ -11,6 +11,7 @@ import {computeCoveragePercentage, countCriticalGaps} from './utils';
 export default function ContentGapMatrixHeader({data}: {data: MatrixData}) {
 	const coveragePercentage = computeCoveragePercentage(data);
 	const criticalGaps = countCriticalGaps(data);
+	const noAssets = data.totalAssetCount === 0;
 
 	return (
 		<div className="lfr-cmp__content-gap-matrix-header">
@@ -33,9 +34,17 @@ export default function ContentGapMatrixHeader({data}: {data: MatrixData}) {
 					)}`}
 				</span>
 
-				<span className="text-danger text-weight-semi-bold">
-					{`${criticalGaps} ${Liferay.Language.get('critical-gaps')}`}
-				</span>
+				{noAssets ? (
+					<span className="text-secondary text-weight-semi-bold">
+						{Liferay.Language.get('no-assets-found')}
+					</span>
+				) : (
+					<span className="text-danger text-weight-semi-bold">
+						{`${criticalGaps} ${Liferay.Language.get(
+							'critical-gaps'
+						)}`}
+					</span>
+				)}
 			</div>
 		</div>
 	);

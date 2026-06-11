@@ -7,7 +7,7 @@ import classNames from 'classnames';
 import React from 'react';
 
 import {TaxonomyTerm} from './types';
-import {isSentinel} from './utils';
+import {getCellTier, isSentinel} from './utils';
 
 export default function ContentGapCell({
 	funnelStage,
@@ -23,11 +23,11 @@ export default function ContentGapCell({
 	const sentinel = isSentinel(persona) || isSentinel(funnelStage);
 	const gap = totalCount === 0;
 
-	// Relative intensity within the project, scaled against the busiest real
-	// cell. Isolated here so the scale is a one-line change later.
+	// Discrete fill tier (1..N) relative to the busiest real cell, or 0 for
+	// gaps and sentinel cells, which are never filled. The scale itself lives
+	// in getCellTier, so the color model is one swap away.
 
-	const intensity =
-		sentinel || maxRealCount === 0 ? 0 : totalCount / maxRealCount;
+	const tier = gap || sentinel ? 0 : getCellTier(totalCount, maxRealCount);
 
 	return (
 		<div
@@ -35,17 +35,10 @@ export default function ContentGapCell({
 			className={classNames('lfr-cmp__content-gap-cell', {
 				'lfr-cmp__content-gap-cell--gap': gap,
 				'lfr-cmp__content-gap-cell--sentinel': sentinel,
+				[`lfr-cmp__content-gap-cell--tier-${tier}`]: tier > 0,
 			})}
 			role="gridcell"
 		>
-			{!gap && !sentinel && (
-				<span
-					aria-hidden="true"
-					className="lfr-cmp__content-gap-cell-fill"
-					style={{opacity: 0.15 + intensity * 0.85}}
-				/>
-			)}
-
 			<span className="lfr-cmp__content-gap-cell-count">
 				{totalCount}
 			</span>

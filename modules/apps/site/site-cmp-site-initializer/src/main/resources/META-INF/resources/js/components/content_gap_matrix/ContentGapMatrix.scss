@@ -55,6 +55,29 @@
 	padding-right: 1rem;
 }
 
+// Fill tiers: a single-hue teal ramp (light to dark = fewer to more assets).
+// Holding one hue and varying only lightness keeps the scale colorblind-safe
+// and lets the grid read as one ramp. The darkest tier is deepened (vs a
+// lighter teal) so the white count text clears WCAG AA on it. Steps map to
+// getCellTier's 1..N.
+
+$content-gap-cell-tiers: (
+	1: #ccf4ee,
+	2: #96e9db,
+	3: #5dc9b7,
+	4: #15806e,
+);
+
+// Count text: dark teal on the lighter tiers, flipping to white only on the
+// darkest tier, where the fill is dark enough that white text clears WCAG AA.
+// Flipping any earlier (e.g. tier 3) would drop white text to ~2:1, far below
+// legible. Gap cells use the deepened warning amber so the zero reads as part
+// of the same "missing" signal as the dashed border.
+
+$content-gap-cell-text: #125449;
+$content-gap-cell-text-gap: #863a00;
+$content-gap-cell-text-inverse: #ffffff;
+
 .lfr-cmp__content-gap-cell {
 	align-items: center;
 	border: 0.0625rem solid $secondary-l3;
@@ -65,23 +88,36 @@
 	overflow: hidden;
 	position: relative;
 
-	&--gap {
-		background-color: transparent;
-		border-style: dashed;
+	@each $tier, $color in $content-gap-cell-tiers {
+		&--tier-#{$tier} {
+			background-color: $color;
+		}
+	}
+
+	&--tier-4 .lfr-cmp__content-gap-cell-count {
+		color: $content-gap-cell-text-inverse;
 	}
 
 	&--sentinel {
 		background-color: $light-l1;
 	}
-}
 
-.lfr-cmp__content-gap-cell-fill {
-	background-color: $success;
-	inset: 0;
-	position: absolute;
+	// Gaps win over any fill: no color, dashed warning border. This is the
+	// "missing message" signal the whole matrix exists to surface.
+
+	&--gap {
+		background-color: transparent;
+		border-color: $warning;
+		border-style: dashed;
+
+		.lfr-cmp__content-gap-cell-count {
+			color: $content-gap-cell-text-gap;
+		}
+	}
 }
 
 .lfr-cmp__content-gap-cell-count {
+	color: $content-gap-cell-text;
 	font-size: 1rem;
 	font-weight: 600;
 	position: relative;

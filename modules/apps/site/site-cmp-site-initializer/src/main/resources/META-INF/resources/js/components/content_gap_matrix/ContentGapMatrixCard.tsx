@@ -60,14 +60,18 @@ export default function ContentGapMatrixCard({projectId}: Props) {
 			{loading || !data ? (
 				<ClayLoadingIndicator />
 			) : data.totalAssetCount === 0 ? (
-				<div className="empty-state">
-					<ClayEmptyState
-						description={Liferay.Language.get(
-							'add-assets-to-this-project-to-track-coverage'
-						)}
-						title={Liferay.Language.get('no-assets-yet')}
-					/>
-				</div>
+				<>
+					<ContentGapMatrix data={data} />
+
+					<div className="empty-state">
+						<ClayEmptyState
+							description={Liferay.Language.get(
+								'add-assets-to-this-project-to-track-coverage'
+							)}
+							title={Liferay.Language.get('no-assets-yet')}
+						/>
+					</div>
+				</>
 			) : !hasCategorizedAssets(data) ? (
 				<div className="empty-state">
 					<ClayEmptyState

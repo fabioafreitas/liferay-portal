@@ -63,6 +63,34 @@ export function getMaxRealCount(data: MatrixData): number {
 }
 
 /**
+ * Number of non-empty color tiers. Counts collapse onto one of these discrete
+ * steps (1..N) rather than a continuous gradient: the eye can rank a handful
+ * of shades and spot the gaps between them, where it cannot rank a smooth
+ * ramp. Tier 0 is reserved for empty cells, which are never filled.
+ */
+export const CELL_TIER_COUNT = 4;
+
+/**
+ * Maps a cell count to a fill tier in 1..CELL_TIER_COUNT, relative to the
+ * busiest real cell, so the scale auto-fits both small and large projects with
+ * no configured thresholds. Any positive count lands in at least tier 1, so a
+ * single asset is never rendered invisible; 0 returns 0 (rendered as a gap).
+ *
+ * Linear by design, matching the project-relative intent. For a heavily skewed
+ * project (a few huge cells, many small) swap the ratio for a log curve here —
+ * Math.log1p(count) / Math.log1p(maxRealCount) — and every cell follows.
+ */
+export function getCellTier(count: number, maxRealCount: number): number {
+	if (count <= 0 || maxRealCount <= 0) {
+		return 0;
+	}
+
+	const intensity = Math.min(1, count / maxRealCount);
+
+	return Math.max(1, Math.ceil(intensity * CELL_TIER_COUNT));
+}
+
+/**
  * Placeholder Coverage % (pending the product definition): filled real cells
  * over total real cells.
  */
