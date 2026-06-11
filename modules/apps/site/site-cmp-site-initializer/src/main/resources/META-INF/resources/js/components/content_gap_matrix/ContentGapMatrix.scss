@@ -1,0 +1,89 @@
+@import 'atlas-variables';
+
+.lfr-cmp__content-gap-matrix-container {
+	border-color: $secondary-l3;
+	border-radius: 0.5rem;
+	border-style: solid;
+	border-width: 0.0625rem;
+	padding: 1.5rem;
+	width: 100%;
+
+	.empty-state {
+		padding-bottom: 1rem;
+		padding-top: 1rem;
+	}
+}
+
+.lfr-cmp__content-gap-matrix-header {
+	align-items: flex-start;
+	display: flex;
+	justify-content: space-between;
+	margin-bottom: 1.5rem;
+}
+
+.lfr-cmp__content-gap-matrix-header-stats {
+	align-items: center;
+	display: flex;
+	gap: 1rem;
+	white-space: nowrap;
+}
+
+.lfr-cmp__content-gap-matrix-grid {
+	display: grid;
+	gap: 0.5rem;
+}
+
+.lfr-cmp__content-gap-matrix-corner {
+	background-color: transparent;
+}
+
+.lfr-cmp__content-gap-matrix-column-header {
+	color: $secondary;
+	font-size: 0.75rem;
+	font-weight: 600;
+	padding-bottom: 0.5rem;
+	text-align: center;
+	text-transform: uppercase;
+}
+
+.lfr-cmp__content-gap-matrix-row-header {
+	align-items: center;
+	color: $body-color;
+	display: flex;
+	font-size: 0.875rem;
+	font-weight: 600;
+	padding-right: 1rem;
+}
+
+.lfr-cmp__content-gap-cell {
+	align-items: center;
+	border: 0.0625rem solid $secondary-l3;
+	border-radius: 0.5rem;
+	display: flex;
+	justify-content: center;
+	min-height: 4rem;
+	overflow: hidden;
+	position: relative;
+
+	&--gap {
+		background-color: transparent;
+		border-style: dashed;
+	}
+
+	&--sentinel {
+		background-color: $light-l1;
+	}
+}
+
+.lfr-cmp__content-gap-cell-fill {
+	background-color: $success;
+	inset: 0;
+	position: absolute;
+}
+
+.lfr-cmp__content-gap-cell-count {
+	font-size: 1rem;
+	font-weight: 600;
+	position: relative;
+	z-index: 1;
+}
