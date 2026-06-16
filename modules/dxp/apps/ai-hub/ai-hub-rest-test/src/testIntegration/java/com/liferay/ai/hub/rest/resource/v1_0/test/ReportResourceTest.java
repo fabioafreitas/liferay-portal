@@ -143,7 +143,7 @@ public class ReportResourceTest extends BaseReportResourceTestCase {
 
 		_testPostReport(null, reportResource);
 
-		String externalReferenceCode = RandomTestUtil.randomString();
+		String chatbotExternalReferenceCode = RandomTestUtil.randomString();
 
 		_defaultObjectEntryManager.addObjectEntry(
 			_dtoConverterContext,
@@ -155,7 +155,8 @@ public class ReportResourceTest extends BaseReportResourceTestCase {
 						() -> HashMapBuilder.<String, Object>put(
 							"active", true
 						).put(
-							"externalReferenceCode", externalReferenceCode
+							"externalReferenceCode",
+							chatbotExternalReferenceCode
 						).put(
 							"r_accountToAIHubChatbots_accountEntryId",
 							_accountEntry.getAccountEntryId()
@@ -167,7 +168,7 @@ public class ReportResourceTest extends BaseReportResourceTestCase {
 			null);
 
 		_testPostReport(
-			externalReferenceCode,
+			chatbotExternalReferenceCode,
 			ReportResource.builder(
 			).endpoint(
 				testCompany.getVirtualHostname(),
