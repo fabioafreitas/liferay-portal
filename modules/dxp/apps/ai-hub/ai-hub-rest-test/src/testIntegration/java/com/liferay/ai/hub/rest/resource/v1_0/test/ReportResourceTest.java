@@ -7,11 +7,14 @@ package com.liferay.ai.hub.rest.resource.v1_0.test;
 
 import com.liferay.account.constants.AccountConstants;
 import com.liferay.account.model.AccountEntry;
+import com.liferay.account.model.AccountRole;
 import com.liferay.account.service.AccountEntryLocalService;
 import com.liferay.account.service.AccountEntryUserRelLocalService;
+import com.liferay.account.service.AccountRoleLocalService;
 import com.liferay.ai.hub.rest.client.dto.v1_0.Report;
 import com.liferay.ai.hub.rest.client.resource.v1_0.ReportResource;
 import com.liferay.arquillian.extension.junit.bridge.junit.Arquillian;
+import com.liferay.notification.service.NotificationQueueEntryLocalService;
 import com.liferay.object.constants.ObjectDefinitionConstants;
 import com.liferay.object.model.ObjectDefinition;
 import com.liferay.object.rest.dto.v1_0.ObjectEntry;
@@ -21,12 +24,14 @@ import com.liferay.object.service.ObjectDefinitionLocalService;
 import com.liferay.object.service.ObjectRelationshipLocalService;
 import com.liferay.petra.function.transform.TransformUtil;
 import com.liferay.petra.string.StringPool;
+import com.liferay.portal.kernel.model.Role;
 import com.liferay.portal.kernel.model.User;
 import com.liferay.portal.kernel.model.UserConstants;
 import com.liferay.portal.kernel.security.auth.PrincipalThreadLocal;
 import com.liferay.portal.kernel.security.permission.PermissionChecker;
 import com.liferay.portal.kernel.security.permission.PermissionCheckerFactoryUtil;
 import com.liferay.portal.kernel.security.permission.PermissionThreadLocal;
+import com.liferay.portal.kernel.service.RoleLocalService;
 import com.liferay.portal.kernel.service.ServiceContextThreadLocal;
 import com.liferay.portal.kernel.service.UserLocalService;
 import com.liferay.portal.kernel.test.util.RandomTestUtil;
@@ -125,6 +130,16 @@ public class ReportResourceTest extends BaseReportResourceTestCase {
 			aiHubAccountEntry.getAccountEntryId(), user.getUserId());
 		_accountEntryUserRelLocalService.addAccountEntryUserRel(
 			_accountEntry.getAccountEntryId(), user.getUserId());
+
+		Role role = _roleLocalService.getRole(
+			TestPropsValues.getCompanyId(), "AI Hub Administrator");
+
+		AccountRole accountRole =
+			_accountRoleLocalService.fetchAccountRoleByRoleId(role.getRoleId());
+
+		_accountRoleLocalService.associateUser(
+			_accountEntry.getAccountEntryId(), accountRole.getAccountRoleId(),
+			TestPropsValues.getUserId());
 	}
 
 	@AfterClass
@@ -176,6 +191,12 @@ public class ReportResourceTest extends BaseReportResourceTestCase {
 			).locale(
 				LocaleUtil.getDefault()
 			).build());
+
+		_testPostReportNotification("agentError", 0);
+		_testPostReportNotification("harmfulContent", 1);
+		_testPostReportNotification("inaccurateResponse", 0);
+		_testPostReportNotification("other", 0);
+		_testPostReportNotification("personalDataExposure", 1);
 	}
 
 	@Override
@@ -243,6 +264,25 @@ public class ReportResourceTest extends BaseReportResourceTestCase {
 				ObjectEntry::getExternalReferenceCode, String.class));
 	}
 
+	private void _testPostReportNotification(String reason, int expectedDelta)
+		throws Exception {
+
+		int count =
+			_notificationQueueEntryLocalService.
+				getNotificationQueueEntriesCount();
+
+		Report report = randomReport();
+
+		report.setReason(reason);
+
+		reportResource.postReport(report);
+
+		Assert.assertEquals(
+			count + expectedDelta,
+			_notificationQueueEntryLocalService.
+				getNotificationQueueEntriesCount());
+	}
+
 	private static AccountEntry _accountEntry;
 
 	@Inject
@@ -251,6 +291,9 @@ public class ReportResourceTest extends BaseReportResourceTestCase {
 	@Inject
 	private static AccountEntryUserRelLocalService
 		_accountEntryUserRelLocalService;
+
+	@Inject
+	private static AccountRoleLocalService _accountRoleLocalService;
 
 	private static DefaultObjectEntryManager _defaultObjectEntryManager;
 	private static DTOConverterContext _dtoConverterContext;
@@ -267,10 +310,17 @@ public class ReportResourceTest extends BaseReportResourceTestCase {
 	private static PermissionChecker _originalPermissionChecker;
 
 	@Inject
+	private static RoleLocalService _roleLocalService;
+
+	@Inject
 	private static SiteInitializerRegistry _siteInitializerRegistry;
 
 	@Inject
 	private static UserLocalService _userLocalService;
+
+	@Inject
+	private NotificationQueueEntryLocalService
+		_notificationQueueEntryLocalService;
 
 	@Inject
 	private ObjectDefinitionLocalService _objectDefinitionLocalService;
