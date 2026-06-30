@@ -11,10 +11,10 @@ import com.liferay.document.library.configuration.DLConfiguration;
 import com.liferay.fragment.renderer.FragmentRenderer;
 import com.liferay.info.constants.InfoDisplayWebKeys;
 import com.liferay.object.model.ObjectEntry;
-import com.liferay.object.model.ObjectRelationship;
 import com.liferay.object.service.ObjectDefinitionLocalService;
 import com.liferay.object.service.ObjectDefinitionService;
 import com.liferay.object.service.ObjectEntryLocalService;
+import com.liferay.object.service.ObjectRelationshipLocalService;
 import com.liferay.portal.kernel.util.Portal;
 import com.liferay.site.cms.site.initializer.internal.display.context.ViewAllRelatedAssetsSectionDisplayContext;
 
@@ -59,11 +59,9 @@ public class ViewAllRelatedAssetsJSPSectionFragmentRenderer
 			groupLocalService, httpServletRequest, language,
 			_objectDefinitionLocalService.fetchObjectDefinition(
 				objectEntry.getObjectDefinitionId()),
-			_objectDefinitionLocalService, _objectDefinitionService,
-			objectEntry, _objectEntryLocalService,
-			(ObjectRelationship)httpServletRequest.getAttribute(
-				"OBJECT_RELATIONSHIP"),
-			_portal, translationInfoItemFieldValuesExporterRegistry);
+			_objectDefinitionLocalService, _objectDefinitionService, objectEntry,
+			_objectEntryLocalService, _objectRelationshipLocalService, _portal,
+			translationInfoItemFieldValuesExporterRegistry);
 	}
 
 	@Override
@@ -87,6 +85,9 @@ public class ViewAllRelatedAssetsJSPSectionFragmentRenderer
 
 	@Reference
 	private ObjectEntryLocalService _objectEntryLocalService;
+
+	@Reference
+	private ObjectRelationshipLocalService _objectRelationshipLocalService;
 
 	@Reference
 	private Portal _portal;
