@@ -6,8 +6,15 @@
 package com.liferay.object.rest.internal.util;
 
 import com.liferay.asset.kernel.model.AssetCategory;
+import com.liferay.asset.kernel.model.AssetVocabulary;
+import com.liferay.asset.kernel.model.AssetVocabularyGroupRel;
 import com.liferay.asset.kernel.service.AssetCategoryLocalServiceUtil;
 import com.liferay.asset.kernel.service.AssetCategoryServiceUtil;
+import com.liferay.asset.kernel.service.AssetVocabularyGroupRelLocalServiceUtil;
+import com.liferay.asset.kernel.service.AssetVocabularyLocalServiceUtil;
+import com.liferay.depot.constants.DepotConstants;
+import com.liferay.depot.model.DepotEntry;
+import com.liferay.depot.service.DepotEntryLocalServiceUtil;
 import com.liferay.depot.util.SiteConnectedGroupGroupProviderUtil;
 import com.liferay.object.comment.ObjectEntryComment;
 import com.liferay.object.exception.ObjectEntryGroupIdException;
@@ -19,10 +26,12 @@ import com.liferay.object.rest.dto.v1_0.TaxonomyCategoryBrief;
 import com.liferay.object.service.ObjectEntryLocalServiceUtil;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.portal.kernel.feature.flag.FeatureFlagManagerUtil;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.model.Company;
 import com.liferay.portal.kernel.model.Group;
+import com.liferay.portal.kernel.model.GroupConstants;
 import com.liferay.portal.kernel.service.CompanyLocalServiceUtil;
 import com.liferay.portal.kernel.service.GroupLocalServiceUtil;
 import com.liferay.portal.kernel.service.ServiceContext;
@@ -230,32 +239,38 @@ public class ServiceContextUtil {
 				companyId, groupId, externalReferenceCode,
 				taxonomyCategoryBrief);
 
-			if (!ArrayUtil.contains(groupIds, scopeGroupId)) {
+			String parentTaxonomyCategoryExternalReferenceCode = null;
+
+			ParentTaxonomyCategory parentTaxonomyCategory =
+				taxonomyCategoryBrief.getParentTaxonomyCategory();
+
+			if (parentTaxonomyCategory != null) {
+				parentTaxonomyCategoryExternalReferenceCode =
+					parentTaxonomyCategory.getExternalReferenceCode();
+			}
+
+			String parentTaxonomyVocabularyExternalReferenceCode = null;
+
+			ParentTaxonomyVocabulary parentTaxonomyVocabulary =
+				taxonomyCategoryBrief.getParentTaxonomyVocabulary();
+
+			if (parentTaxonomyVocabulary != null) {
+				parentTaxonomyVocabularyExternalReferenceCode =
+					parentTaxonomyVocabulary.getExternalReferenceCode();
+			}
+
+			if (!ArrayUtil.contains(groupIds, scopeGroupId) &&
+				!_isAssetVocabularySharedWithGroup(
+					companyId, groupId,
+					_getVocabularyId(
+						scopeGroupId, externalReferenceCode,
+						parentTaxonomyVocabularyExternalReferenceCode))) {
+
 				throw new ObjectEntryGroupIdException.
 					InvalidGroupIdForAssetCategoryBrief(externalReferenceCode);
 			}
 
 			try {
-				String parentTaxonomyCategoryExternalReferenceCode = null;
-
-				ParentTaxonomyCategory parentTaxonomyCategory =
-					taxonomyCategoryBrief.getParentTaxonomyCategory();
-
-				if (parentTaxonomyCategory != null) {
-					parentTaxonomyCategoryExternalReferenceCode =
-						parentTaxonomyCategory.getExternalReferenceCode();
-				}
-
-				String parentTaxonomyVocabularyExternalReferenceCode = null;
-
-				ParentTaxonomyVocabulary parentTaxonomyVocabulary =
-					taxonomyCategoryBrief.getParentTaxonomyVocabulary();
-
-				if (parentTaxonomyVocabulary != null) {
-					parentTaxonomyVocabularyExternalReferenceCode =
-						parentTaxonomyVocabulary.getExternalReferenceCode();
-				}
-
 				AssetCategory assetCategory =
 					AssetCategoryServiceUtil.getOrAddEmptyCategoryWithAncestors(
 						externalReferenceCode, scopeGroupId,
@@ -297,12 +312,82 @@ public class ServiceContextUtil {
 					assetCategoryId);
 
 			if ((assetCategory == null) ||
-				!ArrayUtil.contains(groupIds, assetCategory.getGroupId())) {
+				(!ArrayUtil.contains(groupIds, assetCategory.getGroupId()) &&
+				 !_isAssetVocabularySharedWithGroup(
+					 companyId, groupId,
+					 assetCategory.getVocabularyId()))) {
 
 				throw new ObjectEntryGroupIdException.
 					InvalidGroupIdForAssetCategory(assetCategoryId);
 			}
 		}
+	}
+
+	// CMS shares its system vocabularies with every depot entry of a given
+	// type through AssetVocabularyGroupRel rows scoped to
+	// GroupConstants.ANY_PARENT_GROUP_ID, independently of
+	// SiteConnectedGroupGroupProviderUtil, which only knows about actual
+	// site ancestry and depot connections.
+
+	private static boolean _isAssetVocabularySharedWithGroup(
+		long companyId, long groupId, long vocabularyId) {
+
+		if (vocabularyId <= 0) {
+			return false;
+		}
+
+		DepotEntry depotEntry = DepotEntryLocalServiceUtil.
+			fetchGroupDepotEntry(groupId);
+
+		if ((depotEntry == null) ||
+			((depotEntry.getType() != DepotConstants.TYPE_PROJECT) &&
+			 (depotEntry.getType() != DepotConstants.TYPE_SPACE)) ||
+			!FeatureFlagManagerUtil.isEnabled(companyId, "LPD-17564")) {
+
+			return false;
+		}
+
+		for (AssetVocabularyGroupRel assetVocabularyGroupRel :
+				AssetVocabularyGroupRelLocalServiceUtil.
+					getAssetVocabularyGroupRelsByGroupIdAndDepotEntryType(
+						GroupConstants.ANY_PARENT_GROUP_ID,
+						depotEntry.getType())) {
+
+			if (assetVocabularyGroupRel.getVocabularyId() == vocabularyId) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	private static long _getVocabularyId(
+		long scopeGroupId, String externalReferenceCode,
+		String vocabularyExternalReferenceCode) {
+
+		AssetCategory assetCategory =
+			AssetCategoryLocalServiceUtil.
+				fetchAssetCategoryByExternalReferenceCode(
+					externalReferenceCode, scopeGroupId);
+
+		if (assetCategory != null) {
+			return assetCategory.getVocabularyId();
+		}
+
+		if (Validator.isNull(vocabularyExternalReferenceCode)) {
+			return 0;
+		}
+
+		AssetVocabulary assetVocabulary =
+			AssetVocabularyLocalServiceUtil.
+				fetchAssetVocabularyByExternalReferenceCode(
+					vocabularyExternalReferenceCode, scopeGroupId);
+
+		if (assetVocabulary == null) {
+			return 0;
+		}
+
+		return assetVocabulary.getVocabularyId();
 	}
 
 	private static final Log _log = LogFactoryUtil.getLog(
