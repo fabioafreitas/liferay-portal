@@ -271,16 +271,16 @@ public abstract class BaseContentCoverageResourceTestCase {
 		for (String additionalAssertFieldName :
 				getAdditionalAssertFieldNames()) {
 
-			if (Objects.equals("funnelStages", additionalAssertFieldName)) {
-				if (contentCoverage.getFunnelStages() == null) {
+			if (Objects.equals("cells", additionalAssertFieldName)) {
+				if (contentCoverage.getCells() == null) {
 					valid = false;
 				}
 
 				continue;
 			}
 
-			if (Objects.equals("matrixCells", additionalAssertFieldName)) {
-				if (contentCoverage.getMatrixCells() == null) {
+			if (Objects.equals("funnelStages", additionalAssertFieldName)) {
+				if (contentCoverage.getFunnelStages() == null) {
 					valid = false;
 				}
 
@@ -422,10 +422,10 @@ public abstract class BaseContentCoverageResourceTestCase {
 		for (String additionalAssertFieldName :
 				getAdditionalAssertFieldNames()) {
 
-			if (Objects.equals("funnelStages", additionalAssertFieldName)) {
+			if (Objects.equals("cells", additionalAssertFieldName)) {
 				if (!Objects.deepEquals(
-						contentCoverage1.getFunnelStages(),
-						contentCoverage2.getFunnelStages())) {
+						contentCoverage1.getCells(),
+						contentCoverage2.getCells())) {
 
 					return false;
 				}
@@ -433,10 +433,10 @@ public abstract class BaseContentCoverageResourceTestCase {
 				continue;
 			}
 
-			if (Objects.equals("matrixCells", additionalAssertFieldName)) {
+			if (Objects.equals("funnelStages", additionalAssertFieldName)) {
 				if (!Objects.deepEquals(
-						contentCoverage1.getMatrixCells(),
-						contentCoverage2.getMatrixCells())) {
+						contentCoverage1.getFunnelStages(),
+						contentCoverage2.getFunnelStages())) {
 
 					return false;
 				}
@@ -574,12 +574,12 @@ public abstract class BaseContentCoverageResourceTestCase {
 		sb.append(operator);
 		sb.append(" ");
 
-		if (entityFieldName.equals("funnelStages")) {
+		if (entityFieldName.equals("cells")) {
 			throw new IllegalArgumentException(
 				"Invalid entity field " + entityFieldName);
 		}
 
-		if (entityFieldName.equals("matrixCells")) {
+		if (entityFieldName.equals("funnelStages")) {
 			throw new IllegalArgumentException(
 				"Invalid entity field " + entityFieldName);
 		}
@@ -869,4 +869,4 @@ public abstract class BaseContentCoverageResourceTestCase {
 		_contentCoverageResource;
 
 }
-// LIFERAY-REST-BUILDER-HASH:-415583431
+// LIFERAY-REST-BUILDER-HASH:-1483920199

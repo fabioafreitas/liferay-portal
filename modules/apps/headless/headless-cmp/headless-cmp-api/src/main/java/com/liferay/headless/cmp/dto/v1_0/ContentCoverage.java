@@ -50,6 +50,48 @@ public class ContentCoverage implements Serializable {
 
 	@io.swagger.v3.oas.annotations.media.Schema
 	@Valid
+	public Cell[] getCells() {
+		if (_cellsSupplier != null) {
+			cells = _cellsSupplier.get();
+
+			_cellsSupplier = null;
+		}
+
+		return cells;
+	}
+
+	public void setCells(Cell[] cells) {
+		this.cells = cells;
+
+		_cellsSupplier = null;
+	}
+
+	@JsonIgnore
+	public void setCells(
+		UnsafeSupplier<Cell[], Exception> cellsUnsafeSupplier) {
+
+		_cellsSupplier = () -> {
+			try {
+				return cellsUnsafeSupplier.get();
+			}
+			catch (RuntimeException runtimeException) {
+				throw runtimeException;
+			}
+			catch (Exception exception) {
+				throw new RuntimeException(exception);
+			}
+		};
+	}
+
+	@GraphQLField
+	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
+	protected Cell[] cells;
+
+	@JsonIgnore
+	private Supplier<Cell[]> _cellsSupplier;
+
+	@io.swagger.v3.oas.annotations.media.Schema
+	@Valid
 	public FunnelStage[] getFunnelStages() {
 		if (_funnelStagesSupplier != null) {
 			funnelStages = _funnelStagesSupplier.get();
@@ -89,48 +131,6 @@ public class ContentCoverage implements Serializable {
 
 	@JsonIgnore
 	private Supplier<FunnelStage[]> _funnelStagesSupplier;
-
-	@io.swagger.v3.oas.annotations.media.Schema
-	@Valid
-	public MatrixCell[] getMatrixCells() {
-		if (_matrixCellsSupplier != null) {
-			matrixCells = _matrixCellsSupplier.get();
-
-			_matrixCellsSupplier = null;
-		}
-
-		return matrixCells;
-	}
-
-	public void setMatrixCells(MatrixCell[] matrixCells) {
-		this.matrixCells = matrixCells;
-
-		_matrixCellsSupplier = null;
-	}
-
-	@JsonIgnore
-	public void setMatrixCells(
-		UnsafeSupplier<MatrixCell[], Exception> matrixCellsUnsafeSupplier) {
-
-		_matrixCellsSupplier = () -> {
-			try {
-				return matrixCellsUnsafeSupplier.get();
-			}
-			catch (RuntimeException runtimeException) {
-				throw runtimeException;
-			}
-			catch (Exception exception) {
-				throw new RuntimeException(exception);
-			}
-		};
-	}
-
-	@GraphQLField
-	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
-	protected MatrixCell[] matrixCells;
-
-	@JsonIgnore
-	private Supplier<MatrixCell[]> _matrixCellsSupplier;
 
 	@io.swagger.v3.oas.annotations.media.Schema
 	@Valid
@@ -242,6 +242,28 @@ public class ContentCoverage implements Serializable {
 
 		sb.append("{");
 
+		Cell[] cells = getCells();
+
+		if (cells != null) {
+			if (sb.length() > 1) {
+				sb.append(", ");
+			}
+
+			sb.append("\"cells\": ");
+
+			sb.append("[");
+
+			for (int i = 0; i < cells.length; i++) {
+				sb.append(String.valueOf(cells[i]));
+
+				if ((i + 1) < cells.length) {
+					sb.append(", ");
+				}
+			}
+
+			sb.append("]");
+		}
+
 		FunnelStage[] funnelStages = getFunnelStages();
 
 		if (funnelStages != null) {
@@ -257,28 +279,6 @@ public class ContentCoverage implements Serializable {
 				sb.append(String.valueOf(funnelStages[i]));
 
 				if ((i + 1) < funnelStages.length) {
-					sb.append(", ");
-				}
-			}
-
-			sb.append("]");
-		}
-
-		MatrixCell[] matrixCells = getMatrixCells();
-
-		if (matrixCells != null) {
-			if (sb.length() > 1) {
-				sb.append(", ");
-			}
-
-			sb.append("\"matrixCells\": ");
-
-			sb.append("[");
-
-			for (int i = 0; i < matrixCells.length; i++) {
-				sb.append(String.valueOf(matrixCells[i]));
-
-				if ((i + 1) < matrixCells.length) {
 					sb.append(", ");
 				}
 			}
@@ -421,4 +421,4 @@ public class ContentCoverage implements Serializable {
 	private Map<String, Serializable> _extendedProperties;
 
 }
-// LIFERAY-REST-BUILDER-HASH:530136572
+// LIFERAY-REST-BUILDER-HASH:1718775038

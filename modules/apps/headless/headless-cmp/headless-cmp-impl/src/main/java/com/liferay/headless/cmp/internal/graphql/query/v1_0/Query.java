@@ -68,20 +68,18 @@ public class Query {
 	/**
 	 * Invoke this method with the command line:
 	 *
-	 * curl -H 'Content-Type: text/plain; charset=utf-8' -X 'POST' 'http://localhost:8080/o/graphql' -d $'{"query": "query {projectContentCoverage(cmsGroupId: ___, projectId: ___){funnelStages, matrixCells, personas, totalAssetCount}}"}' -u 'test@liferay.com:test'
+	 * curl -H 'Content-Type: text/plain; charset=utf-8' -X 'POST' 'http://localhost:8080/o/graphql' -d $'{"query": "query {projectContentCoverage(projectId: ___){cells, funnelStages, personas, totalAssetCount}}"}' -u 'test@liferay.com:test'
 	 */
 	@GraphQLField
 	public ContentCoverage projectContentCoverage(
-			@GraphQLName("projectId") Long projectId,
-			@GraphQLName("cmsGroupId") Long cmsGroupId)
+			@GraphQLName("projectId") Long projectId)
 		throws Exception {
 
 		return _applyComponentServiceObjects(
 			_contentCoverageResourceComponentServiceObjects,
 			this::_populateResourceContext,
 			contentCoverageResource ->
-				contentCoverageResource.getProjectContentCoverage(
-					projectId, cmsGroupId));
+				contentCoverageResource.getProjectContentCoverage(projectId));
 	}
 
 	/**
@@ -341,4 +339,4 @@ public class Query {
 	private com.liferay.portal.kernel.model.User _user;
 
 }
-// LIFERAY-REST-BUILDER-HASH:770268904
+// LIFERAY-REST-BUILDER-HASH:1874240441

@@ -32,12 +32,11 @@ public interface ContentCoverageResource {
 		return new Builder();
 	}
 
-	public ContentCoverage getProjectContentCoverage(
-			Long projectId, Long cmsGroupId)
+	public ContentCoverage getProjectContentCoverage(Long projectId)
 		throws Exception;
 
 	public HttpInvoker.HttpResponse getProjectContentCoverageHttpResponse(
-			Long projectId, Long cmsGroupId)
+			Long projectId)
 		throws Exception;
 
 	public static class Builder {
@@ -149,12 +148,11 @@ public interface ContentCoverageResource {
 	public static class ContentCoverageResourceImpl
 		implements ContentCoverageResource {
 
-		public ContentCoverage getProjectContentCoverage(
-				Long projectId, Long cmsGroupId)
+		public ContentCoverage getProjectContentCoverage(Long projectId)
 			throws Exception {
 
 			HttpInvoker.HttpResponse httpResponse =
-				getProjectContentCoverageHttpResponse(projectId, cmsGroupId);
+				getProjectContentCoverageHttpResponse(projectId);
 
 			String content = httpResponse.getContent();
 
@@ -216,7 +214,7 @@ public interface ContentCoverageResource {
 		}
 
 		public HttpInvoker.HttpResponse getProjectContentCoverageHttpResponse(
-				Long projectId, Long cmsGroupId)
+				Long projectId)
 			throws Exception {
 
 			HttpInvoker httpInvoker = HttpInvoker.newHttpInvoker();
@@ -239,10 +237,6 @@ public interface ContentCoverageResource {
 			}
 
 			httpInvoker.httpMethod(HttpInvoker.HttpMethod.GET);
-
-			if (cmsGroupId != null) {
-				httpInvoker.parameter("cmsGroupId", String.valueOf(cmsGroupId));
-			}
 
 			httpInvoker.path(
 				_builder._scheme + "://" + _builder._host + ":" +
@@ -271,4 +265,4 @@ public interface ContentCoverageResource {
 	}
 
 }
-// LIFERAY-REST-BUILDER-HASH:561315006
+// LIFERAY-REST-BUILDER-HASH:-1287165357

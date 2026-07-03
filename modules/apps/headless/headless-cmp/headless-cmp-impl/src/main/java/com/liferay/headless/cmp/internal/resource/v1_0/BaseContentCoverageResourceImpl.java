@@ -52,10 +52,6 @@ public abstract class BaseContentCoverageResourceImpl
 			@io.swagger.v3.oas.annotations.Parameter(
 				in = io.swagger.v3.oas.annotations.enums.ParameterIn.PATH,
 				name = "projectId"
-			),
-			@io.swagger.v3.oas.annotations.Parameter(
-				in = io.swagger.v3.oas.annotations.enums.ParameterIn.QUERY,
-				name = "cmsGroupId"
 			)
 		}
 	)
@@ -72,11 +68,7 @@ public abstract class BaseContentCoverageResourceImpl
 			@io.swagger.v3.oas.annotations.Parameter(hidden = true)
 			@jakarta.validation.constraints.NotNull
 			@jakarta.ws.rs.PathParam("projectId")
-			Long projectId,
-			@io.swagger.v3.oas.annotations.Parameter(hidden = true)
-			@jakarta.validation.constraints.NotNull
-			@jakarta.ws.rs.QueryParam("cmsGroupId")
-			Long cmsGroupId)
+			Long projectId)
 		throws Exception {
 
 		return new ContentCoverage();
@@ -527,4 +519,4 @@ public abstract class BaseContentCoverageResourceImpl
 		LogFactoryUtil.getLog(BaseContentCoverageResourceImpl.class);
 
 }
-// LIFERAY-REST-BUILDER-HASH:1229536617
+// LIFERAY-REST-BUILDER-HASH:1679994135

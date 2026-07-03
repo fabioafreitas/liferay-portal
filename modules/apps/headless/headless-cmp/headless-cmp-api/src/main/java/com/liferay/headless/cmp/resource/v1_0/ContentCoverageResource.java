@@ -43,8 +43,7 @@ import org.osgi.annotation.versioning.ProviderType;
 @ProviderType
 public interface ContentCoverageResource {
 
-	public ContentCoverage getProjectContentCoverage(
-			Long projectId, Long cmsGroupId)
+	public ContentCoverage getProjectContentCoverage(Long projectId)
 		throws Exception;
 
 	public default void setContextAcceptLanguage(
@@ -135,4 +134,4 @@ public interface ContentCoverageResource {
 	}
 
 }
-// LIFERAY-REST-BUILDER-HASH:-504973010
+// LIFERAY-REST-BUILDER-HASH:-210441053

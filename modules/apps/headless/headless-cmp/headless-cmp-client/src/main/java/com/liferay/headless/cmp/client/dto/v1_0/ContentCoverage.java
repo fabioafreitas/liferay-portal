@@ -25,6 +25,27 @@ public class ContentCoverage implements Cloneable, Serializable {
 		return ContentCoverageSerDes.toDTO(json);
 	}
 
+	public Cell[] getCells() {
+		return cells;
+	}
+
+	public void setCells(Cell[] cells) {
+		this.cells = cells;
+	}
+
+	public void setCells(
+		UnsafeSupplier<Cell[], Exception> cellsUnsafeSupplier) {
+
+		try {
+			cells = cellsUnsafeSupplier.get();
+		}
+		catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	protected Cell[] cells;
+
 	public FunnelStage[] getFunnelStages() {
 		return funnelStages;
 	}
@@ -45,27 +66,6 @@ public class ContentCoverage implements Cloneable, Serializable {
 	}
 
 	protected FunnelStage[] funnelStages;
-
-	public MatrixCell[] getMatrixCells() {
-		return matrixCells;
-	}
-
-	public void setMatrixCells(MatrixCell[] matrixCells) {
-		this.matrixCells = matrixCells;
-	}
-
-	public void setMatrixCells(
-		UnsafeSupplier<MatrixCell[], Exception> matrixCellsUnsafeSupplier) {
-
-		try {
-			matrixCells = matrixCellsUnsafeSupplier.get();
-		}
-		catch (Exception e) {
-			throw new RuntimeException(e);
-		}
-	}
-
-	protected MatrixCell[] matrixCells;
 
 	public Persona[] getPersonas() {
 		return personas;
@@ -141,4 +141,4 @@ public class ContentCoverage implements Cloneable, Serializable {
 	}
 
 }
-// LIFERAY-REST-BUILDER-HASH:501268268
+// LIFERAY-REST-BUILDER-HASH:-1237812236
