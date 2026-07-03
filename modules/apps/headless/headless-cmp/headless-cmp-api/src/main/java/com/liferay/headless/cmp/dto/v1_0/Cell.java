@@ -33,17 +33,17 @@ import java.util.function.Supplier;
  * @generated
  */
 @Generated("")
-@GraphQLName("MatrixCell")
+@GraphQLName("Cell")
 @JsonFilter("Liferay.Vulcan")
-@XmlRootElement(name = "MatrixCell")
-public class MatrixCell implements Serializable {
+@XmlRootElement(name = "Cell")
+public class Cell implements Serializable {
 
-	public static MatrixCell toDTO(String json) {
-		return ObjectMapperUtil.readValue(MatrixCell.class, json);
+	public static Cell toDTO(String json) {
+		return ObjectMapperUtil.readValue(Cell.class, json);
 	}
 
-	public static MatrixCell unsafeToDTO(String json) {
-		return ObjectMapperUtil.unsafeReadValue(MatrixCell.class, json);
+	public static Cell unsafeToDTO(String json) {
+		return ObjectMapperUtil.unsafeReadValue(Cell.class, json);
 	}
 
 	@io.swagger.v3.oas.annotations.media.Schema
@@ -175,13 +175,13 @@ public class MatrixCell implements Serializable {
 			return true;
 		}
 
-		if (!(object instanceof MatrixCell)) {
+		if (!(object instanceof Cell)) {
 			return false;
 		}
 
-		MatrixCell matrixCell = (MatrixCell)object;
+		Cell cell = (Cell)object;
 
-		return Objects.equals(toString(), matrixCell.toString());
+		return Objects.equals(toString(), cell.toString());
 	}
 
 	@Override
@@ -247,7 +247,7 @@ public class MatrixCell implements Serializable {
 
 	@io.swagger.v3.oas.annotations.media.Schema(
 		accessMode = io.swagger.v3.oas.annotations.media.Schema.AccessMode.READ_ONLY,
-		defaultValue = "com.liferay.headless.cmp.dto.v1_0.MatrixCell",
+		defaultValue = "com.liferay.headless.cmp.dto.v1_0.Cell",
 		name = "x-class-name"
 	)
 	public String xClassName;
@@ -341,4 +341,4 @@ public class MatrixCell implements Serializable {
 	private Map<String, Serializable> _extendedProperties;
 
 }
-// LIFERAY-REST-BUILDER-HASH:-884937496
+// LIFERAY-REST-BUILDER-HASH:-968720919

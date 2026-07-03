@@ -5,7 +5,7 @@
 
 package com.liferay.headless.cmp.client.serdes.v1_0;
 
-import com.liferay.headless.cmp.client.dto.v1_0.MatrixCell;
+import com.liferay.headless.cmp.client.dto.v1_0.Cell;
 import com.liferay.headless.cmp.client.json.BaseJSONParser;
 
 import jakarta.annotation.Generated;
@@ -21,22 +21,22 @@ import java.util.TreeMap;
  * @generated
  */
 @Generated("")
-public class MatrixCellSerDes {
+public class CellSerDes {
 
-	public static MatrixCell toDTO(String json) {
-		MatrixCellJSONParser matrixCellJSONParser = new MatrixCellJSONParser();
+	public static Cell toDTO(String json) {
+		CellJSONParser cellJSONParser = new CellJSONParser();
 
-		return matrixCellJSONParser.parseToDTO(json);
+		return cellJSONParser.parseToDTO(json);
 	}
 
-	public static MatrixCell[] toDTOs(String json) {
-		MatrixCellJSONParser matrixCellJSONParser = new MatrixCellJSONParser();
+	public static Cell[] toDTOs(String json) {
+		CellJSONParser cellJSONParser = new CellJSONParser();
 
-		return matrixCellJSONParser.parseToDTOs(json);
+		return cellJSONParser.parseToDTOs(json);
 	}
 
-	public static String toJSON(MatrixCell matrixCell) {
-		if (matrixCell == null) {
+	public static String toJSON(Cell cell) {
+		if (cell == null) {
 			return "null";
 		}
 
@@ -44,7 +44,7 @@ public class MatrixCellSerDes {
 
 		sb.append("{");
 
-		if (matrixCell.getFunnelStageId() != null) {
+		if (cell.getFunnelStageId() != null) {
 			if (sb.length() > 1) {
 				sb.append(", ");
 			}
@@ -53,12 +53,12 @@ public class MatrixCellSerDes {
 
 			sb.append("\"");
 
-			sb.append(_escape(matrixCell.getFunnelStageId()));
+			sb.append(_escape(cell.getFunnelStageId()));
 
 			sb.append("\"");
 		}
 
-		if (matrixCell.getPersonaId() != null) {
+		if (cell.getPersonaId() != null) {
 			if (sb.length() > 1) {
 				sb.append(", ");
 			}
@@ -67,19 +67,19 @@ public class MatrixCellSerDes {
 
 			sb.append("\"");
 
-			sb.append(_escape(matrixCell.getPersonaId()));
+			sb.append(_escape(cell.getPersonaId()));
 
 			sb.append("\"");
 		}
 
-		if (matrixCell.getTotalCount() != null) {
+		if (cell.getTotalCount() != null) {
 			if (sb.length() > 1) {
 				sb.append(", ");
 			}
 
 			sb.append("\"totalCount\": ");
 
-			sb.append(matrixCell.getTotalCount());
+			sb.append(cell.getTotalCount());
 		}
 
 		sb.append("}");
@@ -88,54 +88,52 @@ public class MatrixCellSerDes {
 	}
 
 	public static Map<String, Object> toMap(String json) {
-		MatrixCellJSONParser matrixCellJSONParser = new MatrixCellJSONParser();
+		CellJSONParser cellJSONParser = new CellJSONParser();
 
-		return matrixCellJSONParser.parseToMap(json);
+		return cellJSONParser.parseToMap(json);
 	}
 
-	public static Map<String, String> toMap(MatrixCell matrixCell) {
-		if (matrixCell == null) {
+	public static Map<String, String> toMap(Cell cell) {
+		if (cell == null) {
 			return null;
 		}
 
 		Map<String, String> map = new TreeMap<>();
 
-		if (matrixCell.getFunnelStageId() == null) {
+		if (cell.getFunnelStageId() == null) {
 			map.put("funnelStageId", null);
 		}
 		else {
-			map.put(
-				"funnelStageId", String.valueOf(matrixCell.getFunnelStageId()));
+			map.put("funnelStageId", String.valueOf(cell.getFunnelStageId()));
 		}
 
-		if (matrixCell.getPersonaId() == null) {
+		if (cell.getPersonaId() == null) {
 			map.put("personaId", null);
 		}
 		else {
-			map.put("personaId", String.valueOf(matrixCell.getPersonaId()));
+			map.put("personaId", String.valueOf(cell.getPersonaId()));
 		}
 
-		if (matrixCell.getTotalCount() == null) {
+		if (cell.getTotalCount() == null) {
 			map.put("totalCount", null);
 		}
 		else {
-			map.put("totalCount", String.valueOf(matrixCell.getTotalCount()));
+			map.put("totalCount", String.valueOf(cell.getTotalCount()));
 		}
 
 		return map;
 	}
 
-	public static class MatrixCellJSONParser
-		extends BaseJSONParser<MatrixCell> {
+	public static class CellJSONParser extends BaseJSONParser<Cell> {
 
 		@Override
-		protected MatrixCell createDTO() {
-			return new MatrixCell();
+		protected Cell createDTO() {
+			return new Cell();
 		}
 
 		@Override
-		protected MatrixCell[] createDTOArray(int size) {
-			return new MatrixCell[size];
+		protected Cell[] createDTOArray(int size) {
+			return new Cell[size];
 		}
 
 		@Override
@@ -155,22 +153,22 @@ public class MatrixCellSerDes {
 
 		@Override
 		protected void setField(
-			MatrixCell matrixCell, String jsonParserFieldName,
+			Cell cell, String jsonParserFieldName,
 			Object jsonParserFieldValue) {
 
 			if (Objects.equals(jsonParserFieldName, "funnelStageId")) {
 				if (jsonParserFieldValue != null) {
-					matrixCell.setFunnelStageId((String)jsonParserFieldValue);
+					cell.setFunnelStageId((String)jsonParserFieldValue);
 				}
 			}
 			else if (Objects.equals(jsonParserFieldName, "personaId")) {
 				if (jsonParserFieldValue != null) {
-					matrixCell.setPersonaId((String)jsonParserFieldValue);
+					cell.setPersonaId((String)jsonParserFieldValue);
 				}
 			}
 			else if (Objects.equals(jsonParserFieldName, "totalCount")) {
 				if (jsonParserFieldValue != null) {
-					matrixCell.setTotalCount(
+					cell.setTotalCount(
 						Long.valueOf((String)jsonParserFieldValue));
 				}
 			}
@@ -255,4 +253,4 @@ public class MatrixCellSerDes {
 	}
 
 }
-// LIFERAY-REST-BUILDER-HASH:570045953
+// LIFERAY-REST-BUILDER-HASH:-225844252

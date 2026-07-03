@@ -6,7 +6,7 @@
 package com.liferay.headless.cmp.client.dto.v1_0;
 
 import com.liferay.headless.cmp.client.function.UnsafeSupplier;
-import com.liferay.headless.cmp.client.serdes.v1_0.MatrixCellSerDes;
+import com.liferay.headless.cmp.client.serdes.v1_0.CellSerDes;
 
 import jakarta.annotation.Generated;
 
@@ -19,10 +19,10 @@ import java.util.Objects;
  * @generated
  */
 @Generated("")
-public class MatrixCell implements Cloneable, Serializable {
+public class Cell implements Cloneable, Serializable {
 
-	public static MatrixCell toDTO(String json) {
-		return MatrixCellSerDes.toDTO(json);
+	public static Cell toDTO(String json) {
+		return CellSerDes.toDTO(json);
 	}
 
 	public String getFunnelStageId() {
@@ -89,8 +89,8 @@ public class MatrixCell implements Cloneable, Serializable {
 	protected Long totalCount;
 
 	@Override
-	public MatrixCell clone() throws CloneNotSupportedException {
-		return (MatrixCell)super.clone();
+	public Cell clone() throws CloneNotSupportedException {
+		return (Cell)super.clone();
 	}
 
 	@Override
@@ -99,13 +99,13 @@ public class MatrixCell implements Cloneable, Serializable {
 			return true;
 		}
 
-		if (!(object instanceof MatrixCell)) {
+		if (!(object instanceof Cell)) {
 			return false;
 		}
 
-		MatrixCell matrixCell = (MatrixCell)object;
+		Cell cell = (Cell)object;
 
-		return Objects.equals(toString(), matrixCell.toString());
+		return Objects.equals(toString(), cell.toString());
 	}
 
 	@Override
@@ -116,8 +116,8 @@ public class MatrixCell implements Cloneable, Serializable {
 	}
 
 	public String toString() {
-		return MatrixCellSerDes.toJSON(this);
+		return CellSerDes.toJSON(this);
 	}
 
 }
-// LIFERAY-REST-BUILDER-HASH:-1071979521
+// LIFERAY-REST-BUILDER-HASH:98366694

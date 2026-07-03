@@ -5,9 +5,9 @@
 
 package com.liferay.headless.cmp.client.serdes.v1_0;
 
+import com.liferay.headless.cmp.client.dto.v1_0.Cell;
 import com.liferay.headless.cmp.client.dto.v1_0.ContentCoverage;
 import com.liferay.headless.cmp.client.dto.v1_0.FunnelStage;
-import com.liferay.headless.cmp.client.dto.v1_0.MatrixCell;
 import com.liferay.headless.cmp.client.dto.v1_0.Persona;
 import com.liferay.headless.cmp.client.json.BaseJSONParser;
 
@@ -49,6 +49,26 @@ public class ContentCoverageSerDes {
 
 		sb.append("{");
 
+		if (contentCoverage.getCells() != null) {
+			if (sb.length() > 1) {
+				sb.append(", ");
+			}
+
+			sb.append("\"cells\": ");
+
+			sb.append("[");
+
+			for (int i = 0; i < contentCoverage.getCells().length; i++) {
+				sb.append(String.valueOf(contentCoverage.getCells()[i]));
+
+				if ((i + 1) < contentCoverage.getCells().length) {
+					sb.append(", ");
+				}
+			}
+
+			sb.append("]");
+		}
+
 		if (contentCoverage.getFunnelStages() != null) {
 			if (sb.length() > 1) {
 				sb.append(", ");
@@ -62,26 +82,6 @@ public class ContentCoverageSerDes {
 				sb.append(String.valueOf(contentCoverage.getFunnelStages()[i]));
 
 				if ((i + 1) < contentCoverage.getFunnelStages().length) {
-					sb.append(", ");
-				}
-			}
-
-			sb.append("]");
-		}
-
-		if (contentCoverage.getMatrixCells() != null) {
-			if (sb.length() > 1) {
-				sb.append(", ");
-			}
-
-			sb.append("\"matrixCells\": ");
-
-			sb.append("[");
-
-			for (int i = 0; i < contentCoverage.getMatrixCells().length; i++) {
-				sb.append(String.valueOf(contentCoverage.getMatrixCells()[i]));
-
-				if ((i + 1) < contentCoverage.getMatrixCells().length) {
 					sb.append(", ");
 				}
 			}
@@ -138,6 +138,13 @@ public class ContentCoverageSerDes {
 
 		Map<String, String> map = new TreeMap<>();
 
+		if (contentCoverage.getCells() == null) {
+			map.put("cells", null);
+		}
+		else {
+			map.put("cells", String.valueOf(contentCoverage.getCells()));
+		}
+
 		if (contentCoverage.getFunnelStages() == null) {
 			map.put("funnelStages", null);
 		}
@@ -145,15 +152,6 @@ public class ContentCoverageSerDes {
 			map.put(
 				"funnelStages",
 				String.valueOf(contentCoverage.getFunnelStages()));
-		}
-
-		if (contentCoverage.getMatrixCells() == null) {
-			map.put("matrixCells", null);
-		}
-		else {
-			map.put(
-				"matrixCells",
-				String.valueOf(contentCoverage.getMatrixCells()));
 		}
 
 		if (contentCoverage.getPersonas() == null) {
@@ -190,10 +188,10 @@ public class ContentCoverageSerDes {
 
 		@Override
 		protected boolean parseMaps(String jsonParserFieldName) {
-			if (Objects.equals(jsonParserFieldName, "funnelStages")) {
+			if (Objects.equals(jsonParserFieldName, "cells")) {
 				return false;
 			}
-			else if (Objects.equals(jsonParserFieldName, "matrixCells")) {
+			else if (Objects.equals(jsonParserFieldName, "funnelStages")) {
 				return false;
 			}
 			else if (Objects.equals(jsonParserFieldName, "personas")) {
@@ -211,7 +209,22 @@ public class ContentCoverageSerDes {
 			ContentCoverage contentCoverage, String jsonParserFieldName,
 			Object jsonParserFieldValue) {
 
-			if (Objects.equals(jsonParserFieldName, "funnelStages")) {
+			if (Objects.equals(jsonParserFieldName, "cells")) {
+				if (jsonParserFieldValue != null) {
+					Object[] jsonParserFieldValues =
+						(Object[])jsonParserFieldValue;
+
+					Cell[] cellsArray = new Cell[jsonParserFieldValues.length];
+
+					for (int i = 0; i < cellsArray.length; i++) {
+						cellsArray[i] = CellSerDes.toDTO(
+							(String)jsonParserFieldValues[i]);
+					}
+
+					contentCoverage.setCells(cellsArray);
+				}
+			}
+			else if (Objects.equals(jsonParserFieldName, "funnelStages")) {
 				if (jsonParserFieldValue != null) {
 					Object[] jsonParserFieldValues =
 						(Object[])jsonParserFieldValue;
@@ -225,22 +238,6 @@ public class ContentCoverageSerDes {
 					}
 
 					contentCoverage.setFunnelStages(funnelStagesArray);
-				}
-			}
-			else if (Objects.equals(jsonParserFieldName, "matrixCells")) {
-				if (jsonParserFieldValue != null) {
-					Object[] jsonParserFieldValues =
-						(Object[])jsonParserFieldValue;
-
-					MatrixCell[] matrixCellsArray =
-						new MatrixCell[jsonParserFieldValues.length];
-
-					for (int i = 0; i < matrixCellsArray.length; i++) {
-						matrixCellsArray[i] = MatrixCellSerDes.toDTO(
-							(String)jsonParserFieldValues[i]);
-					}
-
-					contentCoverage.setMatrixCells(matrixCellsArray);
 				}
 			}
 			else if (Objects.equals(jsonParserFieldName, "personas")) {
@@ -346,4 +343,4 @@ public class ContentCoverageSerDes {
 	}
 
 }
-// LIFERAY-REST-BUILDER-HASH:1168372434
+// LIFERAY-REST-BUILDER-HASH:-707106354
