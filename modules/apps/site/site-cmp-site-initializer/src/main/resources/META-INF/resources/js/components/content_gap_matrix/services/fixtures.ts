@@ -131,10 +131,10 @@ export const PARTIAL_COVERAGE_MATRIX: MatrixData = {
 		{funnelStageId: '50003', personaId: '40004', totalCount: 0},
 		{funnelStageId: '50004', personaId: '40004', totalCount: 5},
 
-		{funnelStageId: '50001', personaId: 'no-persona', totalCount: 2},
+		{funnelStageId: '50001', personaId: NO_PERSONA.id, totalCount: 2},
 		{
-			funnelStageId: 'no-funnel-stage',
-			personaId: 'no-persona',
+			funnelStageId: NO_FUNNEL_STAGE.id,
+			personaId: NO_PERSONA.id,
 			totalCount: 3,
 		},
 	],
@@ -149,8 +149,8 @@ export const PARTIAL_COVERAGE_MATRIX: MatrixData = {
 export const UNCATEGORIZED_MATRIX: MatrixData = {
 	cells: [
 		{
-			funnelStageId: 'no-funnel-stage',
-			personaId: 'no-persona',
+			funnelStageId: NO_FUNNEL_STAGE.id,
+			personaId: NO_PERSONA.id,
 			totalCount: 18,
 		},
 	],

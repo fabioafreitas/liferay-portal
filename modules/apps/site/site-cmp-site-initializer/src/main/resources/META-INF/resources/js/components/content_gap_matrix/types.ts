@@ -24,16 +24,18 @@ export interface MatrixData {
 	totalAssetCount: number;
 }
 
+export const NO_CATEGORY_ID = '-1';
+
 export const NO_FUNNEL_STAGE: TaxonomyTerm = {
 	externalReferenceCode: null,
-	id: 'no-funnel-stage',
+	id: NO_CATEGORY_ID,
 	name: Liferay.Language.get('no-funnel'),
 	uncategorized: true,
 };
 
 export const NO_PERSONA: TaxonomyTerm = {
 	externalReferenceCode: null,
-	id: 'no-persona',
+	id: NO_CATEGORY_ID,
 	name: Liferay.Language.get('no-persona'),
 	uncategorized: true,
 };
