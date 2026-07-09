@@ -12,7 +12,7 @@ import {
 describe('toMatrixData', () => {
 	it('appends the localized sentinels after the real categories, preserving order', () => {
 		const matrixData = toMatrixData({
-			cells: [],
+			contentCoverageEntries: [],
 			funnelStages: [
 				{externalReferenceCode: 'F1', id: '50001', name: 'Awareness'},
 				{externalReferenceCode: 'F2', id: '50002', name: 'Decision'},
@@ -36,7 +36,7 @@ describe('toMatrixData', () => {
 
 	it('maps the uncategorized bucket ("-1"), and any missing id, to the sentinel axes', () => {
 		const matrixData = toMatrixData({
-			cells: [
+			contentCoverageEntries: [
 				{funnelStageId: '50001', personaId: '40001', totalCount: 5},
 				{funnelStageId: '50001', personaId: '-1', totalCount: 2},
 				{funnelStageId: null, personaId: null, totalCount: 1},

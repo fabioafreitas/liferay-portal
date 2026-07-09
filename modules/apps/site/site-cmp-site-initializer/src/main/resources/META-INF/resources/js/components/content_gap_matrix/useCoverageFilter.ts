@@ -11,14 +11,15 @@ import {
 import {useLiferayState} from '@liferay/frontend-js-state-web/react';
 import {useCallback, useMemo} from 'react';
 
-import {TaxonomyTerm} from './types';
+import {MatrixData, TaxonomyTerm, UNCATEGORIZED_ID} from './types';
 
 /**
- * Id of the asset data set's category filter
- *  which spans the persona and funnel-stage
- * vocabularies.
+ * Ids of the asset data set's persona and funnel-stage category filters. Each
+ * targets the internal-category field scoped to its own vocabulary; the data
+ * set ANDs them so a cell click narrows to assets carrying both categories.
  */
-const ASSET_CATEGORY_FILTER_ID = 'taxonomyCategoryIds';
+const FUNNEL_STAGE_FILTER_ID = 'cmpFunnelStageCategoryIds';
+const PERSONA_FILTER_ID = 'cmpPersonaCategoryIds';
 
 interface CoverageFilter {
 
@@ -29,19 +30,47 @@ interface CoverageFilter {
 	applyFilter: (persona: TaxonomyTerm, funnelStage: TaxonomyTerm) => void;
 
 	/**
-	 * Category ids currently selected in the data set's category filter, used to
-	 * highlight the matching cell. Empty when the filter is inactive or set to
-	 * exclude.
+	 * Category ids currently selected in the persona and funnel-stage filters,
+	 * used to highlight the matching cell. The uncategorized sentinel ("-1")
+	 * stands for a filter set to exclude every real category on that axis.
 	 */
 	selectedCategoryIds: Set<string>;
 }
 
 /**
- * Bridges the matrix to the project's asset data set: it writes to the data
- * set's own state atom, resolved by its id and reads back which categories
- * are filtered so the matrix can highlight the selected cell.
+ * Builds the selected data for one axis. A real category selects itself; the
+ * uncategorized sentinel excludes every real category on that axis, which is
+ * the project-relative "no persona" / "no funnel stage" query.
  */
-export function useCoverageFilter(assetFDSId: string): CoverageFilter {
+function buildSelectedData(
+	term: TaxonomyTerm,
+	realTerms: TaxonomyTerm[]
+): Record<string, unknown> {
+	if (term.uncategorized) {
+		return {
+			exclude: true,
+			selectedItems: realTerms.map((realTerm) => ({
+				label: realTerm.name,
+				value: realTerm.id,
+			})),
+		};
+	}
+
+	return {
+		exclude: false,
+		selectedItems: [{label: term.name, value: term.id}],
+	};
+}
+
+/**
+ * Bridges the matrix to the project's asset data set: it writes to the data
+ * set's own state atom, resolved by its id, and reads back which categories are
+ * filtered so the matrix can highlight the selected cell.
+ */
+export function useCoverageFilter(
+	assetFDSId: string,
+	data: MatrixData
+): CoverageFilter {
 	const assetFDSAtom = useMemo(
 		() => getOrCreateFDSAtom({fdsName: assetFDSId}),
 		[assetFDSId]
@@ -50,59 +79,73 @@ export function useCoverageFilter(assetFDSId: string): CoverageFilter {
 	const [assetFDSState, setAssetFDSState] =
 		useLiferayState<IFDSState>(assetFDSAtom);
 
+	const {funnelStages, personas} = data;
+
 	const applyFilter = useCallback(
 		(persona: TaxonomyTerm, funnelStage: TaxonomyTerm) => {
+			const selectedDataByFilterId: Record<
+				string,
+				Record<string, unknown>
+			> = {
+				[FUNNEL_STAGE_FILTER_ID]: buildSelectedData(
+					funnelStage,
+					funnelStages.filter((term) => !term.uncategorized)
+				),
+				[PERSONA_FILTER_ID]: buildSelectedData(
+					persona,
+					personas.filter((term) => !term.uncategorized)
+				),
+			};
+
 			setAssetFDSState({
 				...assetFDSState,
 				filters: (assetFDSState?.filters ?? []).map(
 					(filter: IBaseFilterState) => {
-						if (filter.id !== ASSET_CATEGORY_FILTER_ID) {
+						const selectedData = selectedDataByFilterId[filter.id];
+
+						if (!selectedData) {
 							return filter;
 						}
 
 						return {
 							...filter,
 							active: true,
-							selectedData: {
-								exclude: false,
-								selectedItems: [
-									{label: persona.name, value: persona.id},
-									{
-										label: funnelStage.name,
-										value: funnelStage.id,
-									},
-								],
-							},
+							selectedData,
 						};
 					}
 				),
 			});
 		},
-		[assetFDSState, setAssetFDSState]
+		[assetFDSState, funnelStages, personas, setAssetFDSState]
 	);
 
 	const selectedCategoryIds = useMemo(() => {
-		const categoryFilter = (assetFDSState?.filters ?? []).find(
-			(filter: IBaseFilterState) => filter.id === ASSET_CATEGORY_FILTER_ID
-		);
+		const categoryIds = new Set<string>();
 
-		const selectedData = categoryFilter?.selectedData as
-			| {exclude?: boolean; selectedItems?: Array<{value: string}>}
-			| undefined;
+		for (const filter of assetFDSState?.filters ?? []) {
+			if (
+				(filter.id !== FUNNEL_STAGE_FILTER_ID &&
+					filter.id !== PERSONA_FILTER_ID) ||
+				!filter.active
+			) {
+				continue;
+			}
 
-		if (
-			!categoryFilter ||
-			!categoryFilter.active ||
-			selectedData?.exclude
-		) {
-			return new Set<string>();
+			const selectedData = filter.selectedData as
+				| {exclude?: boolean; selectedItems?: Array<{value: string}>}
+				| undefined;
+
+			if (selectedData?.exclude) {
+				categoryIds.add(UNCATEGORIZED_ID);
+			}
+			else {
+				for (const item of selectedData?.selectedItems ?? []) {
+					categoryIds.add(String(item.value));
+				}
+			}
 		}
 
-		return new Set<string>(
-			(selectedData?.selectedItems ?? []).map((item) =>
-				String(item.value)
-			)
-		);
+		return categoryIds;
 	}, [assetFDSState]);
 
 	return {applyFilter, selectedCategoryIds};

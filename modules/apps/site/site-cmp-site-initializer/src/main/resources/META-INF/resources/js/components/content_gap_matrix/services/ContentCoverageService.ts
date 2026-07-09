@@ -17,14 +17,14 @@ interface ContentCoverageTermResponse {
 	name: string;
 }
 
-interface ContentCoverageCellResponse {
+interface ContentCoverageEntryResponse {
 	funnelStageId: string | null;
 	personaId: string | null;
 	totalCount: number;
 }
 
 interface ContentCoverageResponse {
-	cells?: ContentCoverageCellResponse[];
+	contentCoverageEntries?: ContentCoverageEntryResponse[];
 	funnelStages?: ContentCoverageTermResponse[];
 	personas?: ContentCoverageTermResponse[];
 	totalAssetCount?: number;
@@ -40,7 +40,8 @@ function toTaxonomyTerm(term: ContentCoverageTermResponse): TaxonomyTerm {
 
 /**
  * Adapts the REST response to MatrixData. The endpoint returns the real personas
- * and funnel stages plus cells keyed by category id, using UNCATEGORIZED_ID
+ * and funnel stages plus content coverage entries keyed by category id, using
+ * UNCATEGORIZED_ID
  * ("-1") for the uncategorized "other" bucket. This appends the localized
  * sentinel axes (which reuse that id) so those cells land in the "No Persona"
  * row / "No Funnel" column; a missing id defensively falls back to the same
@@ -48,11 +49,14 @@ function toTaxonomyTerm(term: ContentCoverageTermResponse): TaxonomyTerm {
  */
 export function toMatrixData(response: ContentCoverageResponse): MatrixData {
 	return {
-		cells: (response.cells ?? []).map((cell) => ({
-			funnelStageId: cell.funnelStageId ?? NO_FUNNEL_STAGE.id,
-			personaId: cell.personaId ?? NO_PERSONA.id,
-			totalCount: cell.totalCount,
-		})),
+		cells: (response.contentCoverageEntries ?? []).map(
+			(contentCoverageEntry) => ({
+				funnelStageId:
+					contentCoverageEntry.funnelStageId ?? NO_FUNNEL_STAGE.id,
+				personaId: contentCoverageEntry.personaId ?? NO_PERSONA.id,
+				totalCount: contentCoverageEntry.totalCount,
+			})
+		),
 		funnelStages: [
 			...(response.funnelStages ?? []).map(toTaxonomyTerm),
 			NO_FUNNEL_STAGE,
@@ -67,8 +71,7 @@ export function toMatrixData(response: ContentCoverageResponse): MatrixData {
 
 /**
  * Real implementation for the headless-cmp content-coverage endpoint
- * (LPD-93362). Not yet wired: the Card uses ContentCoverageServiceMock until the
- * endpoint is available; swap the Card back to this once it lands.
+ * (LPD-93362).
  */
 export const ContentCoverageServiceImpl: ContentCoverageService = {
 	async getMatrix(projectId: string): Promise<MatrixData> {

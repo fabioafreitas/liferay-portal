@@ -8,7 +8,7 @@ import React, {useEffect, useRef, useState} from 'react';
 
 import ContentGapCellActions from './ContentGapCellActions';
 import {TaxonomyTerm} from './types';
-import {getCellTier, isSentinel} from './utils';
+import {getCellTier} from './utils';
 
 interface ContentGapCellProps {
 	funnelStage: TaxonomyTerm;
@@ -35,12 +35,7 @@ export default function ContentGapCell({
 
 	const tier = gap ? 0 : getCellTier(totalCount, maxRealCount);
 
-	// Only real persona/funnel-stage cells filter the asset table. The
-	// uncategorized "No Persona" row and "No Funnel" column have no category to
-	// filter by, so they stay static.
-
-	const clickable =
-		Boolean(onFilter) && !isSentinel(persona) && !isSentinel(funnelStage);
+	const clickable = Boolean(onFilter);
 
 	const className = classNames('lfr-cmp__content-gap-cell', {
 		'lfr-cmp__content-gap-cell--active': active,

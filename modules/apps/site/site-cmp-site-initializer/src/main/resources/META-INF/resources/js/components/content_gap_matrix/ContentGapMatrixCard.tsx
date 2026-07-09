@@ -11,9 +11,9 @@ import {FDS_EVENT} from '@liferay/frontend-data-set-web';
 import {navigate, sub} from 'frontend-js-web';
 import React, {useCallback, useEffect, useState} from 'react';
 
+import {ContentCoverageServiceImpl} from './services/ContentCoverageService';
 import ContentGapMatrixGrid from './ContentGapMatrixGrid';
 import ContentGapMatrixHeader from './ContentGapMatrixHeader';
-import {ContentCoverageServiceMock} from './services/ContentCoverageServiceMock';
 import {MatrixData} from './types';
 
 import './ContentGapMatrix.scss';
@@ -25,7 +25,7 @@ interface ContentGapMatrixCardProps {
 	projectId: string;
 }
 
-const contentCoverageService = ContentCoverageServiceMock;
+const contentCoverageService = ContentCoverageServiceImpl;
 
 export default function ContentGapMatrixCard({
 	assetFDSId,
