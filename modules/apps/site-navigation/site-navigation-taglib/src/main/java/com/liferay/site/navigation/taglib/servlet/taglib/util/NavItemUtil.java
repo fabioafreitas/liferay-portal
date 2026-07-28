@@ -94,6 +94,13 @@ public class NavItemUtil {
 					continue;
 				}
 
+				Layout layout = siteNavigationMenuItemType.getLayout(
+					siteNavigationMenuItem);
+
+				if ((layout != null) && layout.isHidden()) {
+					continue;
+				}
+
 				if (!siteNavigationMenuItemType.isDynamic()) {
 					navItems.add(
 						new SiteNavigationMenuNavItemImpl(
