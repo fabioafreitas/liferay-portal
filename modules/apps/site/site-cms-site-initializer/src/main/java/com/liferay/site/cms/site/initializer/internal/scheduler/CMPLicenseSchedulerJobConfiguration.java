@@ -46,9 +46,7 @@ public class CMPLicenseSchedulerJobConfiguration
 	}
 
 	private void _checkResources(long companyId) {
-		CMPLicenseUtil.checkResources(
-			companyId, _groupLocalService, _layoutLocalService,
-			_objectDefinitionLocalService);
+		return;
 	}
 
 	@Reference

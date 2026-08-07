@@ -7,8 +7,6 @@ package com.liferay.site.cms.site.initializer.util;
 
 import com.liferay.object.model.ObjectDefinition;
 import com.liferay.object.service.ObjectDefinitionLocalService;
-import com.liferay.portal.kernel.license.util.App;
-import com.liferay.portal.kernel.license.util.LicenseManagerUtil;
 import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.model.GroupConstants;
 import com.liferay.portal.kernel.model.Layout;
@@ -28,12 +26,8 @@ public class CMPLicenseUtil {
 		LayoutLocalService layoutLocalService,
 		ObjectDefinitionLocalService objectDefinitionLocalService) {
 
-		boolean appEnabled = LicenseManagerUtil.isAppEnabled(App.CMP);
-
-		_checkLayouts(
-			appEnabled, companyId, groupLocalService, layoutLocalService);
-		_checkObjectDefinitions(
-			appEnabled, companyId, objectDefinitionLocalService);
+		_checkLayouts(true, companyId, groupLocalService, layoutLocalService);
+		_checkObjectDefinitions(true, companyId, objectDefinitionLocalService);
 	}
 
 	private static void _checkLayouts(
